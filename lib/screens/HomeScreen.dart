@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../commons/BottomNavbar.dart';
 
 class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: BottomNavbar(),
       backgroundColor: Colors.white,
       body: Center(
         child: Card(
