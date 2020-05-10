@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../commons/BottomNavbar.dart';
 
-class NewsScreen extends StatelessWidget {
+class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.blueAccent,
@@ -10,7 +10,7 @@ class NewsScreen extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(8.0),
               child: SelectableText(
-                'News',
+                'Login',
                 style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w500

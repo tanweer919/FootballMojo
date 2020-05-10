@@ -1,3 +1,4 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'custom_icons.dart';
@@ -7,34 +8,27 @@ class BottomNavbar extends StatelessWidget {
     fontWeight: FontWeight.w400,
     color: Colors.black,
   );
-
-  final List<BottomNavigationBarItem> bottomNavbarItems = [
-    BottomNavigationBarItem(
-      activeIcon: Icon(MyFlutterApp.home__1_, color: Colors.orange,),
-      icon: Icon(MyFlutterApp.home__1_),
-      title: Text('Home', style: _bottomNavBarStyle,)
-    ),
-    BottomNavigationBarItem(
-        activeIcon: Icon(MyFlutterApp.score, color: Colors.orange,),
-        icon: Icon(MyFlutterApp.score),
-        title: Text('Score', style: _bottomNavBarStyle,)
-    ),
-    BottomNavigationBarItem(
-        activeIcon: Icon(MyFlutterApp.news, color: Colors.orange,),
-        icon: Icon(MyFlutterApp.news),
-        title: Text('News', style: _bottomNavBarStyle,)
-    )
-  ];
-  final List<String> routes = ['/home', '/score', '/news'];
+  final navigatorKey;
+  BottomNavbar({this.navigatorKey});
+  final List<String> routes = ['/home', '/score', '/news', '/login'];
+  final List<Color> backgroundColors = [Colors.blueAccent, Colors.orange, Colors.red, Colors.green];
   Widget build(BuildContext context){
     final appProvider = Provider.of<AppProvider>(context);
-    return BottomNavigationBar(
-      items: bottomNavbarItems,
+    return CurvedNavigationBar(
+      height: 55.0,
+      backgroundColor: Colors.transparent,
+      color: Colors.orange,
+      animationDuration: Duration(milliseconds: 500),
+      items: <Widget>[
+        Icon(MyFlutterApp.home__1_, size: 25, color: Colors.white,),
+        Icon(MyFlutterApp.score, size: 25, color: Colors.white,),
+        Icon(MyFlutterApp.news, size: 25, color: Colors.white,),
+        Icon(Icons.account_circle, size: 25, color: Colors.white,)
+      ],
       onTap: (int index) {
         appProvider.navbarIndex = index;
-        Navigator.of(context).pushReplacementNamed(routes[index]);
+        navigatorKey.currentState.pushReplacementNamed(routes[index]);
       },
-      currentIndex: appProvider.navbarIndex,
     );
   }
 }
