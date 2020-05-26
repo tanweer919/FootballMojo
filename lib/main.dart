@@ -3,9 +3,12 @@ import 'screens/HomeScreen.dart';
 import 'package:provider/provider.dart';
 import 'Provider/AppProvider.dart';
 import 'helper/CustomRouter.dart';
-import 'commons/BottomNavbar.dart';
+import 'screens/FavouriteScreen1.dart';
 void main() {
-  GlobalKey<NavigatorState> navigator = new GlobalKey<NavigatorState>();
+  final ThemeData theme = ThemeData(
+    primaryColor: Color(0xFF50C878),
+    primaryColorDark: Color(0XFFA0A5AA)
+  );
   runApp(
     MultiProvider(
       providers: [
@@ -14,19 +17,13 @@ void main() {
         )
       ],
       child: MaterialApp(
-        navigatorKey: navigator,
         debugShowCheckedModeBanner: false,
+        theme: theme,
         home: HomeScreen(),
-        builder: (context, child) {
-          return new Scaffold(
-              body: child,
-              bottomNavigationBar:BottomNavbar(
-                navigatorKey: navigator,
-              ),
-              resizeToAvoidBottomPadding: false
-          );
-        },
         onGenerateRoute: Router().generateRoutes,
+        navigatorObservers: [
+          HeroController()
+        ],
       ),
     )
   );

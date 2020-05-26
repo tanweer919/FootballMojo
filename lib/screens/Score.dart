@@ -36,6 +36,7 @@ class _ScoreScreenState extends State<ScoreScreen> with TickerProviderStateMixin
   }
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: BottomNavbar(),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(

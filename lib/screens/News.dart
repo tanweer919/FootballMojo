@@ -4,6 +4,7 @@ import '../commons/BottomNavbar.dart';
 class NewsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: BottomNavbar(),
         backgroundColor: Colors.blueAccent,
         body: Center(
           child: Card(

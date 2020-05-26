@@ -1,26 +1,53 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../commons/BottomNavbar.dart';
-import '../commons/custom_icons.dart';
+import '../commons/NewsCard.dart';
+import '../helper/NewsService.dart';
+import '../models/News.dart';
+import 'package:pk_skeleton/pk_skeleton.dart';
+import '../helper/FlushbarHelper.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
+  final Map<String, dynamic> message;
+  HomeScreen({this.message});
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  final _pageController = PageController(initialPage: 0);
+  Future<List<News>> futureNewsList;
+  Future<List<News>> futureFavouriteNewsList;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => showAlert());
+    setState(() {
+      futureFavouriteNewsList = NewsService().fetchNews('Real madrid');
+      futureNewsList = NewsService().fetchNews('Football');
+    });
+  }
+
+  int carouselIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: BottomNavbar(),
         body: SafeArea(
-      child: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.only(top: 30.0),
-          child: Column(
-            children: <Widget>[UpcomingMatchesSection(), NewsSection()],
+          child: SingleChildScrollView(
+            child: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Flexible(fit: FlexFit.loose, child: carousel()),
+                  UpcomingMatchesSection(),
+                  NewsSection()
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-    ));
+        ));
   }
 
   Widget UpcomingMatchesSection() {
@@ -105,73 +132,204 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget NewsSection() {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            'Latest News',
-            style: TextStyle(fontSize: 14),
-          ),
-          ListView.separated(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              separatorBuilder: (BuildContext context, int index) {
-                return Divider();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Latest News',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.left,
+              ),
+            ),
+            FutureBuilder<List<News>>(
+              future: futureNewsList,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return ListView.builder(
+                      itemCount: 5,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return PKCardSkeleton(
+                          isCircularImage: true,
+                          isBottomLinesActive: true,
+                        );
+                      });
+                }
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider();
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        return NewsCard(
+                          index: index,
+                          news: snapshot.data[index],
+                        );
+                      });
+                }
               },
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        height: 80,
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              'https://www.thesun.co.uk/wp-content/uploads/2018/07/NINTCHDBPICT000485853573.jpg?strip=all&w=200',
-                        ),
-                      ),
-                      Container(
-                        height: 80,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical : 8.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Flexible(
-                                fit: FlexFit.tight,
-                                child: Text(
-                                  'Yaya Toure edges Man City Closer to PL title',
-                                ),
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    'Bleacher Report',
-                                    style: TextStyle(fontSize: 11),
-                                  ),
-                                  Text(
-                                    '1hr',
-                                    style: TextStyle(
-                                        fontSize: 11, color: Color(0xff808080)),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              }),
-        ],
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  Widget carousel() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.35,
+      child: FutureBuilder(
+        future: futureFavouriteNewsList,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return PageView(
+              controller: _pageController,
+              children: <Widget>[
+                for (int i = 0; i < 5; i++)
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Image.asset(
+                      'assets/images/news_default.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+              ],
+              onPageChanged: (int index) {
+                setState(() {
+                  carouselIndex = index;
+                });
+              },
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            List<News> data = snapshot.data;
+            return PageView(
+              controller: _pageController,
+              children: <Widget>[
+                for (int i = 0; i < 5; i++)
+                  Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: <Widget>[
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/newsarticle', arguments: {'index': i + 100, 'news': data[i]});
+                        },
+                        child: Container(
+                          child: CachedNetworkImage(
+                            height: MediaQuery.of(context).size.height * 0.35,
+                            imageUrl: data[i].imageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (BuildContext context, String url) =>
+                                Image.asset(
+                              'assets/images/news_default.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.12,
+                          color: Colors.black.withOpacity(0.4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Padding(
+                                  padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Flexible(
+                                        child: Text(
+                                          data[i].title,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w300,
+                                              fontSize: 16,
+                                              color: Colors.white
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 4.0),
+                                            child: Text(
+                                              data[i].source,
+                                              style: TextStyle(fontSize: 14, color: Colors.amberAccent),
+                                            ),
+                                          ),
+                                          Text(
+                                            '1hr',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.amberAccent),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    for (int i = 0; i < 5; i++)
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                        child: Container(
+                                          height: 10,
+                                          width: 10,
+                                          decoration: BoxDecoration(
+                                              color: carouselIndex == i
+                                                  ? Theme.of(context).primaryColor
+                                                  : Colors.white,
+                                              borderRadius: BorderRadius.circular(10.0)),
+                                        ),
+                                      )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+              ],
+              onPageChanged: (int index) {
+                setState(() {
+                  carouselIndex = index;
+                });
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  void showAlert() {
+    if (widget.message != null) {
+      FlushHelper.flushbarAlert(
+          context: context,
+          title: widget.message['title'],
+          message: widget.message['content'],
+          seconds: 3);
+    }
   }
 }
