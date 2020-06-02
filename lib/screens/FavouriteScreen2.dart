@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:sportsmojo/commons/custom_icons.dart';
-import '../commons/BottomNavbar.dart';
-import '../constants.dart';
 import '../models/Team.dart';
-import '../helper/TeamService.dart';
-import '../helper/LocalStorage.dart';
+import '../services/TeamService.dart';
+import '../services/LocalStorage.dart';
+import '../services/GetItLocator.dart';
 
 class FavouriteTeam extends StatefulWidget {
   final int leagueId;
@@ -25,9 +23,10 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
 
   @override
   void initState() {
+    TeamService _teamService = locator<TeamService>();
     super.initState();
     setState(() {
-      futureTeamList = TeamService(id: widget.leagueId).fetchTeams();
+      futureTeamList = _teamService.fetchTeams(id: widget.leagueId);
     });
   }
 

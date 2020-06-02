@@ -1,11 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../commons/BottomNavbar.dart';
 import '../commons/NewsCard.dart';
-import '../helper/NewsService.dart';
 import '../models/News.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
-import '../helper/FlushbarHelper.dart';
+import '../services/FlushbarHelper.dart';
+import '../Provider/HomeViewModel.dart';
+import '../services/GetItLocator.dart';
+import '../Provider/AppProvider.dart';
+import 'package:pu';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -16,34 +20,44 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final _pageController = PageController(initialPage: 0);
-  Future<List<News>> futureNewsList;
-  Future<List<News>> futureFavouriteNewsList;
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  String teamName;
   @override
   void initState() {
+    final initialState = Provider.of<AppProvider>(context, listen: false);
+    if(initialState.newsList == null) {
+      initialState.loadAllNews();
+    }
+    if(initialState.loadFavouriteNews() == null) {
+      initialState.loadFavouriteNews();
+    }
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => showAlert());
-    setState(() {
-      futureFavouriteNewsList = NewsService().fetchNews('Real madrid');
-      futureNewsList = NewsService().fetchNews('Football');
-    });
   }
 
-  int carouselIndex = 0;
+
+  HomeViewModel _viewModel = locator<HomeViewModel>();
 
   @override
   Widget build(BuildContext context) {
+    final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
         bottomNavigationBar: BottomNavbar(),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Flexible(fit: FlexFit.loose, child: carousel()),
-                  UpcomingMatchesSection(),
-                  NewsSection()
-                ],
+        body: ChangeNotifierProvider<HomeViewModel>(
+          create: (context) => _viewModel,
+          child: Consumer<HomeViewModel>(
+            builder: (context, model, child) => SafeArea(
+              child: SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Flexible(fit: FlexFit.loose, child: carousel(model: model, appProvider: appProvider)),
+                      UpcomingMatchesSection(),
+                      NewsSection(model: model, appProvider: appProvider)
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -131,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget NewsSection() {
+  Widget NewsSection({HomeViewModel model, AppProvider appProvider}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -146,11 +160,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 textAlign: TextAlign.left,
               ),
             ),
-            FutureBuilder<List<News>>(
-              future: futureNewsList,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return ListView.builder(
+            appProvider.newsList != null ? ListView.separated(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: appProvider.newsList.length,
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider();
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return NewsCard(
+                    index: index,
+                    news: appProvider.newsList[index],
+                  );
+                }) : ListView.builder(
                       itemCount: 5,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -159,60 +181,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           isCircularImage: true,
                           isBottomLinesActive: true,
                         );
-                      });
-                }
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: snapshot.data.length,
-                      separatorBuilder: (BuildContext context, int index) {
-                        return Divider();
-                      },
-                      itemBuilder: (BuildContext context, int index) {
-                        return NewsCard(
-                          index: index,
-                          news: snapshot.data[index],
-                        );
-                      });
-                }
-              },
-            )
+                      })
           ],
         ),
       ),
     );
   }
 
-  Widget carousel() {
+  Widget carousel({HomeViewModel model, AppProvider appProvider}) {
+    List<News> favouriteNewsList = appProvider.favouriteNewsList;
     return Container(
       height: MediaQuery.of(context).size.height * 0.35,
-      child: FutureBuilder(
-        future: futureFavouriteNewsList,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return PageView(
-              controller: _pageController,
-              children: <Widget>[
-                for (int i = 0; i < 5; i++)
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.35,
-                    child: Image.asset(
-                      'assets/images/news_default.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-              ],
-              onPageChanged: (int index) {
-                setState(() {
-                  carouselIndex = index;
-                });
-              },
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            List<News> data = snapshot.data;
-            return Stack(
+      child: favouriteNewsList != null ? Stack(
               alignment: Alignment.bottomLeft,
               children: <Widget>[
                 PageView(
@@ -222,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       InkWell(
                         onTap: () {
                           Navigator.of(context).pushNamed('/newsarticle',
-                              arguments: {'index': i + 100, 'news': data[i]});
+                              arguments: {'index': i + 100, 'news': favouriteNewsList[i]});
                         },
                         child: Stack(
                           alignment: Alignment.bottomLeft,
@@ -230,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             Container(
                               child: CachedNetworkImage(
                                 height: MediaQuery.of(context).size.height * 0.35,
-                                imageUrl: data[i].imageUrl,
+                                imageUrl: favouriteNewsList[i].imageUrl,
                                 fit: BoxFit.cover,
                                 placeholder: (BuildContext context, String url) =>
                                     Image.asset(
@@ -251,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 children: <Widget>[
                                   Flexible(
                                     child: Text(
-                                      data[i].title,
+                                      favouriteNewsList[i].title,
                                       style: TextStyle(
                                           fontWeight: FontWeight.w300,
                                           fontSize: 16,
@@ -264,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       Padding(
                                         padding: const EdgeInsets.only(right: 4.0),
                                         child: Text(
-                                          data[i].source,
+                                          favouriteNewsList[i].source,
                                           style: TextStyle(fontSize: 14, color: Colors.amberAccent),
                                         ),
                                       ),
@@ -284,9 +264,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                   ],
                   onPageChanged: (int index) {
-                    setState(() {
-                      carouselIndex = index;
-                    });
+                    model.carouselIndex = index;
                   },
                 ),
                 Align(
@@ -309,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 height: 10,
                                 width: 10,
                                 decoration: BoxDecoration(
-                                    color: carouselIndex == i
+                                    color: model.carouselIndex == i
                                         ? Theme.of(context).primaryColor
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(10.0)),
@@ -321,10 +299,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 )
               ],
-            );
-          }
+            ) : PageView(
+        controller: _pageController,
+        children: <Widget>[
+          for (int i = 0; i < 5; i++)
+            Container(
+              height: MediaQuery.of(context).size.height * 0.35,
+              child: Image.asset(
+                'assets/images/news_default.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+        ],
+        onPageChanged: (int index) {
+          model.carouselIndex = index;
         },
-      ),
+      )
     );
   }
 
@@ -336,5 +326,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           message: widget.message['content'],
           seconds: 3);
     }
+  }
+
+  Future<void> _onRefresh() async {
+
+  }
+
+  Future<void> _onLoading() async {
+
   }
 }

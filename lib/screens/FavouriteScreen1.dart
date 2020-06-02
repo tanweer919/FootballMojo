@@ -1,11 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
-import 'package:sportsmojo/commons/custom_icons.dart';
-import '../commons/BottomNavbar.dart';
 import '../constants.dart';
-import '../models/Team.dart';
-import '../helper/TeamService.dart';
 
 class FavouriteLeague extends StatefulWidget {
   @override

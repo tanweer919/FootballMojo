@@ -1,15 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import '../models/Team.dart';
 import '../secret.dart';
 class TeamService {
-  int id;
-  TeamService({this.id});
   static BaseOptions options = new BaseOptions(headers: {
     'x-rapidapi-host': 'v3.football.api-sports.io',
     'x-rapidapi-key': scoreApiKey
   });
   final dio = new Dio(options);
-  Future<List<Team>> fetchTeams() async {
+  Future<List<Team>> fetchTeams({@required int id}) async {
     List<Team> teamList = [];
     try {
       final response =

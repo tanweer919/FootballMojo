@@ -31,15 +31,16 @@ class BottomNavbar extends StatelessWidget {
           title: Text('Login', style: _bottomNavBarStyle,)
       )
     ];
-    final appProvider = Provider.of<AppProvider>(context);
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      items: bottomNavbarItems,
-      onTap: (int index) {
-        appProvider.navbarIndex = index;
-        Navigator.of(context).pushReplacementNamed(routes[index]);
-      },
-      currentIndex: appProvider.navbarIndex,
+    return Consumer<AppProvider>(
+      builder: (context, model, child) => BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: bottomNavbarItems,
+        onTap: (int index) {
+          model.navbarIndex = index;
+          Navigator.of(context).pushReplacementNamed(routes[index]);
+        },
+        currentIndex: model.navbarIndex,
+      ),
     );
   }
 }
