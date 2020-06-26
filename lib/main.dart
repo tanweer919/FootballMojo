@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'Provider/AppProvider.dart';
 import 'services/CustomRouter.dart';
 import 'services/GetItLocator.dart';
-import 'Provider/AppProvider.dart';
 
 void main() {
   setupLocator();

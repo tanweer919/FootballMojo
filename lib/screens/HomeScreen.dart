@@ -9,7 +9,7 @@ import '../services/FlushbarHelper.dart';
 import '../Provider/HomeViewModel.dart';
 import '../services/GetItLocator.dart';
 import '../Provider/AppProvider.dart';
-import 'package:pu';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -46,16 +46,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         body: ChangeNotifierProvider<HomeViewModel>(
           create: (context) => _viewModel,
           child: Consumer<HomeViewModel>(
-            builder: (context, model, child) => SafeArea(
-              child: SingleChildScrollView(
-                child: Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Flexible(fit: FlexFit.loose, child: carousel(model: model, appProvider: appProvider)),
-                      UpcomingMatchesSection(),
-                      NewsSection(model: model, appProvider: appProvider)
-                    ],
+            builder: (context, model, child) => SmartRefresher(
+              controller: _refreshController,
+              enablePullDown: true,
+              onLoading: () async{
+                _onLoading(appProvider: appProvider);
+              },
+              onRefresh: () async{
+                _onRefresh(appProvider: appProvider);
+              },
+              header: WaterDropHeader(),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Flexible(fit: FlexFit.loose, child: carousel(model: model, appProvider: appProvider)),
+                        UpcomingMatchesSection(),
+                        NewsSection(model: model, appProvider: appProvider)
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -328,11 +339,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _onRefresh() async {
-
+  Future<void> _onLoading({AppProvider appProvider}) async {
+    appProvider.newsList = null;
+    appProvider.favouriteNewsList = null;
+    _refreshController.loadComplete();
   }
 
-  Future<void> _onLoading() async {
-
+  Future<void> _onRefresh({AppProvider appProvider}) async {
+    await appProvider.loadFavouriteNews();
+    await appProvider.loadAllNews();
+    _refreshController.refreshCompleted();
   }
 }

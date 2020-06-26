@@ -7,6 +7,7 @@ import '../commons/NewsCard.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import '../services/LocalStorage.dart';
 import '../Provider/AppProvider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class NewsScreen extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   TabController _tabController;
   String teamName;
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
   void initState(){
     final initialState = Provider.of<AppProvider>(context, listen: false);
     if(initialState.newsList == null) {
@@ -62,12 +64,23 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-          body: TabBarView(
-            controller: _tabController,
-            children: <Widget>[
-              allNews(model: model),
-              favouriteTeamNews(model: model)
-            ],
+          body: SmartRefresher(
+            controller: _refreshController,
+            onRefresh: () {
+              _onRefresh(appProvider: model);
+            },
+            onLoading: () {
+              _onLoading(appProvider: model);
+            },
+            header: WaterDropHeader(),
+            enablePullDown: true,
+            child: TabBarView(
+              controller: _tabController,
+              children: <Widget>[
+                allNews(model: model),
+                favouriteTeamNews(model: model)
+              ],
+            ),
           )
       ),
     );
@@ -160,5 +173,17 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  Future<void> _onLoading({AppProvider appProvider}) async {
+    appProvider.newsList = null;
+    appProvider.favouriteNewsList = null;
+    _refreshController.loadComplete();
+  }
+
+  Future<void> _onRefresh({AppProvider appProvider}) async {
+    await appProvider.loadFavouriteNews();
+    await appProvider.loadAllNews();
+    _refreshController.refreshCompleted();
   }
 }

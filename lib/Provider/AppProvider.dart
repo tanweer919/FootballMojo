@@ -29,4 +29,14 @@ class AppProvider extends ChangeNotifier {
   List<News> get newsList => _newsList;
   List<News> get favouriteNewsList => _favouriteNewsList;
 
+  void set newsList(List<News> news) {
+    _newsList = news;
+    notifyListeners();
+  }
+
+  void set favouriteNewsList(List<News> news) {
+    _favouriteNewsList = news.sublist(0, 4);
+    notifyListeners();
+  }
+
 }
