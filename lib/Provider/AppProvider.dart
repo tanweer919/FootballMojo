@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sportsmojo/models/Score.dart';
+import 'package:sportsmojo/services/ScoreService.dart';
 import '../services/NewsService.dart';
 import '../services/LocalStorage.dart';
 import '../services/GetItLocator.dart';
@@ -7,6 +9,7 @@ class AppProvider extends ChangeNotifier {
   int _navbarIndex;
   List<News> _newsList;
   List<News> _favouriteNewsList;
+  List<Score> _favouriteTeamScores;
   AppProvider(this._navbarIndex);
   int get navbarIndex => _navbarIndex;
 
@@ -15,6 +18,8 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
   NewsService _newsService = locator<NewsService>();
+  ScoreService _scoreService = locator<ScoreService>();
+  
   Future<void> loadAllNews() async{
     _newsList = await _newsService.fetchNews('football');
     notifyListeners();
@@ -26,8 +31,15 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadFavouriteScores() async {
+    String teamId = await LocalStorage.getString('teamId');
+    _favouriteTeamScores = await _scoreService.fetchScoresByTeam(id: teamId);
+    notifyListeners();
+  }
+
   List<News> get newsList => _newsList;
   List<News> get favouriteNewsList => _favouriteNewsList;
+  List<Score> get favouriteTeamScores => _favouriteTeamScores;
 
   void set newsList(List<News> news) {
     _newsList = news;
@@ -36,6 +48,11 @@ class AppProvider extends ChangeNotifier {
 
   void set favouriteNewsList(List<News> news) {
     _favouriteNewsList = news.sublist(0, 4);
+    notifyListeners();
+  }
+
+  void set favouriteTeamScores(List<Score> scores) {
+    _favouriteTeamScores = scores;
     notifyListeners();
   }
 

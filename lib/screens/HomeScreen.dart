@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsmojo/models/Score.dart';
 import '../commons/BottomNavbar.dart';
 import '../commons/NewsCard.dart';
 import '../models/News.dart';
@@ -20,21 +21,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final _pageController = PageController(initialPage: 0);
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   String teamName;
   @override
   void initState() {
     final initialState = Provider.of<AppProvider>(context, listen: false);
-    if(initialState.newsList == null) {
+    if (initialState.newsList == null) {
       initialState.loadAllNews();
     }
-    if(initialState.loadFavouriteNews() == null) {
+    if (initialState.favouriteNewsList == null) {
       initialState.loadFavouriteNews();
+    }
+    if (initialState.favouriteTeamScores == null) {
+      initialState.loadFavouriteScores();
     }
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => showAlert());
   }
-
 
   HomeViewModel _viewModel = locator<HomeViewModel>();
 
@@ -49,10 +53,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             builder: (context, model, child) => SmartRefresher(
               controller: _refreshController,
               enablePullDown: true,
-              onLoading: () async{
+              onLoading: () async {
                 _onLoading(appProvider: appProvider);
               },
-              onRefresh: () async{
+              onRefresh: () async {
                 _onRefresh(appProvider: appProvider);
               },
               header: WaterDropHeader(),
@@ -62,8 +66,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Flexible(fit: FlexFit.loose, child: carousel(model: model, appProvider: appProvider)),
-                        UpcomingMatchesSection(),
+                        Flexible(
+                            fit: FlexFit.loose,
+                            child: carousel(
+                                model: model, appProvider: appProvider)),
+                        appProvider.favouriteTeamScores != null
+                            ? UpcomingMatchesSection(appProvider: appProvider)
+                            : PKCardSkeleton(
+                                isCircularImage: true,
+                                isBottomLinesActive: true,
+                              ),
                         NewsSection(model: model, appProvider: appProvider)
                       ],
                     ),
@@ -75,33 +87,48 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ));
   }
 
-  Widget UpcomingMatchesSection() {
+  Widget UpcomingMatchesSection({AppProvider appProvider}) {
+    final List<Score> matches = appProvider.favouriteTeamScores;
+    final int latestMatchIndex =
+        matches.lastIndexWhere((score) => score.status == "FT");
+    final Score latestMatch = matches[latestMatchIndex];
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'Upcoming/Live Matches',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Upcoming/Live Matches',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+              ),
             ),
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Text('La Liga'),
-                        Spacer(),
-                        Container(
-                          width: 20.0,
-                          child: Text(
-                            "73'",
-                            style: TextStyle(color: Colors.red),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        children: <Widget>[
+                          Text(
+                            '${latestMatch.competition} - ${latestMatch.date}, ${latestMatch.time}',
+                            style:
+                                TextStyle(fontSize: 14, color: Color(0X8A000000)),
                           ),
-                        )
-                      ],
+                          Spacer(),
+                          Container(
+                            width: 20.0,
+                            child: Text(
+                              latestMatch.status,
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -115,10 +142,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 child: Container(
                                     height: 60,
                                     child: CachedNetworkImage(
-                                        imageUrl:
-                                            'https://icons.iconarchive.com/icons/giannis-zographos/spanish-football-club/256/Real-Madrid-icon.png')),
+                                        imageUrl: latestMatch.homeTeamLogo)),
                               ),
-                              Text('Real Madrid')
+                              Text(latestMatch.homeTeam)
                             ],
                           ),
                           Expanded(
@@ -126,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  '5 - 4',
+                                  '${latestMatch.homeScore} - ${latestMatch.awayScore}',
                                   style: TextStyle(fontSize: 30),
                                 ),
                               ],
@@ -139,10 +165,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 child: Container(
                                     height: 60,
                                     child: CachedNetworkImage(
-                                        imageUrl:
-                                            'https://icons.iconarchive.com/icons/giannis-zographos/spanish-football-club/256/FC-Barcelona-icon.png')),
+                                        imageUrl: latestMatch.awayTeamLogo)),
                               ),
-                              Text('FC Barcelona')
+                              Text(latestMatch.awayTeam)
                             ],
                           )
                         ],
@@ -171,28 +196,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 textAlign: TextAlign.left,
               ),
             ),
-            appProvider.newsList != null ? ListView.separated(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: appProvider.newsList.length,
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider();
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  return NewsCard(
-                    index: index,
-                    news: appProvider.newsList[index],
-                  );
-                }) : ListView.builder(
-                      itemCount: 5,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, int index) {
-                        return PKCardSkeleton(
-                          isCircularImage: true,
-                          isBottomLinesActive: true,
-                        );
-                      })
+            appProvider.newsList != null
+                ? ListView.separated(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: appProvider.newsList.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider();
+                    },
+                    itemBuilder: (BuildContext context, int index) {
+                      return NewsCard(
+                        index: index,
+                        news: appProvider.newsList[index],
+                      );
+                    })
+                : ListView.builder(
+                    itemCount: 5,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return PKCardSkeleton(
+                        isCircularImage: true,
+                        isBottomLinesActive: true,
+                      );
+                    })
           ],
         ),
       ),
@@ -202,131 +229,145 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget carousel({HomeViewModel model, AppProvider appProvider}) {
     List<News> favouriteNewsList = appProvider.favouriteNewsList;
     return Container(
-      height: MediaQuery.of(context).size.height * 0.35,
-      child: favouriteNewsList != null ? Stack(
-              alignment: Alignment.bottomLeft,
-              children: <Widget>[
-                PageView(
-                  controller: _pageController,
-                  children: <Widget>[
-                    for (int i = 0; i < 5; i++)
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushNamed('/newsarticle',
-                              arguments: {'index': i + 100, 'news': favouriteNewsList[i]});
-                        },
-                        child: Stack(
-                          alignment: Alignment.bottomLeft,
-                          children: <Widget>[
-                            Container(
-                              child: CachedNetworkImage(
-                                height: MediaQuery.of(context).size.height * 0.35,
-                                imageUrl: favouriteNewsList[i].imageUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (BuildContext context, String url) =>
-                                    Image.asset(
-                                  'assets/images/news_default.png',
+        height: MediaQuery.of(context).size.height * 0.35,
+        child: favouriteNewsList != null
+            ? Stack(
+                alignment: Alignment.bottomLeft,
+                children: <Widget>[
+                  PageView(
+                    controller: _pageController,
+                    children: <Widget>[
+                      for (int i = 0; i < 5; i++)
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/newsarticle',
+                                arguments: {
+                                  'index': i + 100,
+                                  'news': favouriteNewsList[i]
+                                });
+                          },
+                          child: Stack(
+                            alignment: Alignment.bottomLeft,
+                            children: <Widget>[
+                              Container(
+                                child: CachedNetworkImage(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  imageUrl: favouriteNewsList[i].imageUrl,
                                   fit: BoxFit.cover,
+                                  placeholder:
+                                      (BuildContext context, String url) =>
+                                          Image.asset(
+                                    'assets/images/news_default.png',
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              color: Colors.black.withOpacity(0.4),
-                              padding:
-                              EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02, left: 12.0, right: 12.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Flexible(
-                                    child: Text(
-                                      favouriteNewsList[i].title,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 16,
-                                          color: Colors.white
+                              Container(
+                                color: Colors.black.withOpacity(0.4),
+                                padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).size.height *
+                                        0.02,
+                                    left: 12.0,
+                                    right: 12.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Flexible(
+                                      child: Text(
+                                        favouriteNewsList[i].title,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 16,
+                                            color: Colors.white),
                                       ),
                                     ),
-                                  ),
-                                  Row(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 4.0),
-                                        child: Text(
-                                          favouriteNewsList[i].source,
-                                          style: TextStyle(fontSize: 14, color: Colors.amberAccent),
+                                    Row(
+                                      children: <Widget>[
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 4.0),
+                                          child: Text(
+                                            favouriteNewsList[i].source,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.amberAccent),
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        '1hr',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.amberAccent),
-                                      )
-                                    ],
-                                  )
-                                ],
+                                        Text(
+                                          '1hr',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.amberAccent),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                    ],
+                    onPageChanged: (int index) {
+                      model.carouselIndex = index;
+                    },
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                      color: Colors.black.withOpacity(0.1),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          for (int i = 0; i < 5; i++)
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 4.0),
+                              child: InkWell(
+                                onTap: () {
+                                  _pageController.animateToPage(i,
+                                      duration: Duration(milliseconds: 200),
+                                      curve: Curves.easeIn);
+                                },
+                                child: Container(
+                                  height: 10,
+                                  width: 10,
+                                  decoration: BoxDecoration(
+                                      color: model.carouselIndex == i
+                                          ? Theme.of(context).primaryColor
+                                          : Colors.white,
+                                      borderRadius:
+                                          BorderRadius.circular(10.0)),
+                                ),
                               ),
                             )
-                          ],
-                        ),
+                        ],
                       ),
-                  ],
-                  onPageChanged: (int index) {
-                    model.carouselIndex = index;
-                  },
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                    color: Colors.black.withOpacity(0.1),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        for (int i = 0; i < 5; i++)
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4.0),
-                            child: InkWell(
-                              onTap: () {
-                                _pageController.animateToPage(i, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-                              },
-                              child: Container(
-                                height: 10,
-                                width: 10,
-                                decoration: BoxDecoration(
-                                    color: model.carouselIndex == i
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(10.0)),
-                              ),
-                            ),
-                          )
-                      ],
                     ),
-                  ),
-                )
-              ],
-            ) : PageView(
-        controller: _pageController,
-        children: <Widget>[
-          for (int i = 0; i < 5; i++)
-            Container(
-              height: MediaQuery.of(context).size.height * 0.35,
-              child: Image.asset(
-                'assets/images/news_default.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-        ],
-        onPageChanged: (int index) {
-          model.carouselIndex = index;
-        },
-      )
-    );
+                  )
+                ],
+              )
+            : PageView(
+                controller: _pageController,
+                children: <Widget>[
+                  for (int i = 0; i < 5; i++)
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      child: Image.asset(
+                        'assets/images/news_default.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                ],
+                onPageChanged: (int index) {
+                  model.carouselIndex = index;
+                },
+              ));
   }
 
   void showAlert() {

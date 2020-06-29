@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../screens/HomeScreen.dart';
-import '../screens/Score.dart';
+import '../screens/ScoreScreen.dart';
 import '../screens/News.dart';
 import '../screens/Login.dart';
 import '../screens/NewsArticle.dart';
