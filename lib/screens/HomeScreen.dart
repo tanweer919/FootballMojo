@@ -89,9 +89,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget UpcomingMatchesSection({AppProvider appProvider}) {
     final List<Score> matches = appProvider.favouriteTeamScores;
-    final int latestMatchIndex =
-        matches.lastIndexWhere((score) => score.status == "FT");
-    final Score latestMatch = matches[latestMatchIndex];
+    final Score latestMatch =
+        matches.firstWhere((score) => score.status == "FT");
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -115,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       child: Row(
                         children: <Widget>[
                           Text(
-                            '${latestMatch.competition} - ${latestMatch.date}, ${latestMatch.time}',
+                            '${latestMatch.competition} - ${latestMatch.date_time}',
                             style:
                                 TextStyle(fontSize: 14, color: Color(0X8A000000)),
                           ),

@@ -1,8 +1,8 @@
+import 'package:intl/intl.dart';
 class Score{
   String competition;
   String venue;
-  String date;
-  String time;
+  String date_time;
   String status;
   String homeTeam;
   String awayTeam;
@@ -11,12 +11,11 @@ class Score{
   int minuteElapsed;
   int homeScore;
   int awayScore;
-  Score({this.competition,this.venue, this.date, this.time, this.status, this.homeTeam, this.awayTeam, this.homeTeamLogo, this.awayTeamLogo, this.homeScore, this.awayScore, this.minuteElapsed});
+  Score({this.competition,this.venue, this.date_time, this.status, this.homeTeam, this.awayTeam, this.homeTeamLogo, this.awayTeamLogo, this.homeScore, this.awayScore, this.minuteElapsed});
   Score.fromJson(Map<String, dynamic> parsedJson):
         competition = parsedJson['league']['name'],
         venue = parsedJson['fixture']['venue']['name'],
-        date = parsedJson['fixture']['date'].substring(0, 10),
-        time = parsedJson['fixture']['date'].substring(11, 16),
+        date_time = new DateFormat('E, d MMMM, jm').format(DateTime.parse(parsedJson['fixture']['date'])),
         status = parsedJson['fixture']['status']['short'],
         homeTeam = parsedJson['teams']['home']['name'],
         awayTeam = parsedJson['teams']['away']['name'],

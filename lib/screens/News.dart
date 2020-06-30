@@ -23,7 +23,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     if(initialState.newsList == null) {
       initialState.loadAllNews();
     }
-    if(initialState.loadFavouriteNews() == null) {
+    if(initialState.favouriteNewsList == null) {
       initialState.loadFavouriteNews();
     }
     super.initState();
@@ -64,23 +64,12 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-          body: SmartRefresher(
-            controller: _refreshController,
-            onRefresh: () {
-              _onRefresh(appProvider: model);
-            },
-            onLoading: () {
-              _onLoading(appProvider: model);
-            },
-            header: WaterDropHeader(),
-            enablePullDown: true,
-            child: TabBarView(
-              controller: _tabController,
-              children: <Widget>[
-                allNews(model: model),
-                favouriteTeamNews(model: model)
-              ],
-            ),
+          body: TabBarView(
+            controller: _tabController,
+            children: <Widget>[
+              allNews(model: model),
+              favouriteTeamNews(model: model)
+            ],
           )
       ),
     );
