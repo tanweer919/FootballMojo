@@ -15,7 +15,7 @@ class Score{
   Score.fromJson(Map<String, dynamic> parsedJson):
         competition = parsedJson['league']['name'],
         venue = parsedJson['fixture']['venue']['name'],
-        date_time = new DateFormat('E, d MMMM, jm').format(DateTime.parse(parsedJson['fixture']['date'])),
+        date_time = new DateFormat('E, d MMMM, hh:mm aaa').format(DateTime.parse('${parsedJson['fixture']['date'].substring(0, 19)}Z')),
         status = parsedJson['fixture']['status']['short'],
         homeTeam = parsedJson['teams']['home']['name'],
         awayTeam = parsedJson['teams']['away']['name'],

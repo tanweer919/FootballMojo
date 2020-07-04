@@ -36,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (initialState.favouriteTeamScores == null) {
       initialState.loadFavouriteScores();
     }
+    if (initialState.leagueWiseScores == null) {
+      initialState.loadLeagueWiseScores();
+    }
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => showAlert());
   }

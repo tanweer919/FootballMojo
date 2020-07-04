@@ -9,6 +9,8 @@ class AppProvider extends ChangeNotifier {
   int _navbarIndex;
   List<News> _newsList;
   List<News> _favouriteNewsList;
+  List<Score> _leagueWiseScores;
+
   List<Score> _favouriteTeamScores;
   AppProvider(this._navbarIndex);
   int get navbarIndex => _navbarIndex;
@@ -31,6 +33,11 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadLeagueWiseScores() async {
+    _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: '140');
+    notifyListeners();
+  }
+
   Future<void> loadFavouriteScores() async {
     String teamId = await LocalStorage.getString('teamId');
     _favouriteTeamScores = await _scoreService.fetchScoresByTeam(id: teamId);
@@ -40,6 +47,7 @@ class AppProvider extends ChangeNotifier {
   List<News> get newsList => _newsList;
   List<News> get favouriteNewsList => _favouriteNewsList;
   List<Score> get favouriteTeamScores => _favouriteTeamScores;
+  List<Score> get leagueWiseScores => _leagueWiseScores;
 
   void set newsList(List<News> news) {
     _newsList = news;
@@ -56,4 +64,8 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void set leagueWiseScores(List<Score> scores) {
+    _leagueWiseScores = scores;
+    notifyListeners();
+  }
 }
