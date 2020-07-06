@@ -186,6 +186,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                     onTap: () {
                       LocalStorage.setString('teamName', team.name);
                       LocalStorage.setString('teamId', '${team.id}');
+                      LocalStorage.setString('leagueId', '${widget.leagueId}');
                       Navigator.of(context)
                           .pushReplacementNamed('/home', arguments: {
                         'favouriteTeamMessage': {

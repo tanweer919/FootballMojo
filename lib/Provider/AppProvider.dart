@@ -34,7 +34,8 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadLeagueWiseScores() async {
-    _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: '140');
+    String leagueId = await LocalStorage.getString('leagueId');
+    _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
     notifyListeners();
   }
 

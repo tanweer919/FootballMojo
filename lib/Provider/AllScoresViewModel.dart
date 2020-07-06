@@ -4,7 +4,7 @@ class AllScoresViewModel extends ChangeNotifier {
   List<Score> _scores;
   int _lastRetrievedIndex;
 
-  AllScoresViewModel(_scores, _lastRetrievedIndex);
+  AllScoresViewModel(this._scores, this._lastRetrievedIndex);
 
 
   List<Score> get allScores => _scores;

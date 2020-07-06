@@ -53,35 +53,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         body: ChangeNotifierProvider<HomeViewModel>(
           create: (context) => _viewModel,
           child: Consumer<HomeViewModel>(
-            builder: (context, model, child) => SmartRefresher(
-              controller: _refreshController,
-              enablePullDown: true,
-              onLoading: () async {
-                _onLoading(appProvider: appProvider);
-              },
-              onRefresh: () async {
-                _onRefresh(appProvider: appProvider);
-              },
-              header: WaterDropHeader(),
-              child: SafeArea(
-                child: SingleChildScrollView(
-                  child: Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Flexible(
-                            fit: FlexFit.loose,
-                            child: carousel(
-                                model: model, appProvider: appProvider)),
-                        appProvider.favouriteTeamScores != null
-                            ? UpcomingMatchesSection(appProvider: appProvider)
-                            : PKCardSkeleton(
-                                isCircularImage: true,
-                                isBottomLinesActive: true,
-                              ),
-                        NewsSection(model: model, appProvider: appProvider)
-                      ],
-                    ),
+            builder: (context, model, child) => SafeArea(
+              child: SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Flexible(
+                          fit: FlexFit.loose,
+                          child: carousel(
+                              model: model, appProvider: appProvider)),
+                      appProvider.favouriteTeamScores != null
+                          ? UpcomingMatchesSection(appProvider: appProvider)
+                          : PKCardSkeleton(
+                              isCircularImage: true,
+                              isBottomLinesActive: true,
+                            ),
+                      NewsSection(model: model, appProvider: appProvider)
+                    ],
                   ),
                 ),
               ),
