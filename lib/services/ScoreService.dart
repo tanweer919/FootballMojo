@@ -15,10 +15,13 @@ class ScoreService {
       await dio.get('https://v3.football.api-sports.io/fixtures?league=${id}&season=2019&timezone=Asia/Kolkata');
       if (response.statusCode == 200) {
         final unparsedJson = response.data['response'].toList();
-        for (int i = unparsedJson.length - 1; i >= 0 ; i--) {
+        for (int i = 0; i < unparsedJson.length; i++) {
           scoresList.add(Score.fromJson(unparsedJson[i]));
         }
       }
+      scoresList.sort((a,b) {
+        return b.date_time.compareTo(a.date_time);
+      });
       return scoresList;
     } on DioError catch (e) {
       return null;
@@ -32,10 +35,13 @@ class ScoreService {
       await dio.get('https://v3.football.api-sports.io/fixtures?team=${id}&season=2019&timezone=Asia/Kolkata');
       if (response.statusCode == 200) {
         final unparsedJson = response.data['response'].toList();
-        for (int i = unparsedJson.length - 1; i >= 0 ; i--) {
+        for (int i = 0; i < unparsedJson.length; i++) {
           scoresList.add(Score.fromJson(unparsedJson[i]));
         }
       }
+      scoresList.sort((a,b) {
+        return b.date_time.compareTo(a.date_time);
+      });
       return scoresList;
     } on DioError catch (e) {
       return null;

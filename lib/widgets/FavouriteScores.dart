@@ -22,25 +22,13 @@ class _FavouriteScoresState extends State<FavouriteScores> {
     final AppProvider appProvider =
     Provider.of<AppProvider>(context, listen: false);
     if (appProvider.favouriteTeamScores == null) {
-      appProvider.loadFavouriteScores();
+      appProvider.loadFavouriteScores().whenComplete(() {
+        _setScores(appProvider);
+      });
     }
-    final List<Score> _favouriteTeamScores = appProvider.favouriteTeamScores;
-    _totalNoOfScores = _favouriteTeamScores.length;
-    _scrollController.addListener(() {
-      if ((_scrollController.position.maxScrollExtent -
-          _scrollController.position.pixels ==
-          0.0) &&
-          _lastRetrievedLindex < _totalNoOfScores - 1) {
-        _getMoreScores(_favouriteTeamScores);
-      }
-    });
-    setState(() {
-      if (_totalNoOfScores > 10) {
-        _scores = _favouriteTeamScores.sublist(0, 10);
-      } else {
-        _scores = _favouriteTeamScores;
-      }
-    });
+    else {
+      _setScores(appProvider);
+    }
   }
 
   @override
@@ -85,6 +73,7 @@ class _FavouriteScoresState extends State<FavouriteScores> {
               );
             })
             : ListView.builder(
+          shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemCount: 10,
             itemBuilder: (BuildContext context, int index) {
@@ -106,6 +95,26 @@ class _FavouriteScoresState extends State<FavouriteScores> {
       } else {
         _scores.addAll(scores.sublist(_lastRetrievedLindex + 1));
         _lastRetrievedLindex = _totalNoOfScores - 1;
+      }
+    });
+  }
+
+  List<Score> _setScores(AppProvider appProvider) {
+    final List<Score> favouriteTeamScores = appProvider.favouriteTeamScores;
+    _totalNoOfScores = favouriteTeamScores.length;
+    setState(() {
+      if (_totalNoOfScores > 10) {
+        _scores = favouriteTeamScores.sublist(0, 10);
+      } else {
+        _scores = favouriteTeamScores;
+      }
+    });
+    _scrollController.addListener(() {
+      if ((_scrollController.position.maxScrollExtent -
+          _scrollController.position.pixels ==
+          0.0) &&
+          _lastRetrievedLindex < _totalNoOfScores - 1) {
+        _getMoreScores(favouriteTeamScores);
       }
     });
   }

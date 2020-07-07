@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/Score.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'custom_icons.dart';
@@ -63,7 +64,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        '${widget.score.competition} - ${widget.score.date_time}',
+                        '${widget.score.competition} - ${DateFormat('E, d MMMM, hh:mm aaa').format(widget.score.date_time)}',
                         style: TextStyle(
                             fontSize: 12, color: Color(0X8A000000)),
                       ),

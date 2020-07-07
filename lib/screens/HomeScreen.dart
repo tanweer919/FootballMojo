@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsmojo/commons/ScoreCard.dart';
 import 'package:sportsmojo/models/Score.dart';
 import '../commons/BottomNavbar.dart';
 import '../commons/NewsCard.dart';
@@ -81,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget UpcomingMatchesSection({AppProvider appProvider}) {
     final List<Score> matches = appProvider.favouriteTeamScores;
-    final Score latestMatch =
+    final Score latestScore =
         matches.firstWhere((score) => score.status == "FT");
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -96,78 +97,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 textAlign: TextAlign.center,
               ),
             ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        children: <Widget>[
-                          Text(
-                            '${latestMatch.competition} - ${latestMatch.date_time}',
-                            style:
-                                TextStyle(fontSize: 14, color: Color(0X8A000000)),
-                          ),
-                          Spacer(),
-                          Container(
-                            width: 20.0,
-                            child: Text(
-                              latestMatch.status,
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4.0),
-                                child: Container(
-                                    height: 60,
-                                    child: CachedNetworkImage(
-                                        imageUrl: latestMatch.homeTeamLogo)),
-                              ),
-                              Text(latestMatch.homeTeam)
-                            ],
-                          ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  '${latestMatch.homeScore} - ${latestMatch.awayScore}',
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Container(
-                                    height: 60,
-                                    child: CachedNetworkImage(
-                                        imageUrl: latestMatch.awayTeamLogo)),
-                              ),
-                              Text(latestMatch.awayTeam)
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
+            ScoreCard(score: latestScore,)
           ]),
     );
   }
