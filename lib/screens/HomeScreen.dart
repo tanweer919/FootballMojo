@@ -300,16 +300,4 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           seconds: 3);
     }
   }
-
-  Future<void> _onLoading({AppProvider appProvider}) async {
-    appProvider.newsList = null;
-    appProvider.favouriteNewsList = null;
-    _refreshController.loadComplete();
-  }
-
-  Future<void> _onRefresh({AppProvider appProvider}) async {
-    await appProvider.loadFavouriteNews();
-    await appProvider.loadAllNews();
-    _refreshController.refreshCompleted();
-  }
 }
