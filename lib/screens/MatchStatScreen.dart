@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sportsmojo/Provider/MatchStatViewModel.dart';
+import '../Provider/MatchEventViewModel.dart';
 import 'package:sportsmojo/commons/custom_icons.dart';
 import '../models/Score.dart';
 import '../widgets/Stats.dart';
 import '../services/GetItLocator.dart';
 import 'package:provider/provider.dart';
+import '../widgets/Scorers.dart';
 
 class MatchStatScreen extends StatefulWidget {
   final Score score;
@@ -17,7 +18,7 @@ class MatchStatScreen extends StatefulWidget {
 }
 
 class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderStateMixin {
-  final MatchStatViewModel _matchStatViewModel = locator<MatchStatViewModel>();
+  final MatchEventViewModel _matchEventViewModel = locator<MatchEventViewModel>();
   Animation<double> animation;
   AnimationController _animationController;
 
@@ -57,7 +58,7 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
         body: SingleChildScrollView(
           child: Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+            const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
             child: Column(
               children: <Widget>[
                 Row(
@@ -152,7 +153,10 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
                 Divider(
                   thickness: 0.7,
                 ),
-                scorers(),
+                ChangeNotifierProvider(
+                  create: (context) => _matchEventViewModel,
+                  child: Scorer(score: widget.score,),
+                ),
                 Divider(
                   thickness: 0.7,
                 ),
@@ -162,54 +166,6 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
           ),
         ),
       ),
-    );
-  }
-
-  Widget scorers() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text("Messi 12'(P)", style: TextStyle(fontSize: 14, color: Color(0XAA000000)), textAlign: TextAlign.left,),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text("Pique 26'", style: TextStyle(fontSize: 14, color: Color(0XAA000000)), textAlign: TextAlign.left,),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text("Suarez 42'", style: TextStyle(fontSize: 14, color: Color(0XAA000000)), textAlign: TextAlign.left,),
-            ),
-          ],
-        ),
-        Container(
-          height: 15,
-          child: Icon(MyFlutterApp.football, color: Color(0XAA000000),),
-        ),
-        Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text("Ramos 22'", style: TextStyle(fontSize: 14, color: Color(0XAA000000)), textAlign: TextAlign.right,),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text("Hazard 26'", style: TextStyle(fontSize: 14, color: Color(0XAA000000)), textAlign: TextAlign.right,),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text("Ramos 44'(P)", style: TextStyle(fontSize: 14, color: Color(0XAA000000)), textAlign: TextAlign.right,),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text("Vinicius 84'", style: TextStyle(fontSize: 14, color: Color(0XAA000000)), textAlign: TextAlign.right,),
-            ),
-          ],
-        )
-      ],
     );
   }
 }

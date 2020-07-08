@@ -176,7 +176,7 @@ class _StatsState extends State<Stats> {
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        '${stats["away"].accuratePasses}%',
+                        '${stats["away"].accuratePasses}',
                         style: TextStyle(fontSize: 14),
                         textAlign: TextAlign.center,
                       )
