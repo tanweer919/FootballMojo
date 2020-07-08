@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sportsmojo/models/Score.dart';
-import 'package:sportsmojo/screens/FixtureStat.dart';
+import 'package:sportsmojo/screens/MatchStatScreen.dart';
 import '../screens/HomeScreen.dart';
 import '../screens/ScoreScreen.dart';
 import '../screens/News.dart';
@@ -18,7 +18,7 @@ class Router {
       '/login',
       '/newsarticle',
       '/selectteam',
-      '/fixturestat'
+      '/matchstat'
     ];
     if (validRoutes.contains(settings.name)) {
       return customRoutes(settings.name, settings.arguments);
@@ -62,7 +62,7 @@ class Router {
       '/selectteam': FavouriteTeam(
         leagueId: leagueId,
       ),
-      '/fixturestat': FixtureStat(
+      '/matchstat': MatchStatScreen(
         score: score,
       )
     };

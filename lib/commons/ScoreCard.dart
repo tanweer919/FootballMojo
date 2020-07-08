@@ -45,7 +45,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
     return Card(
       child: InkWell(
         onTap: () {
-          Navigator.of(context).pushNamed('/fixturestat', arguments: {'score': widget.score} );
+          Navigator.of(context).pushNamed('/matchstat', arguments: {'score': widget.score} );
         },
         child: Padding(
           padding: const EdgeInsets.all(12.0),
