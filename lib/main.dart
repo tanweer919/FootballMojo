@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sportsmojo/screens/FavouriteScreen1.dart';
-import 'screens/HomeScreen.dart';
+import 'start.dart';
 import 'package:provider/provider.dart';
 import 'Provider/AppProvider.dart';
 import 'services/CustomRouter.dart';
@@ -24,7 +23,7 @@ void main() {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme,
-        home: HomeScreen(),
+        home: Start(),
         onGenerateRoute: Router().generateRoutes,
         navigatorObservers: [
           HeroController()

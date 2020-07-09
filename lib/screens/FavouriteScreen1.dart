@@ -126,7 +126,7 @@ class _FavouriteLeagueState extends State<FavouriteLeague> {
               child: InkWell(
                 onTap: () {
                   Navigator.of(context).pushNamed('/selectteam',
-                      arguments: {'leagueId': league.value["id"]});
+                      arguments: {'leagueId': league.value["id"], 'leagueName': league.key});
                 },
                 child: Container(
                   height: 40,

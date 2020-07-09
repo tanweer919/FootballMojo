@@ -9,7 +9,8 @@ import '../services/GetItLocator.dart';
 
 class FavouriteTeam extends StatefulWidget {
   final int leagueId;
-  FavouriteTeam({this.leagueId});
+  final String leagueName;
+  FavouriteTeam({this.leagueId, this.leagueName});
 
   @override
   _FavouriteTeamState createState() => _FavouriteTeamState();
@@ -186,6 +187,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                     onTap: () {
                       LocalStorage.setString('teamName', team.name);
                       LocalStorage.setString('teamId', '${team.id}');
+                      LocalStorage.setString('leagueName', '${widget.leagueName}');
                       LocalStorage.setString('leagueId', '${widget.leagueId}');
                       Navigator.of(context)
                           .pushReplacementNamed('/home', arguments: {

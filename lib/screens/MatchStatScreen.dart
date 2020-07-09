@@ -17,8 +17,10 @@ class MatchStatScreen extends StatefulWidget {
   _MatchStatScreenState createState() => _MatchStatScreenState();
 }
 
-class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderStateMixin {
-  final MatchEventViewModel _matchEventViewModel = locator<MatchEventViewModel>();
+class _MatchStatScreenState extends State<MatchStatScreen>
+    with TickerProviderStateMixin {
+  final MatchEventViewModel _matchEventViewModel =
+      locator<MatchEventViewModel>();
   Animation<double> animation;
   AnimationController _animationController;
 
@@ -27,17 +29,17 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
     _animationController =
         AnimationController(vsync: this, duration: Duration(seconds: 1));
     animation =
-    Tween<double>(begin: 20.0, end: 0.0).animate(_animationController)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _animationController.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          _animationController.forward();
-        }
-      });
+        Tween<double>(begin: 20.0, end: 0.0).animate(_animationController)
+          ..addListener(() {
+            setState(() {});
+          })
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              _animationController.reverse();
+            } else if (status == AnimationStatus.dismissed) {
+              _animationController.forward();
+            }
+          });
     _animationController.forward();
   }
 
@@ -58,7 +60,7 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
         body: SingleChildScrollView(
           child: Padding(
             padding:
-            const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
             child: Column(
               children: <Widget>[
                 Row(
@@ -67,8 +69,8 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
                         '${widget.score.competition} - ${DateFormat('E, d MMMM, hh:mm aaa').format(widget.score.date_time)}',
-                        style: TextStyle(
-                            fontSize: 12, color: Color(0X8A000000)),
+                        style:
+                            TextStyle(fontSize: 12, color: Color(0X8A000000)),
                       ),
                     ),
                     Spacer(),
@@ -79,8 +81,8 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
                           width: 20.0,
                           child: Text(
                             (widget.score.minuteElapsed != null &&
-                                widget.score.minuteElapsed != 90 &&
-                                widget.score.minuteElapsed != 120)
+                                    widget.score.minuteElapsed != 90 &&
+                                    widget.score.minuteElapsed != 120)
                                 ? "${widget.score.minuteElapsed}'"
                                 : "${widget.score.status}",
                             style: TextStyle(color: Colors.red),
@@ -153,17 +155,369 @@ class _MatchStatScreenState extends State<MatchStatScreen> with TickerProviderSt
                 Divider(
                   thickness: 0.7,
                 ),
-                ChangeNotifierProvider(
-                  create: (context) => _matchEventViewModel,
-                  child: Scorer(score: widget.score,),
-                ),
+                (widget.score.status != 'NS')
+                    ? ChangeNotifierProvider(
+                        create: (context) => _matchEventViewModel,
+                        child: Scorer(
+                          score: widget.score,
+                        ),
+                      )
+                    : getScorer(),
                 Divider(
                   thickness: 0.7,
                 ),
-                Stats(score: widget.score,)
+                (widget.score.status != 'NS')
+                    ? Stats(
+                        score: widget.score,
+                      )
+                    : getStats()
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget getScorer() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        ConstrainedBox(
+          constraints: BoxConstraints(
+              minHeight: 50, minWidth: MediaQuery.of(context).size.width * 0.4),
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Container()],
+            ),
+          ),
+        ),
+        Container(
+          height: 10,
+          child: Icon(
+            MyFlutterApp.football,
+            color: Color(0XAA000000),
+            size: 20,
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+              minHeight: 50, minWidth: MediaQuery.of(context).size.width * 0.4),
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [Container()],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget getStats() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                    height: 25,
+                    child: CachedNetworkImage(
+                        imageUrl: widget.score.homeTeamLogo,
+                        placeholder: (BuildContext context, String url) =>
+                            Icon(MyFlutterApp.football))),
+                Text('Team Stats'),
+                Container(
+                    height: 25,
+                    child: CachedNetworkImage(
+                        imageUrl: widget.score.awayTeamLogo,
+                        placeholder: (BuildContext context, String url) =>
+                            Icon(MyFlutterApp.football)))
+              ],
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Shots',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Shots on target',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Possession',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Total Passes',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Accurate Passes',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Fouls',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Yellow Cards',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Red Cards',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Offsides',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Corners',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'Saves',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'N/A',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

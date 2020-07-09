@@ -17,6 +17,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   TabController _tabController;
   String teamName;
+  String leagueName;
   RefreshController _refreshController = RefreshController(initialRefresh: false);
   void initState(){
     final initialState = Provider.of<AppProvider>(context, listen: false);
@@ -33,6 +34,11 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
         teamName = value;
       });
     });
+    LocalStorage.getString('leagueName').then((value) {
+      setState(() {
+        leagueName = value;
+      });
+    });
   }
 
   Widget build(BuildContext context) {
@@ -42,6 +48,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(100.0),
             child: AppBar(
+              leading: Container(),
               backgroundColor: Theme.of(context).primaryColor,
               title: Text('News', style: TextStyle(color: Colors.white),),
               bottom: TabBar(
@@ -49,7 +56,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   tabs: <Widget>[
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text('All', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w400),),
+                      child: Text('$leagueName', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w400),),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),

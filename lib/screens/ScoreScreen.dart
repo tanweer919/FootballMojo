@@ -16,6 +16,7 @@ class _ScoreScreenState extends State<ScoreScreen>
     with TickerProviderStateMixin {
   TabController _tabController;
   String teamName;
+  String leagueName;
   List<bool> _cardExpanded = List<bool>.generate(8, (index) => false);
   @override
   void initState() {
@@ -24,6 +25,11 @@ class _ScoreScreenState extends State<ScoreScreen>
     LocalStorage.getString('teamName').then((value) {
       setState(() {
         teamName = value;
+      });
+    });
+    LocalStorage.getString('leagueName').then((value) {
+      setState(() {
+        leagueName = value;
       });
     });
   }
@@ -37,6 +43,7 @@ class _ScoreScreenState extends State<ScoreScreen>
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(100.0),
             child: AppBar(
+              leading: Container(),
               backgroundColor: Theme.of(context).primaryColor,
               title: Text(
                 'Scores',
@@ -48,7 +55,7 @@ class _ScoreScreenState extends State<ScoreScreen>
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        'All',
+                        '$leagueName',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,

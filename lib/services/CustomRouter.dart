@@ -29,6 +29,7 @@ class Router {
     News news = null;
     int index = null;
     int leagueId = null;
+    String leagueName;
     Map<String, dynamic> favouriteTeamMessage = null;
     Score score = null;
     if (args != null) {
@@ -40,6 +41,9 @@ class Router {
       }
       if (args.containsKey('leagueId')) {
         leagueId = args['leagueId'];
+      }
+      if (args.containsKey('leagueName')) {
+        leagueName = args['leagueName'];
       }
       if (args.containsKey('favouriteTeamMessage')) {
         favouriteTeamMessage = args['favouriteTeamMessage'];
@@ -61,6 +65,7 @@ class Router {
       ),
       '/selectteam': FavouriteTeam(
         leagueId: leagueId,
+        leagueName: leagueName
       ),
       '/matchstat': MatchStatScreen(
         score: score,
