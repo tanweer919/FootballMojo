@@ -8,7 +8,7 @@ class MatchStatViewModel extends ChangeNotifier {
   StatService _statService = locator<StatService>();
 
   Future<void> loadStats({@required int fixtureId}) async{
-    _stats = await _statService.fetchStats(id: fixtureId);
+    _stats = await _statService.fetchStats(fixtureId: fixtureId);
     notifyListeners();
   }
 

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sportsmojo/Provider/MatchStatViewModel.dart';
 import '../Provider/MatchEventViewModel.dart';
 import 'package:sportsmojo/commons/custom_icons.dart';
 import '../models/Score.dart';
@@ -21,6 +22,7 @@ class _MatchStatScreenState extends State<MatchStatScreen>
     with TickerProviderStateMixin {
   final MatchEventViewModel _matchEventViewModel =
       locator<MatchEventViewModel>();
+  final MatchStatViewModel _matchStatViewModel = locator<MatchStatViewModel>();
   Animation<double> animation;
   AnimationController _animationController;
 
@@ -167,9 +169,12 @@ class _MatchStatScreenState extends State<MatchStatScreen>
                   thickness: 0.7,
                 ),
                 (widget.score.status != 'NS')
-                    ? Stats(
-                        score: widget.score,
-                      )
+                    ? ChangeNotifierProvider(
+                        create: (contet) => _matchStatViewModel,
+                      child: Stats(
+                          score: widget.score,
+                        ),
+                    )
                     : getStats()
               ],
             ),
