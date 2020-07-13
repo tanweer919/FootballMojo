@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
 import '../models/Score.dart';
 class AllScoresViewModel extends ChangeNotifier {
-  List<Score> _scores;
-  int _lastRetrievedIndex;
+  String _selectedLeague;
 
-  AllScoresViewModel(this._scores, this._lastRetrievedIndex);
+  AllScoresViewModel(this._selectedLeague);
 
 
-  List<Score> get allScores => _scores;
+  String get selectedLeague => _selectedLeague;
 
-  void set allScores(List<Score> scores) {
-    _scores = scores;
+  void set selectedLeague(String league) {
+    _selectedLeague = league;
     notifyListeners();
   }
-
-  int get lastRetrievedIndex => _lastRetrievedIndex;
-
-  void set lastRetrievedIndex(int index) {
-    _lastRetrievedIndex = index;
-    notifyListeners();
-  }
-
 
 }

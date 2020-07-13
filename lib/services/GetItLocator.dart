@@ -23,7 +23,7 @@ void setupLocator() {
   locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));
-  locator.registerFactoryParam<AllScoresViewModel, List<Score>, int>((scores, index) => AllScoresViewModel(scores, index));
+  locator.registerFactoryParam<AllScoresViewModel, String, void>((league, _) => AllScoresViewModel(league));
   locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>((scores, index) => FavouriteScoresViewModel(scores, index));
   locator.registerFactory<AppProvider>(() => AppProvider(0));
 }
