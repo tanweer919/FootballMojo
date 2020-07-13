@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:sportsmojo/models/Score.dart';
+import 'package:sportsmojo/screens/MatchStatScreen.dart';
 import '../screens/HomeScreen.dart';
-import '../screens/Score.dart';
+import '../screens/ScoreScreen.dart';
 import '../screens/News.dart';
 import '../screens/Login.dart';
 import '../screens/NewsArticle.dart';
@@ -15,7 +17,8 @@ class Router {
       '/news',
       '/login',
       '/newsarticle',
-      '/selectteam'
+      '/selectteam',
+      '/matchstat'
     ];
     if (validRoutes.contains(settings.name)) {
       return customRoutes(settings.name, settings.arguments);
@@ -26,7 +29,9 @@ class Router {
     News news = null;
     int index = null;
     int leagueId = null;
+    String leagueName;
     Map<String, dynamic> favouriteTeamMessage = null;
+    Score score = null;
     if (args != null) {
       if (args.containsKey('index')) {
         index = args['index'];
@@ -37,8 +42,14 @@ class Router {
       if (args.containsKey('leagueId')) {
         leagueId = args['leagueId'];
       }
+      if (args.containsKey('leagueName')) {
+        leagueName = args['leagueName'];
+      }
       if (args.containsKey('favouriteTeamMessage')) {
         favouriteTeamMessage = args['favouriteTeamMessage'];
+      }
+      if (args.containsKey('score')) {
+        score = args['score'];
       }
     }
     Map<String, Widget> screens = {
@@ -54,6 +65,10 @@ class Router {
       ),
       '/selectteam': FavouriteTeam(
         leagueId: leagueId,
+        leagueName: leagueName
+      ),
+      '/matchstat': MatchStatScreen(
+        score: score,
       )
     };
 
