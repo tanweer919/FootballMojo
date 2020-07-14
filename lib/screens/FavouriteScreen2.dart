@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
+import 'package:sportsmojo/Provider/AppProvider.dart';
 import 'package:sportsmojo/commons/custom_icons.dart';
 import '../models/Team.dart';
 import '../services/TeamService.dart';
@@ -33,6 +35,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
 
   @override
   Widget build(BuildContext context) {
+    final AppProvider appProvider = Provider.of<AppProvider>(context);
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
@@ -151,7 +154,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                               ),
                             ),
                             teamList.length > 0
-                                ? teamListView()
+                                ? teamListView(appProvider)
                                 : Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
@@ -178,7 +181,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
     );
   }
 
-  Widget teamListView() {
+  Widget teamListView(AppProvider appProvider) {
     return Column(
         children: teamList
             .map<Widget>((team) => Padding(
@@ -189,6 +192,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                       LocalStorage.setString('teamId', '${team.id}');
                       LocalStorage.setString('leagueName', '${widget.leagueName}');
                       LocalStorage.setString('leagueId', '${widget.leagueId}');
+                      appProvider.selectedLeague = widget.leagueName;
                       Navigator.of(context)
                           .pushReplacementNamed('/home', arguments: {
                         'favouriteTeamMessage': {

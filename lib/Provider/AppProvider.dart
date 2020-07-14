@@ -5,6 +5,7 @@ import '../services/NewsService.dart';
 import '../services/LocalStorage.dart';
 import '../services/GetItLocator.dart';
 import '../models/News.dart';
+import '../constants.dart';
 class AppProvider extends ChangeNotifier {
   int _navbarIndex;
   List<News> _newsList;
@@ -12,8 +13,17 @@ class AppProvider extends ChangeNotifier {
   List<Score> _leagueWiseScores;
 
   List<Score> _favouriteTeamScores;
-  AppProvider(this._navbarIndex);
+
+  String _selectedLeague;
+  AppProvider(this._navbarIndex, this._selectedLeague);
   int get navbarIndex => _navbarIndex;
+
+  String get selectedLeague => _selectedLeague;
+
+  void set selectedLeague(String league) {
+    _selectedLeague = league;
+    notifyListeners();
+  }
 
   void set navbarIndex(int index) {
     _navbarIndex = index;
@@ -33,9 +43,15 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadLeagueWiseScores() async {
-    String leagueId = await LocalStorage.getString('leagueId');
-    _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
+  Future<void> loadLeagueWiseScores({String leagueName}) async {
+    if(leagueName == null) {
+      String storedLeagueId = await LocalStorage.getString('leagueId');
+      _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: storedLeagueId);
+    }
+    else {
+      String leagueId = '${leagues[leagueName]['id']}';
+      _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
+    }
     notifyListeners();
   }
 

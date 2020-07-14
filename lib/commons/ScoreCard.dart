@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/Score.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'custom_icons.dart';
+import '../constants.dart';
 
 class ScoreCard extends StatefulWidget {
   final Score score;
@@ -56,7 +57,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Text(
-                      '${widget.score.competition} - ${DateFormat('E, d MMMM, hh:mm aaa').format(widget.score.date_time)}',
+                      '${widget.score.competition} - ${convertDateTime(date_time: widget.score.date_time)}',
                       style: TextStyle(
                           fontSize: 12, color: Color(0X8A000000)),
                     ),
@@ -155,5 +156,21 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  String convertDateTime({DateTime date_time}) {
+    int dayDifferenceCount = dayDifference(date_time1: DateTime.now(), date_time2: date_time);
+    if(dayDifferenceCount == 0) {
+    return 'Today, ' + DateFormat('hh:mm aaa').format(widget.score.date_time);
+    }
+    else if(dayDifferenceCount == 1) {
+      return 'Yesterday, ' + DateFormat('hh:mm aaa').format(widget.score.date_time);
+    }
+    else if(dayDifferenceCount == -1) {
+      return 'Tomorrow, ' + DateFormat('hh:mm aaa').format(widget.score.date_time);
+    }
+    else {
+      return DateFormat('E, d MMMM, hh:mm aaa').format(date_time);
+    }
   }
 }

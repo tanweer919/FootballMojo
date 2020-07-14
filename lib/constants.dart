@@ -44,3 +44,9 @@ final Map<String, dynamic> leagues = {
     "logo": "https://media.api-sports.io/football/leagues/3.png"
   },
 };
+
+int dayDifference({DateTime date_time1, DateTime date_time2}) {
+  final date1 = DateTime(date_time1.year, date_time1.month, date_time1.day);
+  final date2 = DateTime(date_time2.year, date_time2.month, date_time2.day);
+  return date1.difference(date2).inDays;
+}

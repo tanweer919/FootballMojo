@@ -41,7 +41,7 @@ class _ScorerState extends State<Scorer> {
                         minWidth: MediaQuery.of(context).size.width * 0.4),
                     child: Container(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: getHomeGoals(model: model),
                       ),
@@ -61,7 +61,7 @@ class _ScorerState extends State<Scorer> {
                         minWidth: MediaQuery.of(context).size.width * 0.4),
                     child: Container(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: getAwayGoals(model: model),
                       ),

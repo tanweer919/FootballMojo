@@ -4,14 +4,17 @@ import 'package:provider/provider.dart';
 import 'Provider/AppProvider.dart';
 import 'services/CustomRouter.dart';
 import 'services/GetItLocator.dart';
+import 'services/LocalStorage.dart';
 
-void main() {
+void main() async{
   setupLocator();
   final ThemeData theme = ThemeData(
     primaryColor: Color(0xFF50C878),
     primaryColorDark: Color(0XFFA0A5AA)
   );
-  AppProvider appProvider = locator<AppProvider>();
+  WidgetsFlutterBinding.ensureInitialized();
+  final leagueName = await LocalStorage.getString('leagueName');
+  AppProvider appProvider = locator<AppProvider>(param1: leagueName);
 
   runApp(
     MultiProvider(

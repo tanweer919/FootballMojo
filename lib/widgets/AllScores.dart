@@ -6,6 +6,7 @@ import '../Provider/AppProvider.dart';
 import '../models/Score.dart';
 import '../commons/ScoreCard.dart';
 import 'SettingsDialog.dart';
+import '../constants.dart';
 
 class AllScores extends StatefulWidget {
   @override
@@ -40,6 +41,7 @@ class _AllScoresState extends State<AllScores> {
 
   @override
   Widget build(BuildContext context) {
+    final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.settings),
@@ -52,7 +54,7 @@ class _AllScoresState extends State<AllScores> {
         controller: _scrollController,
         child: Container(
           margin: EdgeInsets.only(top: 10.0),
-          child: _scores != null
+          child: ( appProvider.leagueWiseScores !=null && _scores != null)
               ? ListView.builder(
                   shrinkWrap: true,
                   itemCount: _lastRetrievedLindex + 2,
@@ -81,24 +83,24 @@ class _AllScoresState extends State<AllScores> {
                     }
                     final Score score = _scores[index];
                     if (index != 0 &&
-                        score.date_time
-                                .difference(_scores[index - 1].date_time)
-                                .inDays ==
+                        dayDifference(
+                                date_time1: score.date_time,
+                                date_time2: _scores[index - 1].date_time) ==
                             0) {
                       return ScoreCard(
                         score: score,
                       );
                     } else {
                       return Padding(
-                        padding: EdgeInsets.only(top: 8.0),
+                        padding: EdgeInsets.only(top: 12.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
                               child: Text(
-                                '${DateFormat('E, d MMMM').format(score.date_time)}',
+                                '${convertDateTime(date_time: score.date_time)}',
                                 style: TextStyle(fontSize: 20),
                               ),
                             ),
@@ -159,12 +161,26 @@ class _AllScoresState extends State<AllScores> {
   }
 
   void onSettingPressed() {
-    showDialog(
+    showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            content: SettingsDialog()
+          return Container(
+            child: SettingsDialog(),
           );
         });
+  }
+
+  String convertDateTime({DateTime date_time}) {
+    int dayDifferenceCount =
+        dayDifference(date_time1: DateTime.now(), date_time2: date_time);
+    if (dayDifferenceCount == 0) {
+      return 'Today';
+    } else if (dayDifferenceCount == 1) {
+      return 'Yesterday';
+    } else if (dayDifferenceCount == -1) {
+      return 'Tomorrow';
+    } else {
+      return DateFormat('E, d MMMM').format(date_time);
+    }
   }
 }

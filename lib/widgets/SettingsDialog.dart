@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../widgets/LeagueDropdown.dart';
 import '../constants.dart';
 class SettingsDialog extends StatefulWidget{
-
   @override
   _SettingsDialogState createState() => _SettingsDialogState();
 }

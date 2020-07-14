@@ -6,8 +6,6 @@ import '../commons/custom_icons.dart';
 import '../services/LocalStorage.dart';
 import '../widgets/AllScores.dart';
 import '../widgets/FavouriteScores.dart';
-import '../services/GetItLocator.dart';
-import '../Provider/AllScoresViewModel.dart';
 
 class ScoreScreen extends StatefulWidget {
   @override
@@ -19,7 +17,6 @@ class _ScoreScreenState extends State<ScoreScreen>
   TabController _tabController;
   String teamName;
   String leagueName;
-  AllScoresViewModel _allScoresViewModel;
   @override
   void initState() {
     super.initState();
@@ -29,69 +26,59 @@ class _ScoreScreenState extends State<ScoreScreen>
         teamName = value;
       });
     });
-    LocalStorage.getString('leagueName').then((value) {
-      setState(() {
-        _allScoresViewModel = locator<AllScoresViewModel>(param1: value);
-      });
-    });
   }
 
 
 
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
-    return ChangeNotifierProvider(
-      create: (context) => _allScoresViewModel,
-      child: Scaffold(
-          bottomNavigationBar: BottomNavbar(),
-          backgroundColor: Color(0xfff1f1f1),
-          appBar: PreferredSize(
-              preferredSize: Size.fromHeight(100.0),
-              child: AppBar(
-                leading: Container(),
-                backgroundColor: Theme.of(context).primaryColor,
-                title: Text(
-                  'Scores',
-                  style: TextStyle(color: Colors.white),
-                ),
-                bottom: TabBar(
-                    controller: _tabController,
-                    tabs: <Widget>[
-                      Consumer<AllScoresViewModel>(
-                        builder: (context, model, child) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            (model != null) ? '${model.selectedLeague}' : 'All',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
-                      Padding(
+    return Scaffold(
+        bottomNavigationBar: BottomNavbar(),
+        backgroundColor: Color(0xfff1f1f1),
+        appBar: PreferredSize(
+            preferredSize: Size.fromHeight(100.0),
+            child: AppBar(
+              leading: Container(),
+              backgroundColor: Theme.of(context).primaryColor,
+              title: Text(
+                'Scores',
+                style: TextStyle(color: Colors.white),
+              ),
+              bottom: TabBar(
+                  controller: _tabController,
+                  tabs: <Widget>[
+                    Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
-                          '$teamName',
+                          appProvider.selectedLeague,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w400),
                         ),
-                      )
-                    ],
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(width: 3.0, color: Colors.white))),
-              )),
-          body: TabBarView(
-            controller: _tabController,
-            children: <Widget>[
-              AllScores(),
-              FavouriteScores()
-            ],
-          )),
-    );
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        '$teamName',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )
+                  ],
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: UnderlineTabIndicator(
+                      borderSide: BorderSide(width: 3.0, color: Colors.white))),
+            )),
+        body: TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            AllScores(),
+            FavouriteScores()
+          ],
+        ));
   }
 
   Widget scorers() {

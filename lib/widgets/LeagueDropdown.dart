@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../Provider/AllScoresViewModel.dart';
+import '../Provider/AppProvider.dart';
 class LeagueDropdown extends StatefulWidget {
   final List<DropdownMenuItem> items;
   LeagueDropdown({this.items});
@@ -10,7 +10,7 @@ class LeagueDropdown extends StatefulWidget {
 
 class _LeagueDropdownState extends State<LeagueDropdown> {
   Widget build(BuildContext context) {
-    return Consumer<AllScoresViewModel>(
+    return Consumer<AppProvider>(
       builder: (context, model, child) => Theme(
         data: Theme.of(context)
             .copyWith(canvasColor: Theme.of(context).primaryColor),
@@ -27,8 +27,10 @@ class _LeagueDropdownState extends State<LeagueDropdown> {
                 value: model.selectedLeague,
                 items: widget.items,
                 style: TextStyle(color: Colors.white, fontSize: 11),
-                onChanged: (String value) {
+                onChanged: (String value) async{
                   model.selectedLeague = value;
+                  model.leagueWiseScores = null;
+                  await model.loadLeagueWiseScores(leagueName: value);
                 },
               ),
             ),
