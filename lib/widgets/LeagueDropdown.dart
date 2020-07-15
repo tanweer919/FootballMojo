@@ -31,6 +31,7 @@ class _LeagueDropdownState extends State<LeagueDropdown> {
                   model.selectedLeague = value;
                   model.leagueWiseScores = null;
                   await model.loadLeagueWiseScores(leagueName: value);
+                  Navigator.of(context).pushReplacementNamed('/score');
                 },
               ),
             ),
