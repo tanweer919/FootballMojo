@@ -54,9 +54,9 @@ class AppProvider extends ChangeNotifier {
       String leagueId = '${leagues[leagueName]['id']}';
       _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
     }
-    final firstDate = leagueWiseScores[0].date_time;
+    final firstDate = leagueWiseScores.last.date_time;
     _startDate = DateTime(firstDate.year, firstDate.month, firstDate.day);
-    final lastDate = leagueWiseScores.last.date_time;
+    final lastDate = leagueWiseScores[0].date_time;
     _endDate = DateTime(lastDate.year, lastDate.month, lastDate.day);
     notifyListeners();
   }
@@ -89,10 +89,12 @@ class AppProvider extends ChangeNotifier {
 
   void set leagueWiseScores(List<Score> scores) {
     _leagueWiseScores = scores;
-    final firstDate = leagueWiseScores[0].date_time;
-    _startDate = DateTime(firstDate.year, firstDate.month, firstDate.day);
-    final lastDate = leagueWiseScores.last.date_time;
-    _endDate = DateTime(lastDate.year, lastDate.month, lastDate.day);
+    if(scores != null) {
+      final firstDate = leagueWiseScores.last.date_time;
+      _startDate = DateTime(firstDate.year, firstDate.month, firstDate.day);
+      final lastDate = leagueWiseScores[0].date_time;
+      _endDate = DateTime(lastDate.year, lastDate.month, lastDate.day);
+    }
     notifyListeners();
   }
 
