@@ -3,15 +3,16 @@ import 'package:provider/provider.dart';
 import '../Provider/AppProvider.dart';
 class LeagueDropdown extends StatefulWidget {
   final List<DropdownMenuItem> items;
-  LeagueDropdown({this.items});
+  Function(String) onChange;
+  String selectedLeague;
+  LeagueDropdown({this.items, this.onChange, this.selectedLeague});
   @override
   _LeagueDropdownState createState() => _LeagueDropdownState();
 }
 
 class _LeagueDropdownState extends State<LeagueDropdown> {
   Widget build(BuildContext context) {
-    return Consumer<AppProvider>(
-      builder: (context, model, child) => Theme(
+    return Theme(
         data: Theme.of(context)
             .copyWith(canvasColor: Theme.of(context).primaryColor),
         child: Container(
@@ -24,20 +25,14 @@ class _LeagueDropdownState extends State<LeagueDropdown> {
               alignedDropdown: true,
               child: DropdownButton<String>(
                 iconEnabledColor: Colors.white,
-                value: model.selectedLeague,
+                value: widget.selectedLeague,
                 items: widget.items,
                 style: TextStyle(color: Colors.white, fontSize: 11),
-                onChanged: (String value) async{
-                  model.selectedLeague = value;
-                  model.leagueWiseScores = null;
-                  await model.loadLeagueWiseScores(leagueName: value);
-                  Navigator.of(context).pushReplacementNamed('/score');
-                },
+                onChanged: widget.onChange,
               ),
             ),
           ),
         ),
-      ),
     );
   }
 }

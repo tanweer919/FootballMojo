@@ -54,7 +54,7 @@ class _AllScoresState extends State<AllScores> {
         controller: _scrollController,
         child: Container(
           margin: EdgeInsets.only(top: 10.0),
-          child: ( appProvider.leagueWiseScores !=null && _scores != null)
+          child: (appProvider.leagueWiseScores != null && _scores != null)
               ? ListView.builder(
                   shrinkWrap: true,
                   itemCount: _lastRetrievedLindex + 2,
@@ -141,7 +141,12 @@ class _AllScoresState extends State<AllScores> {
   }
 
   void _setScores(AppProvider appProvider) {
-    final List<Score> allScores = appProvider.leagueWiseScores;
+    DateTime now = DateTime.now();
+    now = DateTime(now.year, now.month, now.day);
+    final List<Score> allScores = filterScores(
+        scores: appProvider.leagueWiseScores,
+        after: now.subtract(Duration(days: 30)),
+        before: now.add(Duration(days: 7)));
     _totalNoOfScores = allScores.length;
     setState(() {
       if (_totalNoOfScores > 10) {
@@ -165,6 +170,7 @@ class _AllScoresState extends State<AllScores> {
         context: context,
         builder: (BuildContext context) {
           return Container(
+            height: 250,
             child: SettingsDialog(),
           );
         });

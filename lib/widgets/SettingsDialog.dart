@@ -4,61 +4,199 @@ import 'package:provider/provider.dart';
 import '../widgets/LeagueDropdown.dart';
 import '../constants.dart';
 import '../Provider/AppProvider.dart';
-class SettingsDialog extends StatefulWidget{
+
+class SettingsDialog extends StatefulWidget {
   @override
   _SettingsDialogState createState() => _SettingsDialogState();
 }
 
 class _SettingsDialogState extends State<SettingsDialog> {
+  String dropdownValue;
+  DateTime startDate, endDate;
   List<DropdownMenuItem> leaguesIems = leagues.entries
       .map<DropdownMenuItem<String>>((entry) => DropdownMenuItem<String>(
-    value: entry.key,
-    child: Text(entry.key),
-  ))
+            value: entry.key,
+            child: Text(entry.key),
+          ))
       .toList();
+
+  @override
+  void initState() {
+    final AppProvider appProvider =
+        Provider.of<AppProvider>(context, listen: false);
+    DateTime now = DateTime.now();
+    now = DateTime(now.year, now.month, now.day);
+    setState(() {
+      dropdownValue = appProvider.selectedLeague;
+      startDate = dayDifference(
+                  date_time1: appProvider.startDate,
+                  date_time2: now.subtract(Duration(days: 30))) <
+              0
+          ? now.subtract(Duration(days: 30))
+          : appProvider.startDate;
+      endDate = dayDifference(
+                  date_time1: appProvider.endDate,
+                  date_time2: now.add(Duration(days: 7))) >
+              0
+          ? now.add(Duration(days: 7))
+          : appProvider.endDate;
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, model, child) => Column(
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text('Select League:', style: TextStyle(fontSize: 18),),
-              LeagueDropdown(
-                items: leaguesIems,
-              ),
-            ],
-          ),
-          Divider(thickness: 0.7),
-          InkWell(
-            onTap: () {
-              showDatePicker(context: context, initialDate: model.startDate, firstDate: model.startDate, lastDate: model.endDate);
-            },
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text('${DateFormat('d-M-y').format(model.startDate)}'),
-                Icon(Icons.date_range)
+                Text(
+                  'Select League:',
+                  style: TextStyle(fontSize: 18),
+                ),
+                LeagueDropdown(
+                  items: leaguesIems,
+                  onChange: onDropdownChange,
+                  selectedLeague: dropdownValue,
+                ),
               ],
             ),
           ),
-          Divider(thickness: 0.7,),
-          InkWell(
-            onTap: () {
-              showDatePicker(context: context, initialDate: model.startDate, firstDate: model.startDate, lastDate: model.endDate);
-            },
+          Divider(thickness: 0.7),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text('${DateFormat('d-M-y').format(model.endDate)}'),
-                Icon(Icons.date_range)
+                InkWell(
+                  onTap: () async {
+                    final DateTime date = await showDatePicker(
+                        context: context,
+                        initialDate: startDate,
+                        firstDate: model.startDate,
+                        lastDate: model.endDate);
+                    if (date != null) {
+                      setState(() {
+                        startDate = date;
+                      });
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.black),
+                        borderRadius: BorderRadius.circular(4.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Icon(Icons.date_range),
+                          ),
+                          Text(
+                            '${DateFormat('d-M-y').format(startDate)}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Text(
+                  '-',
+                  style: TextStyle(fontSize: 30),
+                ),
+                InkWell(
+                  onTap: () async {
+                    final DateTime date = await showDatePicker(
+                        context: context,
+                        initialDate: endDate,
+                        firstDate: model.startDate,
+                        lastDate: model.endDate);
+                    if (date != null) {
+                      setState(() {
+                        endDate = date;
+                      });
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.black),
+                        borderRadius: BorderRadius.circular(4.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Icon(Icons.date_range),
+                          ),
+                          Text(
+                            '${DateFormat('d-M-y').format(endDate)}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Divider(thickness: 0.7),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                ButtonTheme(
+                  height: 40,
+                  minWidth: 100,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(20.0),
+                    ),
+                    color: Theme.of(context).primaryColor,
+                    child: Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () async {
+                      if (model.selectedLeague == dropdownValue &&
+                          model.startDate == startDate &&
+                          model.endDate == endDate) {
+                        Navigator.of(context).pop();
+                      } else {
+                        if (model.selectedLeague != dropdownValue) {
+                          model.selectedLeague = dropdownValue;
+                          model.leagueWiseScores = null;
+                          await model.loadLeagueWiseScores(
+                              leagueName: dropdownValue);
+                          Navigator.of(context).pushReplacementNamed('/score');
+                        }
+                        if(model.endDate)
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
           )
         ],
       ),
     );
+  }
+
+  void onDropdownChange(String value) {
+    setState(() {
+      dropdownValue = value;
+    });
   }
 }
