@@ -7,15 +7,17 @@ import '../services/GetItLocator.dart';
 import '../models/News.dart';
 import '../constants.dart';
 class AppProvider extends ChangeNotifier {
+  AppProvider(this._navbarIndex, this._selectedLeague);
   int _navbarIndex;
   List<News> _newsList;
   List<News> _favouriteNewsList;
   List<Score> _leagueWiseScores;
+  DateTime _startDate;
+  DateTime _endDate;
 
   List<Score> _favouriteTeamScores;
 
   String _selectedLeague;
-  AppProvider(this._navbarIndex, this._selectedLeague);
   int get navbarIndex => _navbarIndex;
 
   String get selectedLeague => _selectedLeague;
@@ -52,6 +54,10 @@ class AppProvider extends ChangeNotifier {
       String leagueId = '${leagues[leagueName]['id']}';
       _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
     }
+    final firstDate = leagueWiseScores[0].date_time;
+    _startDate = DateTime(firstDate.year, firstDate.month, firstDate.day);
+    final lastDate = leagueWiseScores.last.date_time;
+    _endDate = DateTime(lastDate.year, lastDate.month, lastDate.day);
     notifyListeners();
   }
 
@@ -83,6 +89,23 @@ class AppProvider extends ChangeNotifier {
 
   void set leagueWiseScores(List<Score> scores) {
     _leagueWiseScores = scores;
+    final firstDate = leagueWiseScores[0].date_time;
+    _startDate = DateTime(firstDate.year, firstDate.month, firstDate.day);
+    final lastDate = leagueWiseScores.last.date_time;
+    _endDate = DateTime(lastDate.year, lastDate.month, lastDate.day);
+    notifyListeners();
+  }
+
+  DateTime get startDate => _startDate;
+  DateTime get endDate => _endDate;
+
+  void set startDate(DateTime date) {
+    _startDate = date;
+    notifyListeners();
+  }
+
+  void set endDate(DateTime date) {
+    _startDate = date;
     notifyListeners();
   }
 }
