@@ -7,7 +7,7 @@ import '../services/GetItLocator.dart';
 import '../models/News.dart';
 import '../constants.dart';
 class AppProvider extends ChangeNotifier {
-  AppProvider(this._navbarIndex, this._selectedLeague);
+  AppProvider(this._navbarIndex, this._selectedLeague, this._startDate, this._endDate);
   int _navbarIndex;
   List<News> _newsList;
   List<News> _favouriteNewsList;
@@ -54,10 +54,6 @@ class AppProvider extends ChangeNotifier {
       String leagueId = '${leagues[leagueName]['id']}';
       _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
     }
-    final firstDate = leagueWiseScores.last.date_time;
-    _startDate = DateTime(firstDate.year, firstDate.month, firstDate.day);
-    final lastDate = leagueWiseScores[0].date_time;
-    _endDate = DateTime(lastDate.year, lastDate.month, lastDate.day);
     notifyListeners();
   }
 
@@ -89,12 +85,6 @@ class AppProvider extends ChangeNotifier {
 
   void set leagueWiseScores(List<Score> scores) {
     _leagueWiseScores = scores;
-    if(scores != null) {
-      final firstDate = leagueWiseScores.last.date_time;
-      _startDate = DateTime(firstDate.year, firstDate.month, firstDate.day);
-      final lastDate = leagueWiseScores[0].date_time;
-      _endDate = DateTime(lastDate.year, lastDate.month, lastDate.day);
-    }
     notifyListeners();
   }
 
@@ -107,7 +97,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void set endDate(DateTime date) {
-    _startDate = date;
+    _endDate = date;
     notifyListeners();
   }
 }

@@ -13,7 +13,7 @@ class FavouriteScores extends StatefulWidget {
 
 class _FavouriteScoresState extends State<FavouriteScores> {
   ScrollController _scrollController = ScrollController();
-  int _lastRetrievedLindex = 9;
+  int _lastRetrievedLindex;
   int _totalNoOfScores;
   List<Score> _scores;
   @override
@@ -51,7 +51,7 @@ class _FavouriteScoresState extends State<FavouriteScores> {
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) {
               if(index == _lastRetrievedLindex + 1) {
-                return Padding(
+                return index == _totalNoOfScores ? Container() : Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: SizedBox(
                     height: 40,
@@ -105,8 +105,10 @@ class _FavouriteScoresState extends State<FavouriteScores> {
     setState(() {
       if (_totalNoOfScores > 10) {
         _scores = favouriteTeamScores.sublist(0, 10);
+        _lastRetrievedLindex = 9;
       } else {
         _scores = favouriteTeamScores;
+        _lastRetrievedLindex = _totalNoOfScores - 1;
       }
     });
     _scrollController.addListener(() {

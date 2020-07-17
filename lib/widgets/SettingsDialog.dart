@@ -29,17 +29,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
     setState(() {
       dropdownValue = appProvider.selectedLeague;
       startDate = dayDifference(
-                  date_time1: appProvider.startDate,
-                  date_time2: now.subtract(Duration(days: 30))) <
+                  date_time1: getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"],
+                  date_time2: appProvider.startDate) <
               0
-          ? now.subtract(Duration(days: 30))
-          : appProvider.startDate;
+          ? appProvider.startDate
+          : getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"];
       endDate = dayDifference(
-                  date_time1: appProvider.endDate,
-                  date_time2: now.add(Duration(days: 7))) >
+                  date_time1: getFirstAndLastDate(appProvider.leagueWiseScores)["lastDate"],
+                  date_time2: appProvider.endDate) >
               0
-          ? now.add(Duration(days: 7))
-          : appProvider.endDate;
+          ? appProvider.endDate
+          : getFirstAndLastDate(appProvider.leagueWiseScores)["lastDate"];
     });
     super.initState();
   }
@@ -78,8 +78,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     final DateTime date = await showDatePicker(
                         context: context,
                         initialDate: startDate,
-                        firstDate: model.startDate,
-                        lastDate: model.endDate);
+                        firstDate: getFirstAndLastDate(model.leagueWiseScores)["firstDate"],
+                        lastDate: getFirstAndLastDate(model.leagueWiseScores)["lastDate"]);
                     if (date != null) {
                       setState(() {
                         startDate = date;
@@ -117,8 +117,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     final DateTime date = await showDatePicker(
                         context: context,
                         initialDate: endDate,
-                        firstDate: model.startDate,
-                        lastDate: model.endDate);
+                        firstDate: getFirstAndLastDate(model.leagueWiseScores)["firstDate"],
+                        lastDate: getFirstAndLastDate(model.leagueWiseScores)["lastDate"]);
                     if (date != null) {
                       setState(() {
                         endDate = date;
@@ -174,14 +174,20 @@ class _SettingsDialogState extends State<SettingsDialog> {
                           model.endDate == endDate) {
                         Navigator.of(context).pop();
                       } else {
-                        if (model.selectedLeague != dropdownValue) {
+                        if (model.selectedLeague != dropdownValue ) {
                           model.selectedLeague = dropdownValue;
+                          model.startDate = startDate;
+                          model.endDate = endDate;
                           model.leagueWiseScores = null;
                           await model.loadLeagueWiseScores(
                               leagueName: dropdownValue);
                           Navigator.of(context).pushReplacementNamed('/score');
                         }
-                        if(model.endDate)
+                        else {
+                          model.startDate = startDate;
+                          model.endDate = endDate;
+                          Navigator.of(context).pushReplacementNamed('/score');
+                        }
                       }
                     },
                   ),

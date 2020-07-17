@@ -56,3 +56,12 @@ int dayDifference({DateTime date_time1, DateTime date_time2}) {
 List<Score> filterScores({List<Score> scores, DateTime after, DateTime before}) {
   return scores.where((score) => dayDifference(date_time1: score.date_time, date_time2: after) >=0 && dayDifference(date_time1: score.date_time, date_time2: before) <= 0).toList();
 }
+
+Map<String, DateTime> getFirstAndLastDate(List<Score> scores) {
+  Map<String, DateTime> dates = {};
+  final firstDate = scores.last.date_time;
+  dates["firstDate"] = DateTime(firstDate.year, firstDate.month, firstDate.day);
+  final lastDate = scores[0].date_time;
+  dates["lastDate"] = DateTime(lastDate.year, lastDate.month, lastDate.day);
+  return dates;
+}

@@ -15,6 +15,7 @@ import '../Provider/MatchEventViewModel.dart';
 GetIt locator = GetIt.instance;
 
 void setupLocator() {
+  DateTime now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   locator.registerLazySingleton<NewsService>(() => NewsService());
   locator.registerLazySingleton<TeamService>(() => TeamService());
   locator.registerLazySingleton<ScoreService>(() => ScoreService());
@@ -24,5 +25,5 @@ void setupLocator() {
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));
   locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>((scores, index) => FavouriteScoresViewModel(scores, index));
-  locator.registerFactoryParam<AppProvider, String, void>((leagueName, _) => AppProvider(0, leagueName));
+  locator.registerFactoryParam<AppProvider, String, void>((leagueName, _) => AppProvider(0, leagueName, now.subtract(Duration(days: 30)), now.add(Duration(days: 7))));
 }

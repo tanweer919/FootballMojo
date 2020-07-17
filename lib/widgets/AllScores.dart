@@ -15,7 +15,7 @@ class AllScores extends StatefulWidget {
 
 class _AllScoresState extends State<AllScores> {
   ScrollController _scrollController = ScrollController();
-  int _lastRetrievedLindex = 9;
+  int _lastRetrievedLindex;
   int _totalNoOfScores;
   List<Score> _scores;
 
@@ -60,8 +60,8 @@ class _AllScoresState extends State<AllScores> {
                   itemCount: _lastRetrievedLindex + 2,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
-                    if (index == _lastRetrievedLindex + 1) {
-                      return Padding(
+                    if (index == _lastRetrievedLindex + 1 ) {
+                      return index == _totalNoOfScores ? Container() : Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: SizedBox(
                           height: 40,
@@ -145,14 +145,16 @@ class _AllScoresState extends State<AllScores> {
     now = DateTime(now.year, now.month, now.day);
     final List<Score> allScores = filterScores(
         scores: appProvider.leagueWiseScores,
-        after: now.subtract(Duration(days: 30)),
-        before: now.add(Duration(days: 7)));
+        after: appProvider.startDate,
+        before: appProvider.endDate);
     _totalNoOfScores = allScores.length;
     setState(() {
       if (_totalNoOfScores > 10) {
         _scores = allScores.sublist(0, 10);
+        _lastRetrievedLindex = 9;
       } else {
         _scores = allScores;
+        _lastRetrievedLindex = _totalNoOfScores - 1;
       }
     });
     _scrollController.addListener(() {
