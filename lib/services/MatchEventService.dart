@@ -1,14 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../models/MatchEvent.dart';
-import '../secret.dart';
+import 'HttpService.dart';
 class MatchEventService {
-  static BaseOptions options = BaseOptions(headers: {
-    'x-rapidapi-host': 'v3.football.api-sports.io',
-    'x-rapidapi-key': scoreApiKey
-  });
-
-  final Dio dio = new Dio(options);
+  final Dio dio = HttpService.getApiClient();
 
   Future<List<MatchEvent>> fetchEvents({@required int fixtureId}) async{
     List<MatchEvent> events = [];

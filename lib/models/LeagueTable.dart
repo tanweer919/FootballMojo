@@ -1,4 +1,4 @@
-class LeagueTable {
+class LeagueTableEntry {
   int position;
   String teamName;
   String teamLogo;
@@ -10,8 +10,8 @@ class LeagueTable {
   int goalsFor;
   int goalsAgainst;
   String form;
-  LeagueTable(this.position, this.teamName, this.teamLogo, this.matchesPlayed, this.wins, this.draws, this.loses, this.points, this.goalsFor, this.goalsAgainst, this.form);
-  LeagueTable.fromJson(Map<String, dynamic> unparsedJson)
+  LeagueTableEntry({this.position, this.teamName, this.teamLogo, this.matchesPlayed, this.wins, this.draws, this.loses, this.points, this.goalsFor, this.goalsAgainst, this.form});
+  LeagueTableEntry.fromJson(Map<String, dynamic> unparsedJson)
     : position = unparsedJson["rank"],
       teamName = unparsedJson["team"]["name"],
       teamLogo = unparsedJson["team"]["logo"],

@@ -1,13 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../models/Score.dart';
-import '../secret.dart';
+import 'HttpService.dart';
 class ScoreService {
-  static BaseOptions options = new BaseOptions(headers: {
-    'x-rapidapi-host': 'v3.football.api-sports.io',
-    'x-rapidapi-key': scoreApiKey
-  });
-  final dio = new Dio(options);
+  final Dio dio = HttpService.getApiClient();
   Future<List<Score>> fetchScoresByLeague({@required String id}) async {
     List<Score> scoresList = [];
     try {
