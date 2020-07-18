@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sportsmojo/Provider/MatchStatViewModel.dart';
+import '../Provider/MatchStatViewModel.dart';
 import '../Provider/MatchEventViewModel.dart';
 import 'package:sportsmojo/commons/custom_icons.dart';
 import '../models/Score.dart';

@@ -8,12 +8,14 @@ import '../screens/Login.dart';
 import '../screens/NewsArticle.dart';
 import '../models/News.dart';
 import '../screens/FavouriteScreen2.dart';
+import '../screens/LeagueTableScreen.dart';
 
 class Router {
   Route<dynamic> generateRoutes(RouteSettings settings) {
     final List<String> validRoutes = [
       '/home',
       '/score',
+      '/table',
       '/news',
       '/login',
       '/newsarticle',
@@ -57,6 +59,7 @@ class Router {
         message: favouriteTeamMessage,
       ),
       '/score': ScoreScreen(),
+      '/table': LeagueTableScreen(),
       '/news': NewsScreen(),
       '/login': LoginScreen(),
       '/newsarticle': NewsArticleScreen(
