@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../Provider/AppProvider.dart';
 import '../commons/BottomNavbar.dart';
 import '../widgets/LeagueTableWiget.dart';
+import '../widgets/AllScores.dart';
 
 class LeagueTableScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
 
   @override
   void initState() {
-    _tabController = TabController(vsync: this, length: 2);
+    _tabController = TabController(vsync: this, length: 3);
   }
 
   @override
@@ -23,14 +24,13 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
         bottomNavigationBar: BottomNavbar(),
-        backgroundColor: Color(0xfff1f1f1),
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(100.0),
             child: AppBar(
               leading: Container(),
               backgroundColor: Theme.of(context).primaryColor,
               title: Text(
-                'League Stats',
+                'League',
                 style: TextStyle(color: Colors.white),
               ),
               bottom: TabBar(
@@ -39,10 +39,20 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
+                        'Matchday',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
                         'Table',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 15,
                             fontWeight: FontWeight.w400),
                       ),
                     ),
@@ -52,7 +62,7 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
                         'Top Scorer',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 15,
                             fontWeight: FontWeight.w400),
                       ),
                     )
@@ -64,6 +74,7 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
         body: TabBarView(
           controller: _tabController,
           children: <Widget>[
+            AllScores(),
             LeagueTableWidget(),
             Container()
           ],

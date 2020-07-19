@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../widgets/LeagueDropdown.dart';
 import '../constants.dart';
 import '../Provider/AppProvider.dart';
 
@@ -11,14 +10,7 @@ class SettingsDialog extends StatefulWidget {
 }
 
 class _SettingsDialogState extends State<SettingsDialog> {
-  String dropdownValue;
   DateTime startDate, endDate;
-  List<DropdownMenuItem> leaguesIems = leagues.entries
-      .map<DropdownMenuItem<String>>((entry) => DropdownMenuItem<String>(
-            value: entry.key,
-            child: Text(entry.key),
-          ))
-      .toList();
 
   @override
   void initState() {
@@ -27,7 +19,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
     DateTime now = DateTime.now();
     now = DateTime(now.year, now.month, now.day);
     setState(() {
-      dropdownValue = appProvider.selectedLeague;
       startDate = dayDifference(
                   date_time1: getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"],
                   date_time2: appProvider.startDate) <
@@ -50,26 +41,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
       builder: (context, model, child) => Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Select League:',
-                  style: TextStyle(fontSize: 18),
-                ),
-                LeagueDropdown(
-                  items: leaguesIems,
-                  onChange: onDropdownChange,
-                  selectedLeague: dropdownValue,
-                ),
-              ],
-            ),
-          ),
-          Divider(thickness: 0.7),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -150,7 +122,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
               ],
             ),
           ),
-          Divider(thickness: 0.7),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -169,25 +140,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: () async {
-                      if (model.selectedLeague == dropdownValue &&
-                          model.startDate == startDate &&
+                      if (model.startDate == startDate &&
                           model.endDate == endDate) {
                         Navigator.of(context).pop();
                       } else {
-                        if (model.selectedLeague != dropdownValue ) {
-                          model.selectedLeague = dropdownValue;
                           model.startDate = startDate;
                           model.endDate = endDate;
-                          model.leagueWiseScores = null;
-                          await model.loadLeagueWiseScores(
-                              leagueName: dropdownValue);
-                          Navigator.of(context).pushReplacementNamed('/score');
-                        }
-                        else {
-                          model.startDate = startDate;
-                          model.endDate = endDate;
-                          Navigator.of(context).pushReplacementNamed('/score');
-                        }
+                          Navigator.of(context).pushReplacementNamed('/league');
                       }
                     },
                   ),
@@ -198,11 +157,5 @@ class _SettingsDialogState extends State<SettingsDialog> {
         ],
       ),
     );
-  }
-
-  void onDropdownChange(String value) {
-    setState(() {
-      dropdownValue = value;
-    });
   }
 }

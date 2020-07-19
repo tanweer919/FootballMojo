@@ -94,23 +94,26 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                 const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: <Widget>[
-                    Column(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Padding(
-                          padding:
-                          const EdgeInsets.only(bottom: 4.0),
-                          child: Container(
-                              height: 60,
-                              child: CachedNetworkImage(
-                                  imageUrl: widget.score.homeTeamLogo,
-                                  placeholder:
-                                      (BuildContext context, String url) =>
-                                      Icon(MyFlutterApp.football))),
-                        ),
-                        FittedBox(child: Text(widget.score.homeTeam))
-                      ],
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      child: Column(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding:
+                            const EdgeInsets.only(bottom: 4.0),
+                            child: Container(
+                                height: 60,
+                                child: CachedNetworkImage(
+                                    imageUrl: widget.score.homeTeamLogo,
+                                    placeholder:
+                                        (BuildContext context, String url) =>
+                                        Icon(MyFlutterApp.football))),
+                          ),
+                          FittedBox(child: Text(widget.score.homeTeam), fit: BoxFit.fitWidth,)
+                        ],
+                      ),
                     ),
                     Expanded(
                       child: Row(
@@ -130,21 +133,24 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
-                    Column(
-                      children: <Widget>[
-                        Padding(
-                          padding:
-                          const EdgeInsets.only(bottom: 8.0),
-                          child: Container(
-                              height: 60,
-                              child: CachedNetworkImage(
-                                  imageUrl: widget.score.awayTeamLogo,
-                                  placeholder:
-                                      (BuildContext context, String url) =>
-                                      Icon(MyFlutterApp.football))),
-                        ),
-                        FittedBox(child: Text(widget.score.awayTeam))
-                      ],
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding:
+                            const EdgeInsets.only(bottom: 8.0),
+                            child: Container(
+                                height: 60,
+                                child: CachedNetworkImage(
+                                    imageUrl: widget.score.awayTeamLogo,
+                                    placeholder:
+                                        (BuildContext context, String url) =>
+                                        Icon(MyFlutterApp.football))),
+                          ),
+                          FittedBox(child: Text(widget.score.awayTeam), fit: BoxFit.fitWidth,)
+                        ],
+                      ),
                     )
                   ],
                 ),

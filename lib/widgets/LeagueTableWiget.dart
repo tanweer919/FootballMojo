@@ -6,17 +6,19 @@ import '../Provider/AppProvider.dart';
 import '../commons/custom_icons.dart';
 import '../constants.dart';
 import '../widgets/LeagueDropdown.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+
 class LeagueTableWidget extends StatefulWidget {
   @override
   _LeagueTableWidgetState createState() => _LeagueTableWidgetState();
 }
 
 class _LeagueTableWidgetState extends State<LeagueTableWidget> {
-  List<DropdownMenuItem> leaguesIems = leagues.entries
+  List<DropdownMenuItem> leaguesItems = leagues.entries
       .map<DropdownMenuItem<String>>((entry) => DropdownMenuItem<String>(
-    value: entry.key,
-    child: Text(entry.key),
-  ))
+            value: entry.key,
+            child: Text(entry.key),
+          ))
       .toList();
 
   @override
@@ -24,7 +26,12 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
     if (appProvider.leagueTableEntries == null) {
-      appProvider.loadLeagueTable();
+      if(appProvider.selectedLeague == null) {
+        appProvider.loadLeagueTable();
+      }
+      else {
+        appProvider.loadLeagueTable(leagueName: appProvider.selectedLeague);
+      }
     }
     super.initState();
   }
@@ -33,32 +40,25 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, model, child) => SingleChildScrollView(
-              child: model.leagueTableEntries != null
-                  ? Container(
+              child: Container(
                       margin: EdgeInsets.only(top: 10.0),
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            LeagueDropdown(
-                              items: leaguesIems,
-                              selectedLeague: model.selectedLeague,
-                            ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    'League Standing',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                              child: LeagueDropdown(
+                                items: leaguesItems,
+                                selectedLeague: model.selectedLeague,
+                                backgroundColor: Color(0xfffafafa),
+                                fontColor: Colors.black,
+                                purpose: "table",
                               ),
                             ),
-                            Card(
+                            model.leagueTableEntries != null
+                                ? Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: SingleChildScrollView(
@@ -92,13 +92,13 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                                 .width *
                                                             0.35,
                                                         child: Text(
-                                                          'Team',
+                                                          'Club',
                                                           style: TextStyle(
                                                               fontSize: 15,
                                                               color: Color(
                                                                   0X8A000000)),
                                                           textAlign:
-                                                              TextAlign.center,
+                                                              TextAlign.left,
                                                         )),
                                                     Container(
                                                         width: MediaQuery.of(
@@ -177,9 +177,9 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                         )),
                                                     Container(
                                                         width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width *
+                                                                    context)
+                                                                .size
+                                                                .width *
                                                             0.1,
                                                         child: Text(
                                                           'GF',
@@ -188,13 +188,13 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                               color: Color(
                                                                   0X8A000000)),
                                                           textAlign:
-                                                          TextAlign.center,
+                                                              TextAlign.center,
                                                         )),
                                                     Container(
                                                         width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width *
+                                                                    context)
+                                                                .size
+                                                                .width *
                                                             0.1,
                                                         child: Text(
                                                           'GA',
@@ -203,13 +203,13 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                               color: Color(
                                                                   0X8A000000)),
                                                           textAlign:
-                                                          TextAlign.center,
+                                                              TextAlign.center,
                                                         )),
                                                     Container(
                                                         width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width *
+                                                                    context)
+                                                                .size
+                                                                .width *
                                                             0.1,
                                                         child: Text(
                                                           'GD',
@@ -218,7 +218,7 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                               color: Color(
                                                                   0X8A000000)),
                                                           textAlign:
-                                                          TextAlign.center,
+                                                              TextAlign.center,
                                                         ))
                                                   ],
                                                 ),
@@ -261,15 +261,28 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                                           String
                                                                               url) =>
                                                                       Icon(MyFlutterApp
-                                                                          .football)),
+                                                                          .football, size: 16,),),
                                                             ),
-                                                            Text(
-                                                              '${model.leagueTableEntries[index].teamName}',
-                                                              style: TextStyle(
-                                                                  fontSize: 15),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
+                                                            Expanded(
+                                                              child: AutoSizeText(
+                                                                '${model.leagueTableEntries[index].teamName}',
+                                                                style: TextStyle(
+                                                                    fontSize: 15),
+                                                                textAlign:
+                                                                TextAlign.left,
+                                                                maxLines: 1,
+                                                                overflowReplacement:
+                                                                FittedBox(
+                                                                  fit: BoxFit.fitWidth,
+                                                                  child: Text(
+                                                                    '${model.leagueTableEntries[index].teamName}',
+                                                                    style: TextStyle(
+                                                                        fontSize: 15),
+                                                                    textAlign:
+                                                                    TextAlign.left,
+                                                                  ),
+                                                                ),
+                                                              ),
                                                             ),
                                                           ],
                                                         ),
@@ -346,46 +359,44 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                       ),
                                                       Container(
                                                         width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width *
+                                                                    context)
+                                                                .size
+                                                                .width *
                                                             0.1,
                                                         child: Text(
                                                           '${model.leagueTableEntries[index].goalsFor}',
                                                           style: TextStyle(
                                                               fontSize: 15),
                                                           textAlign:
-                                                          TextAlign.center,
+                                                              TextAlign.center,
                                                         ),
                                                       ),
-
                                                       Container(
                                                         width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width *
+                                                                    context)
+                                                                .size
+                                                                .width *
                                                             0.1,
                                                         child: Text(
                                                           '${model.leagueTableEntries[index].goalsAgainst}',
                                                           style: TextStyle(
                                                               fontSize: 15),
                                                           textAlign:
-                                                          TextAlign.center,
+                                                              TextAlign.center,
                                                         ),
                                                       ),
-
                                                       Container(
                                                         width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width *
+                                                                    context)
+                                                                .size
+                                                                .width *
                                                             0.1,
                                                         child: Text(
                                                           '${model.leagueTableEntries[index].goalsFor - model.leagueTableEntries[index].goalsAgainst}',
                                                           style: TextStyle(
                                                               fontSize: 15),
                                                           textAlign:
-                                                          TextAlign.center,
+                                                              TextAlign.center,
                                                         ),
                                                       ),
                                                     ],
@@ -417,6 +428,8 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                           .width *
                                                       0.35,
                                                   child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
                                                     children: <Widget>[
                                                       Container(
                                                         width: 16,
@@ -430,14 +443,28 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                                     String
                                                                         url) =>
                                                                 Icon(MyFlutterApp
-                                                                    .football)),
+                                                                    .football, size: 16,)),
                                                       ),
-                                                      Text(
-                                                        '${model.leagueTableEntries[index].teamName}',
-                                                        style: TextStyle(
-                                                            fontSize: 15),
-                                                        textAlign:
-                                                            TextAlign.center,
+                                                      Expanded(
+                                                        child: AutoSizeText(
+                                                          '${model.leagueTableEntries[index].teamName}',
+                                                          style: TextStyle(
+                                                              fontSize: 15),
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          maxLines: 1,
+                                                          overflowReplacement:
+                                                              FittedBox(
+                                                                fit: BoxFit.fitWidth,
+                                                            child: Text(
+                                                              '${model.leagueTableEntries[index].teamName}',
+                                                              style: TextStyle(
+                                                                  fontSize: 15),
+                                                              textAlign:
+                                                                  TextAlign.left,
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -503,47 +530,39 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  width: MediaQuery.of(
-                                                      context)
-                                                      .size
-                                                      .width *
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
                                                       0.1,
                                                   child: Text(
                                                     '${model.leagueTableEntries[index].goalsFor}',
-                                                    style: TextStyle(
-                                                        fontSize: 15),
-                                                    textAlign:
-                                                    TextAlign.center,
+                                                    style:
+                                                        TextStyle(fontSize: 15),
+                                                    textAlign: TextAlign.center,
                                                   ),
                                                 ),
-
                                                 Container(
-                                                  width: MediaQuery.of(
-                                                      context)
-                                                      .size
-                                                      .width *
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
                                                       0.1,
                                                   child: Text(
                                                     '${model.leagueTableEntries[index].goalsAgainst}',
-                                                    style: TextStyle(
-                                                        fontSize: 15),
-                                                    textAlign:
-                                                    TextAlign.center,
+                                                    style:
+                                                        TextStyle(fontSize: 15),
+                                                    textAlign: TextAlign.center,
                                                   ),
                                                 ),
-
                                                 Container(
-                                                  width: MediaQuery.of(
-                                                      context)
-                                                      .size
-                                                      .width *
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
                                                       0.1,
                                                   child: Text(
                                                     '${model.leagueTableEntries[index].goalsFor - model.leagueTableEntries[index].goalsAgainst}',
-                                                    style: TextStyle(
-                                                        fontSize: 15),
-                                                    textAlign:
-                                                    TextAlign.center,
+                                                    style:
+                                                        TextStyle(fontSize: 15),
+                                                    textAlign: TextAlign.center,
                                                   ),
                                                 ),
                                               ],
@@ -553,13 +572,12 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                                   ),
                                 ),
                               ),
+                            ) : PKCardPageSkeleton(
+                              totalLines: 15,
                             ),
                           ],
                         ),
                       ),
-                    )
-                  : PKCardPageSkeleton(
-                      totalLines: 15,
                     ),
             ));
   }

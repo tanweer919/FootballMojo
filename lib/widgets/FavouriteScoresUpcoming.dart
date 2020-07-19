@@ -6,12 +6,12 @@ import '../Provider/AppProvider.dart';
 import '../models/Score.dart';
 import '../commons/ScoreCard.dart';
 
-class FavouriteScores extends StatefulWidget {
+class FavouriteScoresUpcoming extends StatefulWidget {
   @override
-  _FavouriteScoresState createState() => _FavouriteScoresState();
+  _FavouriteScoresUpcomingState createState() => _FavouriteScoresUpcomingState();
 }
 
-class _FavouriteScoresState extends State<FavouriteScores> {
+class _FavouriteScoresUpcomingState extends State<FavouriteScoresUpcoming> {
   ScrollController _scrollController = ScrollController();
   int _lastRetrievedLindex;
   int _totalNoOfScores;
@@ -73,7 +73,7 @@ class _FavouriteScoresState extends State<FavouriteScores> {
               );
             })
             : ListView.builder(
-          shrinkWrap: true,
+            shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemCount: 10,
             itemBuilder: (BuildContext context, int index) {
@@ -100,7 +100,10 @@ class _FavouriteScoresState extends State<FavouriteScores> {
   }
 
   List<Score> _setScores(AppProvider appProvider) {
-    final List<Score> favouriteTeamScores = appProvider.favouriteTeamScores;
+    final List<Score> favouriteTeamScores = appProvider.favouriteTeamScores.where((score) => score.date_time.difference(DateTime.now()).inSeconds > 0).toList();
+    favouriteTeamScores.sort((a, b) {
+      return a.date_time.compareTo(b.date_time);
+    });
     _totalNoOfScores = favouriteTeamScores.length;
     setState(() {
       if (_totalNoOfScores > 10) {

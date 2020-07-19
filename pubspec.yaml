@@ -36,6 +36,7 @@ dependencies:
   get_it: ^4.0.2
   pull_to_refresh: ^1.5.7
   intl: ^0.16.1
+  auto_size_text: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

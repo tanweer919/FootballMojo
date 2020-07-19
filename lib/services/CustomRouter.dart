@@ -15,7 +15,7 @@ class Router {
     final List<String> validRoutes = [
       '/home',
       '/score',
-      '/table',
+      '/league',
       '/news',
       '/login',
       '/newsarticle',
@@ -59,7 +59,7 @@ class Router {
         message: favouriteTeamMessage,
       ),
       '/score': ScoreScreen(),
-      '/table': LeagueTableScreen(),
+      '/league': LeagueTableScreen(),
       '/news': NewsScreen(),
       '/login': LoginScreen(),
       '/newsarticle': NewsArticleScreen(

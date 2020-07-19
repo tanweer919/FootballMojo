@@ -106,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         }
       } else {
         score = latestScore;
+        caption = 'Latest Match';
       }
     } else {
       score = liveMatch;
