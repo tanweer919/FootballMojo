@@ -32,19 +32,25 @@ class _LeagueDropdownState extends State<LeagueDropdown> {
                       items: widget.items,
                       style: TextStyle(color: widget.fontColor, fontSize: 11, fontWeight: FontWeight.w500),
                       onChanged: (String value) async {
-                              model.selectedLeague = value;
-                              model.leagueTableEntries = null;
-                              model.leagueWiseScores = null;
-                              if(widget.purpose == "table") {
-                                await model.loadLeagueTable(
-                                    leagueName: value);
-                                await model.loadLeagueWiseScores(leagueName: value);
-                              }
-                              if(widget.purpose == "score") {
-                                await model.loadLeagueWiseScores(leagueName: value);
-                                await model.loadLeagueTable(
-                                    leagueName: value);
-                                Navigator.of(context).pushReplacementNamed('/league');
+                              if(model.selectedLeague != value) {
+                                model.selectedLeague = value;
+                                model.leagueTableEntries = null;
+                                model.leagueWiseScores = null;
+                                model.topScorers = null;
+                                if(widget.purpose == "topscorer") {
+                                  await model.loadTopScorers(leagueName: value);
+                                }
+                                if(widget.purpose == "table") {
+                                  await model.loadLeagueTable(
+                                      leagueName: value);
+                                  await model.loadLeagueWiseScores(leagueName: value);
+                                }
+                                if(widget.purpose == "score") {
+                                  await model.loadLeagueWiseScores(leagueName: value);
+                                  await model.loadLeagueTable(
+                                      leagueName: value);
+                                  Navigator.of(context).pushReplacementNamed('/league');
+                                }
                               }
                             },
                     ),

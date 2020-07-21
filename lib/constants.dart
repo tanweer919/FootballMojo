@@ -1,4 +1,5 @@
 import 'package:sportsmojo/models/Score.dart';
+import 'package:flutter/material.dart';
 
 final Map<String, dynamic> leagues = {
   "Bundesliga": {
@@ -65,4 +66,13 @@ Map<String, DateTime> getFirstAndLastDate(List<Score> scores) {
   final lastDate = scores[0].date_time;
   dates["lastDate"] = DateTime(lastDate.year, lastDate.month, lastDate.day);
   return dates;
+}
+
+List<DropdownMenuItem> getLeagueItems() {
+  return leagues.entries
+      .map<DropdownMenuItem<String>>((entry) => DropdownMenuItem<String>(
+    value: entry.key,
+    child: Text(entry.key),
+  ))
+      .toList();
 }

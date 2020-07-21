@@ -8,6 +8,8 @@ import '../models/News.dart';
 import '../constants.dart';
 import '../models/LeagueTable.dart';
 import '../services/LeagueTableService.dart';
+import '../services/TopScorerService.dart';
+import '../models/Player.dart';
 class AppProvider extends ChangeNotifier {
   AppProvider(this._navbarIndex, this._selectedLeague, this._startDate, this._endDate);
   int _navbarIndex;
@@ -18,12 +20,14 @@ class AppProvider extends ChangeNotifier {
   DateTime _startDate;
   DateTime _endDate;
   List<Score> _favouriteTeamScores;
+  String _selectedLeague;
+  List<Player> _topScorers;
 
   NewsService _newsService = locator<NewsService>();
   ScoreService _scoreService = locator<ScoreService>();
   LeagueTableService _leagueTableService = locator<LeagueTableService>();
+  TopScorerService _topScorerService = locator<TopScorerService>();
 
-  String _selectedLeague;
   int get navbarIndex => _navbarIndex;
 
   String get selectedLeague => _selectedLeague;
@@ -37,6 +41,7 @@ class AppProvider extends ChangeNotifier {
   DateTime get endDate => _endDate;
 
   List<LeagueTableEntry> get leagueTableEntries => _leagueTableEntries;
+  List<Player> get topScorers => _topScorers;
 
   void set selectedLeague(String league) {
     _selectedLeague = league;
@@ -83,6 +88,11 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void set topScorers(List<Player> scorers) {
+    _topScorers = scorers;
+    notifyListeners();
+  }
+
   Future<void> loadAllNews() async{
     _newsList = await _newsService.fetchNews('football');
     notifyListeners();
@@ -123,4 +133,18 @@ class AppProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> loadTopScorers({String leagueName}) async {
+    if(leagueName == null) {
+      String storedLeagueId = await LocalStorage.getString('leagueId');
+      _topScorers = await _topScorerService.fetchTopScorer(leagueId: storedLeagueId);
+    }
+    else {
+      String leagueId = '${leagues[leagueName]['id']}';
+      _topScorers = await _topScorerService.fetchTopScorer(leagueId: leagueId);
+    }
+    notifyListeners();
+  }
+
+
 }

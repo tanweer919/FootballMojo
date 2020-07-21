@@ -72,7 +72,7 @@ class _AllScoresState extends State<AllScores> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             LeagueDropdown(
-                              items: leaguesItems,
+                              items: getLeagueItems(),
                               selectedLeague: model.selectedLeague,
                               backgroundColor: Color(0xfffafafa),
                               fontColor: Colors.black,

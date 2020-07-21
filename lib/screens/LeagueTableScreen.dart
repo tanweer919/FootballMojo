@@ -4,6 +4,7 @@ import '../Provider/AppProvider.dart';
 import '../commons/BottomNavbar.dart';
 import '../widgets/LeagueTableWiget.dart';
 import '../widgets/AllScores.dart';
+import '../widgets/TopScorer.dart';
 
 class LeagueTableScreen extends StatefulWidget {
   @override
@@ -76,7 +77,7 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
           children: <Widget>[
             AllScores(),
             LeagueTableWidget(),
-            Container()
+            TopScorers()
           ],
         ));
   }

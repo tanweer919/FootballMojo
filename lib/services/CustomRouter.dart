@@ -4,11 +4,11 @@ import 'package:sportsmojo/screens/MatchStatScreen.dart';
 import '../screens/HomeScreen.dart';
 import '../screens/ScoreScreen.dart';
 import '../screens/News.dart';
-import '../screens/Login.dart';
 import '../screens/NewsArticle.dart';
 import '../models/News.dart';
 import '../screens/FavouriteScreen2.dart';
 import '../screens/LeagueTableScreen.dart';
+import '../screens/DashboardScreen.dart';
 
 class Router {
   Route<dynamic> generateRoutes(RouteSettings settings) {
@@ -17,7 +17,7 @@ class Router {
       '/score',
       '/league',
       '/news',
-      '/login',
+      '/dashboard',
       '/newsarticle',
       '/selectteam',
       '/matchstat'
@@ -61,7 +61,7 @@ class Router {
       '/score': ScoreScreen(),
       '/league': LeagueTableScreen(),
       '/news': NewsScreen(),
-      '/login': LoginScreen(),
+      '/dashboard': DashboardScreen(),
       '/newsarticle': NewsArticleScreen(
         index: index,
         news: news,

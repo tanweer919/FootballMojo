@@ -14,10 +14,10 @@ class Player {
     : id = unparsedJson["player"]["id"],
       name = unparsedJson["player"]["name"],
       photoUrl = unparsedJson["player"]["photo"],
-      appearance = unparsedJson["statistics"]["games"]["appearences"],
-      goals = unparsedJson["statistics"]["goals"]["total"],
-      penaltyGoals = unparsedJson["statistics"]["penalty"]["scored"],
-      assists = unparsedJson["statistics"]["goals"]["assists"],
-      teamName = unparsedJson["statistics"]["team"]["name"],
-      teamLogo = unparsedJson["statistics"]["team"]["logo"];
+      appearance = unparsedJson["statistics"][0]["games"]["appearences"] ?? 0,
+      goals = unparsedJson["statistics"][0]["goals"]["total"] ?? 0,
+      penaltyGoals = unparsedJson["statistics"][0]["penalty"]["scored"] ?? 0,
+      assists = unparsedJson["statistics"][0]["goals"]["assists"] ?? 0,
+      teamName = unparsedJson["statistics"][0]["team"]["name"],
+      teamLogo = unparsedJson["statistics"][0]["team"]["logo"];
 }

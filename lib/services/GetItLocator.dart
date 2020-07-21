@@ -6,6 +6,7 @@ import 'ScoreService.dart';
 import 'StatService.dart';
 import 'MatchEventService.dart';
 import 'LeagueTableService.dart';
+import 'TopScorerService.dart';
 import '../Provider/HomeViewModel.dart';
 import '../Provider/AppProvider.dart';
 import '../Provider/FavouriteScoresViewModel.dart';
@@ -21,6 +22,7 @@ void setupLocator() {
   locator.registerLazySingleton<StatService>(() => StatService());
   locator.registerLazySingleton<MatchEventService>(() => MatchEventService());
   locator.registerLazySingleton<LeagueTableService>(() => LeagueTableService());
+  locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
   locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));

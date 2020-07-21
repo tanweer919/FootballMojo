@@ -7,7 +7,7 @@ class BottomNavbar extends StatelessWidget {
     fontWeight: FontWeight.w400,
     color: Colors.black,
   );
-  final List<String> routes = ['/home', '/score', '/league', '/news', '/login'];
+  final List<String> routes = ['/home', '/score', '/league', '/news', '/dashboard'];
   Widget build(BuildContext context){
     final List<BottomNavigationBarItem> bottomNavbarItems = [
       new BottomNavigationBarItem(
@@ -31,9 +31,9 @@ class BottomNavbar extends StatelessWidget {
           title: Text('News', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(Icons.account_circle, color: Colors.orange,),
-          icon: Icon(Icons.account_circle),
-          title: Text('Login', style: _bottomNavBarStyle,)
+          activeIcon: Icon(Icons.dashboard, color: Colors.orange,),
+          icon: Icon(Icons.dashboard),
+          title: Text('Dasboard', style: _bottomNavBarStyle,)
       )
     ];
     return Consumer<AppProvider>(
