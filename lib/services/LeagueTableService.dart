@@ -16,6 +16,9 @@ class LeagueTableService {
           _leagueTableEntries.add(LeagueTableEntry.fromJson(unparsedJson[i]));
         }
       }
+      _leagueTableEntries.sort((a,b) {
+        return a.position.compareTo(b.position);
+      });
       return _leagueTableEntries;
     } on DioError catch (e) {
       return null;
