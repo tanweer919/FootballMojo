@@ -12,6 +12,8 @@ import '../Provider/AppProvider.dart';
 import '../Provider/FavouriteScoresViewModel.dart';
 import '../Provider/MatchStatViewModel.dart';
 import '../Provider/MatchEventViewModel.dart';
+import '../models/User.dart';
+import 'FirebaseService.dart';
 GetIt locator = GetIt.instance;
 
 void setupLocator() {
@@ -23,9 +25,10 @@ void setupLocator() {
   locator.registerLazySingleton<MatchEventService>(() => MatchEventService());
   locator.registerLazySingleton<LeagueTableService>(() => LeagueTableService());
   locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
+  locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
   locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));
   locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>((scores, index) => FavouriteScoresViewModel(scores, index));
-  locator.registerFactoryParam<AppProvider, String, void>((leagueName, _) => AppProvider(0, leagueName, now.subtract(Duration(days: 30)), now.add(Duration(days: 7))));
+  locator.registerFactoryParam<AppProvider, String, User>((leagueName, currentUser) => AppProvider(0, leagueName, now.subtract(Duration(days: 30)), now.add(Duration(days: 7)), currentUser));
 }

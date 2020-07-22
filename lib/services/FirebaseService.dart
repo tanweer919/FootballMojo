@@ -2,12 +2,33 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/User.dart';
 
-class LoginService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn googleSignIn = GoogleSignIn();
+class FirebaseService {
+  FirebaseAuth _auth;
+  GoogleSignIn googleSignIn;
   String name;
   String email;
   String imageUrl;
+
+  FirebaseService() {
+    _auth = FirebaseAuth.instance;
+    googleSignIn = GoogleSignIn();
+  }
+
+  Future<User> getCurrentUser() async {
+    String name;
+    User currentUser = null;
+    final FirebaseUser _firebaseUser = await _auth.currentUser();
+    if (_firebaseUser != null) {
+      name = _firebaseUser.displayName;
+      currentUser = User(
+          uid: _firebaseUser.uid,
+          name: name,
+          email: _firebaseUser.email,
+          profilePic: _firebaseUser.photoUrl);
+    }
+    return currentUser;
+  }
+
 
   Future<User> signInWithGoogle() async {
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
@@ -31,13 +52,11 @@ class LoginService {
     name = user.displayName;
     email = user.email;
     imageUrl = user.photoUrl;
-    if (name.contains(" ")) {
-      name = name.substring(0, name.indexOf(" "));
-    }
-    return User(name: name, email: email, profilePic: imageUrl);
+    return User(uid: user.uid, name: name, email: email, profilePic: imageUrl);
   }
 
   void signOutGoogle() async {
+    await _auth.signOut();
     await googleSignIn.signOut();
   }
 }

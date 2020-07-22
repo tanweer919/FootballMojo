@@ -10,8 +10,10 @@ import '../models/LeagueTable.dart';
 import '../services/LeagueTableService.dart';
 import '../services/TopScorerService.dart';
 import '../models/Player.dart';
+import '../models/User.dart';
+import '../services/FirebaseService.dart';
 class AppProvider extends ChangeNotifier {
-  AppProvider(this._navbarIndex, this._selectedLeague, this._startDate, this._endDate);
+  AppProvider(this._navbarIndex, this._selectedLeague, this._startDate, this._endDate, this._currentUser);
   int _navbarIndex;
   List<News> _newsList;
   List<News> _favouriteNewsList;
@@ -22,6 +24,7 @@ class AppProvider extends ChangeNotifier {
   List<Score> _favouriteTeamScores;
   String _selectedLeague;
   List<Player> _topScorers;
+  User _currentUser;
 
   NewsService _newsService = locator<NewsService>();
   ScoreService _scoreService = locator<ScoreService>();
@@ -42,6 +45,7 @@ class AppProvider extends ChangeNotifier {
 
   List<LeagueTableEntry> get leagueTableEntries => _leagueTableEntries;
   List<Player> get topScorers => _topScorers;
+  User get currentUser => _currentUser;
 
   void set selectedLeague(String league) {
     _selectedLeague = league;
@@ -80,6 +84,11 @@ class AppProvider extends ChangeNotifier {
 
   void set endDate(DateTime date) {
     _endDate = date;
+    notifyListeners();
+  }
+
+  void set currentUser(User user) {
+    _currentUser = user;
     notifyListeners();
   }
 

@@ -5,6 +5,7 @@ import 'Provider/AppProvider.dart';
 import 'services/CustomRouter.dart';
 import 'services/GetItLocator.dart';
 import 'services/LocalStorage.dart';
+import 'services/FirebaseService.dart';
 
 void main() async{
   setupLocator();
@@ -14,7 +15,9 @@ void main() async{
   );
   WidgetsFlutterBinding.ensureInitialized();
   final leagueName = await LocalStorage.getString('leagueName');
-  AppProvider appProvider = locator<AppProvider>(param1: leagueName);
+  FirebaseService firebaseService = locator<FirebaseService>();
+  final currentUser = await firebaseService.getCurrentUser();
+  AppProvider appProvider = locator<AppProvider>(param1: leagueName, param2: currentUser);
 
   runApp(
     MultiProvider(
