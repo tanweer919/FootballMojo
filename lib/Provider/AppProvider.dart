@@ -63,7 +63,12 @@ class AppProvider extends ChangeNotifier {
   }
 
   void set favouriteNewsList(List<News> news) {
-    _favouriteNewsList = news.sublist(0, 4);
+    if(news != null) {
+      _favouriteNewsList = news.sublist(0, 4);
+    }
+    else {
+      _favouriteNewsList = news;
+    }
     notifyListeners();
   }
 

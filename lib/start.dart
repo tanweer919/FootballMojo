@@ -14,8 +14,7 @@ class StartState extends State<Start> {
     if (teamName != null) {
       Navigator.of(context).pushReplacementNamed('/home');
     } else {
-      Navigator.of(context).pushReplacement(new MaterialPageRoute(
-          builder: (context) => FavouriteLeague()));
+      Navigator.of(context).pushReplacementNamed('/selectleague');
     }
   }
 
