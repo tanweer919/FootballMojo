@@ -198,6 +198,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                       appProvider.favouriteTeamScores = null;
                       appProvider.newsList = null;
                       appProvider.favouriteNewsList = null;
+                      appProvider.leagueTableEntries = null;
                       appProvider.navbarIndex = 0;
                       Navigator.of(context)
                           .pushReplacementNamed('/home', arguments: {
