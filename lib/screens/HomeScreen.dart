@@ -62,8 +62,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     children: <Widget>[
                       Flexible(
                           fit: FlexFit.loose,
-                          child: carousel(
-                              model: model, appProvider: appProvider)),
+                          child:
+                              carousel(model: model, appProvider: appProvider)),
                       appProvider.favouriteTeamScores != null
                           ? UpcomingMatchesSection(appProvider: appProvider)
                           : PKCardSkeleton(
@@ -82,8 +82,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget UpcomingMatchesSection({AppProvider appProvider}) {
     final List<Score> matches = appProvider.favouriteTeamScores;
-    final Score latestScore =
-        matches.firstWhere((score) => score.status == "FT");
+    Score score;
+    String caption;
+    final Score liveMatch = matches.firstWhere(
+        (score) =>
+            score.status != "FT" &&
+            score.status != "PEN" &&
+            score.homeScore != null,
+        orElse: () => null);
+    if (liveMatch == null) {
+      final int index = matches
+          .indexWhere((score) => score.status == "FT" || score.status == "PEN");
+      final Score latestScore = matches[index];
+      if (index > 0) {
+        final Score nextScore = matches[index - 1];
+        if (nextScore.date_time.difference(DateTime.now()).inSeconds <
+            DateTime.now().difference(latestScore.date_time).inSeconds) {
+          score = nextScore;
+          caption = 'Upcoming Match';
+        } else {
+          score = latestScore;
+          caption = 'Latest Match';
+        }
+      } else {
+        score = latestScore;
+        caption = 'Latest Match';
+      }
+    } else {
+      score = liveMatch;
+      caption = 'Live Match';
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -92,12 +120,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Text(
-                'Upcoming/Live Matches',
+                caption,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
             ),
-            ScoreCard(score: latestScore,)
+            ScoreCard(
+              score: score,
+            )
           ]),
     );
   }

@@ -4,14 +4,20 @@ import 'package:provider/provider.dart';
 import 'Provider/AppProvider.dart';
 import 'services/CustomRouter.dart';
 import 'services/GetItLocator.dart';
+import 'services/LocalStorage.dart';
+import 'services/FirebaseService.dart';
 
-void main() {
+void main() async{
   setupLocator();
   final ThemeData theme = ThemeData(
     primaryColor: Color(0xFF50C878),
     primaryColorDark: Color(0XFFA0A5AA)
   );
-  AppProvider appProvider = locator<AppProvider>();
+  WidgetsFlutterBinding.ensureInitialized();
+  final leagueName = await LocalStorage.getString('leagueName');
+  FirebaseService firebaseService = locator<FirebaseService>();
+  final currentUser = await firebaseService.getCurrentUser();
+  AppProvider appProvider = locator<AppProvider>(param1: leagueName, param2: currentUser);
 
   runApp(
     MultiProvider(

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "941839892238",
+    "firebase_url": "https://football-mojo.firebaseio.com",
+    "project_id": "football-mojo",
+    "storage_bucket": "football-mojo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941839892238:android:cf75eb4875370f0cac215f",
+        "android_client_info": {
+          "package_name": "com.example.sportsmojo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "941839892238-5brsr913u4pbe9cppcq6ch0s507msjjt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sportsmojo",
+            "certificate_hash": "6ab1580b9c5164660d0fed14658959d0002689c2"
+          }
+        },
+        {
+          "client_id": "941839892238-156mnil47ubu5nmgvgpj64c5g7flg6vp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvqa03yfFA8iiMuUdfvYUAiqPeLG4O_ek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "941839892238-156mnil47ubu5nmgvgpj64c5g7flg6vp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

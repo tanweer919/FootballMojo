@@ -7,7 +7,7 @@ class BottomNavbar extends StatelessWidget {
     fontWeight: FontWeight.w400,
     color: Colors.black,
   );
-  final List<String> routes = ['/home', '/score', '/news', '/login'];
+  final List<String> routes = ['/home', '/score', '/league', '/news', '/dashboard'];
   Widget build(BuildContext context){
     final List<BottomNavigationBarItem> bottomNavbarItems = [
       new BottomNavigationBarItem(
@@ -18,7 +18,12 @@ class BottomNavbar extends StatelessWidget {
       new BottomNavigationBarItem(
           activeIcon: Icon(MyFlutterApp.score, color: Colors.orange,),
           icon: Icon(MyFlutterApp.score),
-          title: Text('Score', style: _bottomNavBarStyle,)
+          title: Text('Matches', style: _bottomNavBarStyle,)
+      ),
+      new BottomNavigationBarItem(
+          activeIcon: Icon(Icons.table_chart, color: Colors.orange,),
+          icon: Icon(Icons.table_chart),
+          title: Text('League', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
           activeIcon: Icon(MyFlutterApp.news, color: Colors.orange,),
@@ -26,9 +31,9 @@ class BottomNavbar extends StatelessWidget {
           title: Text('News', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(Icons.account_circle, color: Colors.orange,),
-          icon: Icon(Icons.account_circle),
-          title: Text('Login', style: _bottomNavBarStyle,)
+          activeIcon: Icon(Icons.dashboard, color: Colors.orange,),
+          icon: Icon(Icons.dashboard),
+          title: Text('Dasboard', style: _bottomNavBarStyle,)
       )
     ];
     return Consumer<AppProvider>(

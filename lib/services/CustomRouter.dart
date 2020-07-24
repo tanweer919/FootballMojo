@@ -4,21 +4,25 @@ import 'package:sportsmojo/screens/MatchStatScreen.dart';
 import '../screens/HomeScreen.dart';
 import '../screens/ScoreScreen.dart';
 import '../screens/News.dart';
-import '../screens/Login.dart';
 import '../screens/NewsArticle.dart';
 import '../models/News.dart';
 import '../screens/FavouriteScreen2.dart';
+import '../screens/LeagueTableScreen.dart';
+import '../screens/DashboardScreen.dart';
+import '../screens/FavouriteScreen1.dart';
 
 class Router {
   Route<dynamic> generateRoutes(RouteSettings settings) {
     final List<String> validRoutes = [
       '/home',
       '/score',
+      '/league',
       '/news',
-      '/login',
+      '/dashboard',
       '/newsarticle',
       '/selectteam',
-      '/matchstat'
+      '/matchstat',
+      '/selectleague'
     ];
     if (validRoutes.contains(settings.name)) {
       return customRoutes(settings.name, settings.arguments);
@@ -57,8 +61,9 @@ class Router {
         message: favouriteTeamMessage,
       ),
       '/score': ScoreScreen(),
+      '/league': LeagueTableScreen(),
       '/news': NewsScreen(),
-      '/login': LoginScreen(),
+      '/dashboard': DashboardScreen(),
       '/newsarticle': NewsArticleScreen(
         index: index,
         news: news,
@@ -69,7 +74,8 @@ class Router {
       ),
       '/matchstat': MatchStatScreen(
         score: score,
-      )
+      ),
+      '/selectleague': FavouriteLeague()
     };
 
     return PageRouteBuilder(

@@ -36,6 +36,10 @@ dependencies:
   get_it: ^4.0.2
   pull_to_refresh: ^1.5.7
   intl: ^0.16.1
+  auto_size_text: ^2.1.0
+  firebase_auth: ^0.16.1
+  google_sign_in: ^4.5.1
+  cloud_firestore: ^0.13.7
 dev_dependencies:
   flutter_test:
     sdk: flutter

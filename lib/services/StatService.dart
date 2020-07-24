@@ -1,13 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../models/MatchStat.dart';
-import '../secret.dart';
+import 'HttpService.dart';
 class StatService {
-  static BaseOptions options = new BaseOptions(headers: {
-    'x-rapidapi-host': 'v3.football.api-sports.io',
-    'x-rapidapi-key': scoreApiKey
-  });
-  final dio = new Dio(options);
+  final Dio dio = HttpService.getApiClient();
 
   Future<Map<String, MatchStat>> fetchStats({@required int fixtureId}) async{
     Map<String, MatchStat> stats = {};

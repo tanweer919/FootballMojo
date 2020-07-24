@@ -1,70 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsmojo/Provider/AppProvider.dart';
+import '../Provider/AppProvider.dart';
 import '../commons/BottomNavbar.dart';
-import '../commons/custom_icons.dart';
-import '../services/LocalStorage.dart';
+import '../widgets/LeagueTableWiget.dart';
 import '../widgets/AllScores.dart';
-import '../widgets/FavouriteScoresPast.dart';
-import '../widgets/FavouriteScoresUpcoming.dart';
+import '../widgets/TopScorer.dart';
 
-
-class ScoreScreen extends StatefulWidget {
+class LeagueTableScreen extends StatefulWidget {
   @override
-  _ScoreScreenState createState() => _ScoreScreenState();
+  _LeagueTableScreenState createState() => _LeagueTableScreenState();
 }
 
-class _ScoreScreenState extends State<ScoreScreen>
+class _LeagueTableScreenState extends State<LeagueTableScreen>
     with TickerProviderStateMixin {
   TabController _tabController;
-  String teamName;
+
   @override
   void initState() {
-    super.initState();
-    _tabController = TabController(vsync: this, length: 2);
-    LocalStorage.getString('teamName').then((value) {
-      setState(() {
-        teamName = value;
-      });
-    });
+    _tabController = TabController(vsync: this, length: 3);
   }
 
-
-
+  @override
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
         bottomNavigationBar: BottomNavbar(),
-        backgroundColor: Color(0xfff1f1f1),
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(100.0),
             child: AppBar(
               leading: Container(),
               backgroundColor: Theme.of(context).primaryColor,
               title: Text(
-                '$teamName',
+                'League',
                 style: TextStyle(color: Colors.white),
               ),
               bottom: TabBar(
                   controller: _tabController,
                   tabs: <Widget>[
                     Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          'Latest',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400),
-                        ),
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        'Matchday',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400),
                       ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
-                        'Upcoming',
+                        'Table',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        'Top Scorer',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
                             fontWeight: FontWeight.w400),
                       ),
                     )
@@ -76,8 +75,9 @@ class _ScoreScreenState extends State<ScoreScreen>
         body: TabBarView(
           controller: _tabController,
           children: <Widget>[
-            FavouriteScoresPast(),
-            FavouriteScoresUpcoming()
+            AllScores(),
+            LeagueTableWidget(),
+            TopScorers()
           ],
         ));
   }

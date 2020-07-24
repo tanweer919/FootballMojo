@@ -6,14 +6,14 @@ import '../Provider/AppProvider.dart';
 import '../models/Score.dart';
 import '../commons/ScoreCard.dart';
 
-class FavouriteScores extends StatefulWidget {
+class FavouriteScoresUpcoming extends StatefulWidget {
   @override
-  _FavouriteScoresState createState() => _FavouriteScoresState();
+  _FavouriteScoresUpcomingState createState() => _FavouriteScoresUpcomingState();
 }
 
-class _FavouriteScoresState extends State<FavouriteScores> {
+class _FavouriteScoresUpcomingState extends State<FavouriteScoresUpcoming> {
   ScrollController _scrollController = ScrollController();
-  int _lastRetrievedLindex = 9;
+  int _lastRetrievedLindex;
   int _totalNoOfScores;
   List<Score> _scores;
   @override
@@ -51,7 +51,7 @@ class _FavouriteScoresState extends State<FavouriteScores> {
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) {
               if(index == _lastRetrievedLindex + 1) {
-                return Padding(
+                return index == _totalNoOfScores ? Container() : Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: SizedBox(
                     height: 40,
@@ -73,7 +73,7 @@ class _FavouriteScoresState extends State<FavouriteScores> {
               );
             })
             : ListView.builder(
-          shrinkWrap: true,
+            shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemCount: 10,
             itemBuilder: (BuildContext context, int index) {
@@ -100,13 +100,18 @@ class _FavouriteScoresState extends State<FavouriteScores> {
   }
 
   List<Score> _setScores(AppProvider appProvider) {
-    final List<Score> favouriteTeamScores = appProvider.favouriteTeamScores;
+    final List<Score> favouriteTeamScores = appProvider.favouriteTeamScores.where((score) => score.date_time.difference(DateTime.now()).inSeconds > 0).toList();
+    favouriteTeamScores.sort((a, b) {
+      return a.date_time.compareTo(b.date_time);
+    });
     _totalNoOfScores = favouriteTeamScores.length;
     setState(() {
       if (_totalNoOfScores > 10) {
         _scores = favouriteTeamScores.sublist(0, 10);
+        _lastRetrievedLindex = 9;
       } else {
         _scores = favouriteTeamScores;
+        _lastRetrievedLindex = _totalNoOfScores - 1;
       }
     });
     _scrollController.addListener(() {
