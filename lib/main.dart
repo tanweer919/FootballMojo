@@ -6,7 +6,7 @@ import 'services/CustomRouter.dart';
 import 'services/GetItLocator.dart';
 import 'services/LocalStorage.dart';
 import 'services/FirebaseService.dart';
-
+import 'screens/StartScreen.dart';
 void main() async{
   setupLocator();
   final ThemeData theme = ThemeData(
@@ -29,7 +29,7 @@ void main() async{
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme,
-        home: Start(),
+        home: StartScreen(),
         onGenerateRoute: Router().generateRoutes,
         navigatorObservers: [
           HeroController()

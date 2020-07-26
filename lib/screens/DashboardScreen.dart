@@ -9,6 +9,7 @@ import '../Provider/AppProvider.dart';
 import '../services/GetItLocator.dart';
 import '../commons/custom_icons.dart';
 import '../services/LocalStorage.dart';
+import '../services/FirestoreService.dart';
 import '../constants.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   FirebaseService firebaseService = locator<FirebaseService>();
-
+  FirestoreService firestoreService = locator<FirestoreService>();
   String teamLogo, teamName, leagueName, leagueLogo;
 
   @override
@@ -135,8 +136,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   final User user =
                                       await firebaseService.signInWithGoogle();
                                   model.currentUser = user;
+                                  final Map<String, dynamic> data = {
+                                    'name': user.name,
+                                    'email': user.email,
+                                    'teamName': await LocalStorage.getString(
+                                      'teamName',
+                                    ),
+                                    'teamId': await LocalStorage.getString(
+                                      'teamId',
+                                    ),
+                                    'teamLogo': await LocalStorage.getString(
+                                      'teamLogo',
+                                    ),
+                                    'leagueName': await LocalStorage.getString(
+                                        'leagueName'),
+                                    'leagueId': await LocalStorage.getString(
+                                      'leagueId',
+                                    )
+                                  };
+                                  await firestoreService.setData(
+                                      userId: user.uid, data: data);
                                 },
-                                padding: EdgeInsets.symmetric(horizontal:4.0),
+                                padding: EdgeInsets.symmetric(horizontal: 4.0),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,

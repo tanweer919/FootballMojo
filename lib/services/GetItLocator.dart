@@ -14,6 +14,7 @@ import '../Provider/MatchStatViewModel.dart';
 import '../Provider/MatchEventViewModel.dart';
 import '../models/User.dart';
 import 'FirebaseService.dart';
+import 'FirestoreService.dart';
 GetIt locator = GetIt.instance;
 
 void setupLocator() {
@@ -26,6 +27,7 @@ void setupLocator() {
   locator.registerLazySingleton<LeagueTableService>(() => LeagueTableService());
   locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
   locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
+  locator.registerLazySingleton<FirestoreService>(() => FirestoreService());
   locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));
