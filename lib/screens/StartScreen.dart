@@ -23,31 +23,31 @@ class StartScreen extends StatelessWidget {
             child: Container(
               height: MediaQuery.of(context).size.height,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
                     height: MediaQuery.of(context).size.height * 0.5,
-                    child: Image.asset('assets/images/football_cover.svg'),
+                    child: Image.asset('assets/images/football_cover.png'),
                   ),
                   Text(
                     'Football just it was meant to be',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
                   ),
-                  Flexible(
-                      child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Text(
-                      'You can get football scores and news directly from your home...',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff34648c),
-                      ),
-                    ),
-                  )),
+//                  Flexible(
+//                      child: Container(
+//                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+//                    child: Text(
+//                      'You can get football scores and news directly from your home...',
+//                      textAlign: TextAlign.center,
+//                      style: TextStyle(
+//                        fontSize: 15,
+//                        fontWeight: FontWeight.w400,
+//                        color: Color(0xff34648c),
+//                      ),
+//                    ),
+//                  )),
                   Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Row(
@@ -107,7 +107,21 @@ class StartScreen extends StatelessWidget {
                         )
                       ],
                     ),
-                  )
+                  ),
+                  Divider(thickness: 0.7, color: Theme.of(context).primaryColor,),
+                  Flexible(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Text(
+                          'Continue as guest...',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff34648c),
+                          ),
+                        ),
+                      ))
                 ],
               ),
             ),
