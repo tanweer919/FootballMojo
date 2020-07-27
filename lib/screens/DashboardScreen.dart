@@ -20,6 +20,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   FirebaseService firebaseService = locator<FirebaseService>();
   FirestoreService firestoreService = locator<FirestoreService>();
+  bool inProgress = false;
   String teamLogo, teamName, leagueName, leagueLogo;
 
   @override
@@ -133,6 +134,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               width: MediaQuery.of(context).size.width * 0.5,
                               child: RaisedButton(
                                 onPressed: () async {
+                                  setState(() {
+                                    inProgress = true;
+                                  });
                                   final User user =
                                       await firebaseService.signInWithGoogle();
                                   model.currentUser = user;
@@ -156,9 +160,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   };
                                   await firestoreService.setData(
                                       userId: user.uid, data: data);
+                                  setState(() {
+                                    inProgress = false;
+                                  });
                                 },
                                 padding: EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Row(
+                                child: inProgress ? CircularProgressIndicator(
+                                  valueColor:
+                                  new AlwaysStoppedAnimation<Color>(Color(0xfff5f5f5)),
+                                ) : Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: <Widget>[

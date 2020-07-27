@@ -10,6 +10,7 @@ import '../screens/FavouriteScreen2.dart';
 import '../screens/LeagueTableScreen.dart';
 import '../screens/DashboardScreen.dart';
 import '../screens/FavouriteScreen1.dart';
+import '../screens/IntroductionScreen.dart';
 
 class Router {
   Route<dynamic> generateRoutes(RouteSettings settings) {
@@ -22,7 +23,8 @@ class Router {
       '/newsarticle',
       '/selectteam',
       '/matchstat',
-      '/selectleague'
+      '/selectleague',
+      '/introduction'
     ];
     if (validRoutes.contains(settings.name)) {
       return customRoutes(settings.name, settings.arguments);
@@ -75,7 +77,8 @@ class Router {
       '/matchstat': MatchStatScreen(
         score: score,
       ),
-      '/selectleague': FavouriteLeague()
+      '/selectleague': FavouriteLeague(),
+      '/introduction': IntroductionScreen()
     };
 
     return PageRouteBuilder(

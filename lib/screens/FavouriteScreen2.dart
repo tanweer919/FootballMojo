@@ -4,10 +4,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsmojo/Provider/AppProvider.dart';
 import 'package:sportsmojo/commons/custom_icons.dart';
+import 'package:sportsmojo/models/User.dart';
 import '../models/Team.dart';
 import '../services/TeamService.dart';
 import '../services/LocalStorage.dart';
 import '../services/GetItLocator.dart';
+import '../services/FirestoreService.dart';
 
 class FavouriteTeam extends StatefulWidget {
   final int leagueId;
@@ -23,6 +25,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
   List<Team> originalTeamList;
   Future<List<Team>> futureTeamList;
   final TextEditingController _controller = new TextEditingController();
+  final FirestoreService _firestoreService = locator<FirestoreService>();
 
   @override
   void initState() {
@@ -60,9 +63,18 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Text('Loading teams', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w400, color: Colors.white,),),
+                        child: Text(
+                          'Loading teams',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                      SpinKitFadingCube(color: Colors.white,)
+                      SpinKitFadingCube(
+                        color: Colors.white,
+                      )
                     ],
                   ),
                 );
@@ -71,8 +83,8 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                 originalTeamList = snapshot.data;
                 teamList = originalTeamList
                     .where((team) => team.name
-                    .toLowerCase()
-                    .contains(_controller.text.toLowerCase()))
+                        .toLowerCase()
+                        .contains(_controller.text.toLowerCase()))
                     .toList();
                 return Column(
                   children: <Widget>[
@@ -125,11 +137,12 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                                     style: TextStyle(fontSize: 18),
                                     onChanged: (String val) {
                                       setState(() {
-                                teamList = originalTeamList
-                                    .where((team) => team.name
-                                        .toLowerCase()
-                                        .contains(_controller.text.toLowerCase()))
-                                    .toList();
+                                        teamList = originalTeamList
+                                            .where((team) => team.name
+                                                .toLowerCase()
+                                                .contains(_controller.text
+                                                    .toLowerCase()))
+                                            .toList();
                                       });
                                     },
                                   ),
@@ -187,26 +200,8 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
             .map<Widget>((team) => Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: InkWell(
-                    onTap: () {
-                      LocalStorage.setString('teamName', team.name);
-                      LocalStorage.setString('teamId', '${team.id}');
-                      LocalStorage.setString('teamLogo', team.logo);
-                      LocalStorage.setString('leagueName', '${widget.leagueName}');
-                      LocalStorage.setString('leagueId', '${widget.leagueId}');
-                      appProvider.selectedLeague = widget.leagueName;
-                      appProvider.leagueWiseScores = null;
-                      appProvider.favouriteTeamScores = null;
-                      appProvider.newsList = null;
-                      appProvider.favouriteNewsList = null;
-                      appProvider.leagueTableEntries = null;
-                      appProvider.navbarIndex = 0;
-                      Navigator.of(context)
-                          .pushReplacementNamed('/home', arguments: {
-                        'favouriteTeamMessage': {
-                          'title': 'Success',
-                          'content': '${team.name} added as your favourite team'
-                        }
-                      });
+                    onTap: () async {
+                      await handleTap(team: team, appProvider: appProvider);
                     },
                     child: Container(
                       height: 40,
@@ -239,5 +234,42 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                   ),
                 ))
             .toList());
+  }
+
+  Future<void> handleTap({Team team, AppProvider appProvider}) async {
+    {
+      LocalStorage.setString('teamName', team.name);
+      LocalStorage.setString('teamId', '${team.id}');
+      LocalStorage.setString('teamLogo', team.logo);
+      LocalStorage.setString('leagueName', '${widget.leagueName}');
+      LocalStorage.setString('leagueId', '${widget.leagueId}');
+      appProvider.selectedLeague = widget.leagueName;
+      appProvider.leagueWiseScores = null;
+      appProvider.favouriteTeamScores = null;
+      appProvider.newsList = null;
+      appProvider.favouriteNewsList = null;
+      appProvider.leagueTableEntries = null;
+      appProvider.navbarIndex = 0;
+      if (appProvider.currentUser != null) {
+        final User user = appProvider.currentUser;
+        final Map<String, dynamic> data = {
+          'name': user.name,
+          'email': user.email,
+          'teamName': team.name,
+          'teamId': '${team.id}',
+          'teamLogo': team.logo,
+          'leagueName': '${widget.leagueName}',
+          'leagueId': '${widget.leagueId}'
+        };
+        await _firestoreService.setData(userId: user.uid, data: data);
+      }
+      Navigator.of(context).pushReplacementNamed('/home', arguments: {
+        'favouriteTeamMessage': {
+          'title': 'Success',
+          'content': '${team.name} added as your favourite team'
+        }
+      });
+    }
+    ;
   }
 }
