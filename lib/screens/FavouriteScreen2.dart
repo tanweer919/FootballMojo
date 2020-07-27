@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sportsmojo/Provider/AppProvider.dart';
 import 'package:sportsmojo/commons/custom_icons.dart';
 import 'package:sportsmojo/models/User.dart';
@@ -251,6 +252,18 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
       appProvider.leagueTableEntries = null;
       appProvider.navbarIndex = 0;
       if (appProvider.currentUser != null) {
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 2000)
+          ..indicatorType = EasyLoadingIndicatorType.chasingDots
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..indicatorSize = 45.0
+          ..radius = 10.0
+          ..backgroundColor = Theme.of(context).primaryColor
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.blue.withOpacity(0.5)
+          ..progressColor = Theme.of(context).primaryColor
+          ..textColor = Colors.white;
+        EasyLoading.show(status: 'Syncing data');
         final User user = appProvider.currentUser;
         final Map<String, dynamic> data = {
           'name': user.name,
@@ -262,6 +275,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
           'leagueId': '${widget.leagueId}'
         };
         await _firestoreService.setData(userId: user.uid, data: data);
+        EasyLoading.dismiss();
       }
       Navigator.of(context).pushReplacementNamed('/home', arguments: {
         'favouriteTeamMessage': {
