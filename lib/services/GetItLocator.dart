@@ -15,10 +15,12 @@ import '../Provider/MatchEventViewModel.dart';
 import '../models/User.dart';
 import 'FirebaseService.dart';
 import 'FirestoreService.dart';
+import 'RemoteConfigService.dart';
 GetIt locator = GetIt.instance;
 
-void setupLocator() {
+Future setupLocator() async{
   DateTime now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  RemoteConfigService remoteConfigService = await RemoteConfigService.getInstance();
   locator.registerLazySingleton<NewsService>(() => NewsService());
   locator.registerLazySingleton<TeamService>(() => TeamService());
   locator.registerLazySingleton<ScoreService>(() => ScoreService());
@@ -28,6 +30,7 @@ void setupLocator() {
   locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
   locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
   locator.registerLazySingleton<FirestoreService>(() => FirestoreService());
+  locator.registerSingleton<RemoteConfigService>(remoteConfigService);
   locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));

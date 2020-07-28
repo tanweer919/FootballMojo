@@ -38,6 +38,11 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return SafeArea(

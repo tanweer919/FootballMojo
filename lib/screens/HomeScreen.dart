@@ -44,6 +44,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) => showAlert());
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   HomeViewModel _viewModel = locator<HomeViewModel>();
 
   @override

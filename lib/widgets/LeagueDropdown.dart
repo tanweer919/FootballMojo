@@ -14,6 +14,12 @@ class LeagueDropdown extends StatefulWidget {
 }
 
 class _LeagueDropdownState extends State<LeagueDropdown> {
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, model, child) => Theme(

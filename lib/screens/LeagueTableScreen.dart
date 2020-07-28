@@ -21,6 +21,11 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(

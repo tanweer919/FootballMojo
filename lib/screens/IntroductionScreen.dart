@@ -21,6 +21,11 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   bool inProgress = false;
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<AppProvider>(

@@ -36,6 +36,11 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, model, child) => Column(

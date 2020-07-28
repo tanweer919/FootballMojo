@@ -28,6 +28,11 @@ class _StatsState extends State<Stats> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(

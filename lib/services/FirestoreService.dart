@@ -15,7 +15,6 @@ class FirestoreService {
 
   Future<Map<String, dynamic>> getData({String userId}) async {
     final DocumentSnapshot document = await _db.collection('users').document(userId).get();
-    print(document);
     return document.data;
   }
 }

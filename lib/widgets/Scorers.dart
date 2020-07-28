@@ -27,6 +27,11 @@ class _ScorerState extends State<Scorer> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<MatchEventViewModel>(
       builder: (context, model, child) {

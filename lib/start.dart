@@ -25,6 +25,11 @@ class StartState extends State<Start> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height,

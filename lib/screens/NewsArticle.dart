@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 import '../models/News.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -60,7 +61,7 @@ class NewsArticleScreen extends StatelessWidget {
                                             style: TextStyle(fontSize: 16),
                                           ),
                                           Text(
-                                            news.publishedAt,
+                                            DateFormat('E, d MMMM, hh:mm aaa').format(news.publishedAt),
                                             style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w400,
@@ -86,7 +87,7 @@ class NewsArticleScreen extends StatelessWidget {
                                     ),
                                     Flexible(
                                       child: Text(
-                                        '${news.content}${news.content}${news.content}${news.content}',
+                                        '${news.content}',
                                         style: TextStyle(
                                           fontSize: 18,
                                           wordSpacing: 1.1,

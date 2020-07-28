@@ -29,6 +29,11 @@ class _ScoreScreenState extends State<ScoreScreen>
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
 
 
   Widget build(BuildContext context) {

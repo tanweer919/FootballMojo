@@ -35,6 +35,11 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, model, child) => Scaffold(

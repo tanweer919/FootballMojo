@@ -11,7 +11,8 @@ import '../services/LeagueTableService.dart';
 import '../services/TopScorerService.dart';
 import '../models/Player.dart';
 import '../models/User.dart';
-import '../services/FirebaseService.dart';
+import '../services/RemoteConfigService.dart';
+
 class AppProvider extends ChangeNotifier {
   AppProvider(this._navbarIndex, this._selectedLeague, this._startDate, this._endDate, this._currentUser);
   int _navbarIndex;
@@ -108,7 +109,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadAllNews() async{
-    _newsList = await _newsService.fetchNews('football');
+    _newsList = await _newsService.fetchNews('european football');
     notifyListeners();
   }
 

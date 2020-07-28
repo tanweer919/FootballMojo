@@ -31,6 +31,11 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, model, child) => SingleChildScrollView(
