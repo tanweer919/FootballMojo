@@ -109,13 +109,15 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadAllNews() async{
-    _newsList = await _newsService.fetchNews('european football');
+    List<News> allNews = await _newsService.fetchNews('european football');
+    _newsList = allNews.where((news) => news.imageUrl != null).toList();
     notifyListeners();
   }
 
   Future<void> loadFavouriteNews() async {
     String teamName = await LocalStorage.getString('teamName');
-    _favouriteNewsList = await  _newsService.fetchNews(teamName);
+    List<News> favouriteNews = await  _newsService.fetchNews(teamName);;
+    _favouriteNewsList = favouriteNews.where((news) => news.imageUrl != null).toList();
     notifyListeners();
   }
 

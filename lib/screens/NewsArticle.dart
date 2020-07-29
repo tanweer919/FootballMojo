@@ -52,22 +52,52 @@ class NewsArticleScreen extends StatelessWidget {
                                     Padding(
                                       padding:
                                           const EdgeInsets.only(bottom: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
-                                          Text(
-                                            news.source,
-                                            style: TextStyle(fontSize: 16),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 4.0),
+                                            child: Container(
+                                              width: 50,
+                                              child: (news.sourceLogo != null) ? CachedNetworkImage(
+                                                imageUrl: news.sourceLogo,
+                                                fit: BoxFit.cover,
+                                                placeholder:
+                                                    (BuildContext context,
+                                                            String url) =>
+                                                        Image.asset(
+                                                  'assets/images/news_source_default.png',
+                                                  width: 50,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ) : Image.asset(
+                                                'assets/images/news_source_default.png',
+                                                width: 50,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
-                                          Text(
-                                            DateFormat('E, d MMMM, hh:mm aaa').format(news.publishedAt),
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                color: Theme.of(context)
-                                                    .primaryColorDark),
-                                          )
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                news.source,
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                              Text(
+                                                DateFormat(
+                                                        'E, d MMMM, hh:mm aaa')
+                                                    .format(news.publishedAt),
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Theme.of(context)
+                                                        .primaryColorDark),
+                                              )
+                                            ],
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -81,7 +111,7 @@ class NewsArticleScreen extends StatelessWidget {
                                               fontWeight: FontWeight.w500,
                                               fontSize: 22,
                                               wordSpacing: 1.1,
-                                              height: 1.3),
+                                              height: 1.1),
                                         ),
                                       ),
                                     ),

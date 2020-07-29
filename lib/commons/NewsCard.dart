@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/News.dart';
@@ -26,7 +27,7 @@ class NewsCard extends StatelessWidget {
                   imageUrl:
                   news.imageUrl,
                   fit: BoxFit.cover,
-                  placeholder: (BuildContext context, String url) => Image.asset('assets/images/news_default.png'),
+                  placeholder: (BuildContext context, String url) => Image.asset('assets/images/news_source_default.png'),
                 ),
               ),
             ),
@@ -47,22 +48,25 @@ class NewsCard extends StatelessWidget {
                           news.title,
                         ),
                       ),
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4.0),
-                            child: Text(
-                              news.source,
-                              style: TextStyle(fontSize: 11),
+                      FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(right: 4.0),
+                              child: Text(
+                                news.source,
+                                style: TextStyle(fontSize: 11),
+                              ),
                             ),
-                          ),
-                          Text(
-                            '1hr',
-                            style: TextStyle(
-                                fontSize: 11,
-                                color: Color(0xff808080)),
-                          )
-                        ],
+                            Text(
+                              '1hr',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xff808080)),
+                            )
+                          ],
+                        ),
                       )
                     ],
                   ),

@@ -18,6 +18,11 @@ class NewsService {
           'https://aniket.cognitiveservices.azure.com/bing/v7.0/news/search',
           queryParameters: {
             'q': query,
+            'mkt': 'en-GB',
+            'originalImg': 'true',
+            'count': '100',
+            'freshness': 'week',
+            'sortBy': 'date'
           });
       if (response.statusCode == 200) {
         final unparsedNews = response.data['value'].toList();
