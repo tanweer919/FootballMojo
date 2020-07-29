@@ -11,10 +11,12 @@ import '../screens/LeagueTableScreen.dart';
 import '../screens/DashboardScreen.dart';
 import '../screens/FavouriteScreen1.dart';
 import '../screens/IntroductionScreen.dart';
+import '../start.dart';
 
 class Router {
   Route<dynamic> generateRoutes(RouteSettings settings) {
     final List<String> validRoutes = [
+      '/start',
       '/home',
       '/score',
       '/league',
@@ -59,6 +61,7 @@ class Router {
       }
     }
     Map<String, Widget> screens = {
+      '/start': Start(),
       '/home': HomeScreen(
         message: favouriteTeamMessage,
       ),

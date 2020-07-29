@@ -8,7 +8,7 @@ class HttpService {
     BaseOptions options = new BaseOptions(headers: {
       'x-rapidapi-host': 'v3.football.api-sports.io',
       'x-rapidapi-key': _remoteConfigService.getString(key: 'scoreApiKey')
-    }, baseUrl: 'https://v3.football.api-sports.io/');
+    }, baseUrl: _remoteConfigService.getString(key: 'scoreUrl'));
     final _dio = new Dio(options);
     return _dio;
   }

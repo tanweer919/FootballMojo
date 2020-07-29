@@ -21,7 +21,9 @@ class RemoteConfigService {
     final Map<String, dynamic> defaults = {
       'season': 2019,
       'scoreApiKey': "",
-      'newsApiKey': ""
+      'newsApiKey': "",
+      'scoreUrl': "",
+      'newsUrl': ""
     };
     await _remoteConfig.setDefaults(defaults);
     await _remoteConfig.fetch(expiration: Duration(hours: 1));

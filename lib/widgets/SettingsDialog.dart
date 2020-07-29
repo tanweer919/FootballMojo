@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../Provider/AppProvider.dart';
+import '../commons/CustomRaisedButton.dart';
 
 class SettingsDialog extends StatefulWidget {
   @override
@@ -132,29 +133,21 @@ class _SettingsDialogState extends State<SettingsDialog> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                ButtonTheme(
+                CustomRaisedButton(
                   height: 40,
                   minWidth: 100,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
-                    ),
-                    color: Theme.of(context).primaryColor,
-                    child: Text(
-                      'Save',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () async {
-                      if (model.startDate == startDate &&
-                          model.endDate == endDate) {
-                        Navigator.of(context).pop();
-                      } else {
-                          model.startDate = startDate;
-                          model.endDate = endDate;
-                          Navigator.of(context).pushReplacementNamed('/league');
-                      }
-                    },
-                  ),
+                  label: 'Save',
+                  inProgress: false,
+                  onPressed: () async {
+                    if (model.startDate == startDate &&
+                        model.endDate == endDate) {
+                      Navigator.of(context).pop();
+                    } else {
+                      model.startDate = startDate;
+                      model.endDate = endDate;
+                      Navigator.of(context).pushReplacementNamed('/league');
+                    }
+                  },
                 ),
               ],
             ),

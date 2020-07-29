@@ -15,10 +15,9 @@ class NewsService {
     List<News> newsList = [];
     try {
       final response = await dio.get(
-          'https://aniket.cognitiveservices.azure.com/bing/v7.0/news/search',
+          _remoteConfigService.getString(key: 'newsUrl'),
           queryParameters: {
             'q': query,
-            'mkt': 'en-GB',
             'originalImg': 'true',
             'count': '100',
             'freshness': 'week',

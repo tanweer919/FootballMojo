@@ -11,6 +11,7 @@ import '../commons/custom_icons.dart';
 import '../services/LocalStorage.dart';
 import '../services/FirestoreService.dart';
 import '../constants.dart';
+import '../commons/CustomRaisedButton.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -107,25 +108,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       )
                                     ],
                                   ),
-                                  ButtonTheme(
+                                  CustomRaisedButton(
                                     height: 30,
                                     minWidth: 75,
-                                    child: RaisedButton(
-                                      color: Theme.of(context).primaryColor,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(15.0),
-                                      ),
-                                      onPressed: () async {
-                                        await firebaseService.signOutGoogle();
-                                        model.currentUser = null;
-                                      },
-                                      child: Text(
-                                        'Logout',
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 14),
-                                      ),
-                                    ),
+                                    label: 'Logout',
+                                    onPressed: () async {
+                                      await firebaseService.signOutGoogle();
+                                      model.currentUser = null;
+                                    },
+                                    inProgress: false,
                                   )
                                 ],
                               ),
