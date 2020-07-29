@@ -74,8 +74,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                   setState(() {
                     inProgress = false;
                   });
-                  Navigator.of(context).pushReplacement(new MaterialPageRoute(
-                      builder: (context) => Start()));
+                  Navigator.of(context).pushReplacementNamed('/start');
                 }
                 else {
                   setState(() {
