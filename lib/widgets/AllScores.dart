@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsmojo/commons/NoContent.dart';
 import '../Provider/AppProvider.dart';
 import '../models/Score.dart';
 import '../commons/ScoreCard.dart';
@@ -58,121 +59,125 @@ class _AllScoresState extends State<AllScores> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
-          builder: (context, model, child) => SingleChildScrollView(
-                controller: _scrollController,
-                child: Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                  padding: const EdgeInsets.only(
-                      left: 8.0, right: 8.0, top: 4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            LeagueDropdown(
-                              items: getLeagueItems(),
-                              selectedLeague: model.selectedLeague,
-                              backgroundColor: Color(0xfffafafa),
-                              fontColor: Colors.black,
-                              purpose: "score",
+        builder: (context, model, child) => SingleChildScrollView(
+              controller: _scrollController,
+              child: Container(
+                margin: EdgeInsets.only(top: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 8.0, right: 8.0, top: 4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          LeagueDropdown(
+                            items: getLeagueItems(),
+                            selectedLeague: model.selectedLeague,
+                            backgroundColor: Color(0xfffafafa),
+                            fontColor: Colors.black,
+                            purpose: "score",
+                          ),
+                          FlatButton(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(Icons.filter_list),
+                                Text('Filter')
+                              ],
                             ),
-                            FlatButton(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Icon(Icons.filter_list),
-                                  Text('Filter')
-                                ],
-                              ),
-                              color: Color(0xfffafafa),
-                              onPressed: () {
-                                onSettingPressed();
-                              },
-                            )
-                          ],
+                            color: Color(0xfffafafa),
+                            onPressed: () {
+                              onSettingPressed();
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    (model.leagueWiseScores != null && _scores != null)
+                        ? _totalNoOfScores > 0
+                            ? scoreList()
+                            : NoContent(
+                                title: 'No matches found',
+                                description:
+                                    'There are no league matches matching your query',
+                              )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: 10,
+                            itemBuilder: (BuildContext context, int index) {
+                              return PKCardSkeleton(
+                                isCircularImage: true,
+                                isBottomLinesActive: true,
+                              );
+                            }),
+                  ],
+                ),
+              ),
+            ));
+  }
+
+  Widget scoreList() {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: _lastRetrievedLindex + 2,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (BuildContext context, int index) {
+          if (index == _lastRetrievedLindex + 1) {
+            return index == _totalNoOfScores
+                ? Container()
+                : Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: SizedBox(
+                      height: 40,
+                      child: Chip(
+                        elevation: 2,
+                        backgroundColor: Colors.white,
+                        avatar: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.arrow_upward),
+                        ),
+                        label: Text(
+                          'Swipe up to load more',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w300),
                         ),
                       ),
-                      (model.leagueWiseScores != null && _scores != null)
-                          ? ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: _lastRetrievedLindex + 2,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (BuildContext context, int index) {
-                                if (index == _lastRetrievedLindex + 1) {
-                                  return index == _totalNoOfScores
-                                      ? Container()
-                                      : Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: 16.0),
-                                          child: SizedBox(
-                                            height: 40,
-                                            child: Chip(
-                                              elevation: 2,
-                                              backgroundColor: Colors.white,
-                                              avatar: CircleAvatar(
-                                                backgroundColor: Colors.white,
-                                                child: Icon(Icons.arrow_upward),
-                                              ),
-                                              label: Text(
-                                                'Swipe up to load more',
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                        FontWeight.w300),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                }
-                                final Score score = _scores[index];
-                                if (index != 0 &&
-                                    dayDifference(
-                                            date_time1: score.date_time,
-                                            date_time2:
-                                                _scores[index - 1].date_time) ==
-                                        0) {
-                                  return ScoreCard(
-                                    score: score,
-                                  );
-                                } else {
-                                  return Padding(
-                                    padding: EdgeInsets.only(top: 12.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12.0),
-                                          child: Text(
-                                            '${convertDateTime(date_time: score.date_time)}',
-                                            style: TextStyle(fontSize: 20),
-                                          ),
-                                        ),
-                                        ScoreCard(
-                                          score: score,
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }
-                              })
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 10,
-                              itemBuilder: (BuildContext context, int index) {
-                                return PKCardSkeleton(
-                                  isCircularImage: true,
-                                  isBottomLinesActive: true,
-                                );
-                              }),
-                    ],
+                    ),
+                  );
+          }
+          final Score score = _scores[index];
+          if (index != 0 &&
+              dayDifference(
+                      date_time1: score.date_time,
+                      date_time2: _scores[index - 1].date_time) ==
+                  0) {
+            return ScoreCard(
+              score: score,
+            );
+          } else {
+            return Padding(
+              padding: EdgeInsets.only(top: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Text(
+                      '${convertDateTime(date_time: score.date_time)}',
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
-                ),
-              ));
+                  ScoreCard(
+                    score: score,
+                  )
+                ],
+              ),
+            );
+          }
+        });
   }
 
   void _getMoreScores(List<Score> scores) {

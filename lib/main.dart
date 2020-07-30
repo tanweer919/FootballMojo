@@ -11,6 +11,7 @@ import 'services/FirebaseService.dart';
 import 'services/RemoteConfigService.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'screens/NoInternetScreen.dart';
+import 'services/NetworkStatusService.dart';
 
 void main() async {
   final ThemeData theme = ThemeData(
@@ -22,6 +23,7 @@ void main() async {
   FirebaseService firebaseService = locator<FirebaseService>();
   final RemoteConfigService _remoteConfigService =
       locator<RemoteConfigService>();
+  final NetworkStatusService _networkStatusService = locator<NetworkStatusService>();
   final result = await DataConnectionChecker().hasConnection;
   if (result) {
     await _remoteConfigService.initialise();
@@ -35,6 +37,9 @@ void main() async {
     providers: [
       ChangeNotifierProvider(
         create: (context) => appProvider,
+      ),
+      StreamProvider<NetworkStatus>(
+        create: (context) => _networkStatusService.networkStatusController.stream,
       )
     ],
     child: FlutterEasyLoading(

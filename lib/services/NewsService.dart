@@ -18,10 +18,10 @@ class NewsService {
           _remoteConfigService.getString(key: 'newsUrl'),
           queryParameters: {
             'q': query,
+            'mkt': 'en-IN',
             'originalImg': 'true',
             'count': '100',
-            'freshness': 'week',
-            'sortBy': 'date'
+            'freshness': 'week'
           });
       if (response.statusCode == 200) {
         final unparsedNews = response.data['value'].toList();

@@ -12,7 +12,7 @@ import '../Provider/HomeViewModel.dart';
 import '../services/GetItLocator.dart';
 import '../Provider/AppProvider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import '../commons/NetworkAwareWidget.dart';
 class HomeScreen extends StatefulWidget {
   @override
   final Map<String, dynamic> message;
@@ -55,34 +55,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
-        bottomNavigationBar: BottomNavbar(),
-        body: ChangeNotifierProvider<HomeViewModel>(
-          create: (context) => _viewModel,
-          child: Consumer<HomeViewModel>(
-            builder: (context, model, child) => SafeArea(
-              child: SingleChildScrollView(
-                child: Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Flexible(
-                          fit: FlexFit.loose,
-                          child:
-                              carousel(model: model, appProvider: appProvider)),
-                      appProvider.favouriteTeamScores != null
-                          ? UpcomingMatchesSection(appProvider: appProvider)
-                          : PKCardSkeleton(
+              bottomNavigationBar: BottomNavbar(),
+              body: ChangeNotifierProvider<HomeViewModel>(
+                create: (context) => _viewModel,
+                child: Consumer<HomeViewModel>(
+                  builder: (context, model, child) => SafeArea(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Flexible(
+                                fit: FlexFit.loose,
+                                child:
+                                carousel(model: model, appProvider: appProvider)),
+                            appProvider.favouriteTeamScores != null
+                                ? UpcomingMatchesSection(appProvider: appProvider)
+                                : PKCardSkeleton(
                               isCircularImage: true,
                               isBottomLinesActive: true,
                             ),
-                      NewsSection(model: model, appProvider: appProvider)
-                    ],
+                            NewsSection(model: model, appProvider: appProvider)
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-        ));
+              ));
   }
 
   Widget UpcomingMatchesSection({AppProvider appProvider}) {
@@ -254,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           ),
                                         ),
                                         Text(
-                                          '1hr',
+                                          convertDateTime(dateTime: favouriteNewsList[i].publishedAt),
                                           style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.amberAccent),
@@ -324,6 +324,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   model.carouselIndex = index;
                 },
               ));
+  }
+
+  String convertDateTime({DateTime dateTime}) {
+    DateTime now = DateTime.now();
+    int diffMin = now.difference(dateTime).inMinutes;
+    int diffHr = now.difference(dateTime).inHours;
+    int diffDay = now.difference(dateTime).inDays;
+
+    if(diffMin < 60) {
+      return '$diffMin mins';
+    }
+    else if(diffMin < 1440) {
+      return '$diffHr hrs';
+    }
+    else {
+      return '$diffDay days';
+    }
   }
 
   void showAlert() {

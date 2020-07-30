@@ -16,6 +16,7 @@ import '../models/User.dart';
 import 'FirebaseService.dart';
 import 'FirestoreService.dart';
 import 'RemoteConfigService.dart';
+import 'NetworkStatusService.dart';
 GetIt locator = GetIt.instance;
 
 Future setupLocator() async{
@@ -30,6 +31,7 @@ Future setupLocator() async{
   locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
   locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
   locator.registerLazySingleton<FirestoreService>(() => FirestoreService());
+  locator.registerLazySingleton<NetworkStatusService>(() => NetworkStatusService());
   locator.registerSingleton<RemoteConfigService>(remoteConfigService);
   locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));

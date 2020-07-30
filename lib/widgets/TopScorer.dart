@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsmojo/commons/NoContent.dart';
 import '../models/Player.dart';
 import '../Provider/AppProvider.dart';
 import 'LeagueDropdown.dart';
@@ -56,38 +57,44 @@ class _TopScorersState extends State<TopScorers> {
                         ),
                       ),
                       model.topScorers != null
-                          ? Card(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: model.topScorers.length,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      if (index == 0) {
-                                        return Column(
-                                          children: <Widget>[
-                                            tableHeader(),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8.0),
-                                              child: tableRow(
-                                                  model.topScorers[index]),
-                                            )
-                                          ],
-                                        );
-                                      }
-                                      return Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 8.0),
-                                        child:
-                                            tableRow(model.topScorers[index]),
-                                      );
-                                    }),
-                              ),
-                            )
+                          ? model.topScorers.length > 0
+                              ? Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 2.0),
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: model.topScorers.length,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          if (index == 0) {
+                                            return Column(
+                                              children: <Widget>[
+                                                tableHeader(),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 8.0),
+                                                  child: tableRow(
+                                                      model.topScorers[index]),
+                                                )
+                                              ],
+                                            );
+                                          }
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8.0),
+                                            child: tableRow(
+                                                model.topScorers[index]),
+                                          );
+                                        }),
+                                  ),
+                                )
+                              : NoContent(
+                                  title: 'Top scorers not found',
+                                  description:
+                                      'Cannot find league topscorers matching your query',
+                                )
                           : PKCardPageSkeleton(
                               totalLines: 15,
                             ),
@@ -172,7 +179,10 @@ class _TopScorersState extends State<TopScorers> {
                         ),
                       ),
                     ),
-                    Text('${topScorer.teamName}', style: TextStyle(fontSize: 13, color: Color(0X8A000000)),)
+                    Text(
+                      '${topScorer.teamName}',
+                      style: TextStyle(fontSize: 13, color: Color(0X8A000000)),
+                    )
                   ],
                 ),
               ),

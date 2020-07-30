@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sportsmojo/commons/NoContent.dart';
 import 'package:sportsmojo/models/LeagueTable.dart';
 import '../Provider/AppProvider.dart';
 import '../commons/custom_icons.dart';
@@ -15,7 +16,6 @@ class LeagueTableWidget extends StatefulWidget {
 }
 
 class _LeagueTableWidgetState extends State<LeagueTableWidget> {
-
   @override
   void initState() {
     final AppProvider appProvider =
@@ -58,46 +58,54 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
                         ),
                       ),
                       model.leagueTableEntries != null
-                          ? Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 1.3,
-                                    child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount:
-                                            model.leagueTableEntries.length,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          if (index == 0) {
-                                            return Column(
-                                              children: <Widget>[
-                                                tableHeader(),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(vertical: 8.0),
-                                                  child: tableRow(
-                                                      model.leagueTableEntries[
+                          ? (model.leagueTableEntries.length > 0
+                              ? Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                1.3,
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount:
+                                                model.leagueTableEntries.length,
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              if (index == 0) {
+                                                return Column(
+                                                  children: <Widget>[
+                                                    tableHeader(),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 8.0),
+                                                      child: tableRow(model
+                                                              .leagueTableEntries[
                                                           index]),
-                                                )
-                                              ],
-                                            );
-                                          }
-                                          return Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: tableRow(model
-                                                .leagueTableEntries[index]),
-                                          );
-                                        }),
+                                                    )
+                                                  ],
+                                                );
+                                              }
+                                              return Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 8.0),
+                                                child: tableRow(model
+                                                    .leagueTableEntries[index]),
+                                              );
+                                            }),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            )
+                                )
+                              : NoContent(
+                                  title: 'No league table found',
+                                  description:
+                                      'There are no league table matching your query'))
                           : PKCardPageSkeleton(
                               totalLines: 15,
                             ),
@@ -112,146 +120,69 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
     return Row(
       children: <Widget>[
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.07,
-            child: Text(' ')),
+            width: MediaQuery.of(context).size.width * 0.07, child: Text(' ')),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.35,
+            width: MediaQuery.of(context).size.width * 0.35,
             child: Text(
               'Club',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.left,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.left,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'MP',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'W',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'L',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'D',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'Pts.',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GF',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GA',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             )),
         Container(
-            width: MediaQuery.of(
-                context)
-                .size
-                .width *
-                0.1,
+            width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GD',
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Color(
-                      0X8A000000)),
-              textAlign:
-              TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              textAlign: TextAlign.center,
             ))
       ],
     );

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../start.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
-import 'package:flushbar/flushbar.dart';
 import '../services/GetItLocator.dart';
 import '../services/RemoteConfigService.dart';
 import '../services/FirebaseService.dart';
 import '../commons/CustomRaisedButton.dart';
 import '../Provider/AppProvider.dart';
+import '../services/FlushbarHelper.dart';
 
 class NoInternetScreen extends StatefulWidget {
+  final String from;
+  NoInternetScreen({this.from});
   @override
   _NoInternetScreenState createState() => _NoInternetScreenState();
 }
@@ -80,21 +81,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                   setState(() {
                     inProgress = false;
                   });
-                  Flushbar(
-                    icon: Icon(
-                      Icons.error,
-                      size: 35,
-                      color: Colors.white,
-                    ),
-                    title: "Error",
-                    message: 'You are offline',
-                    flushbarPosition: FlushbarPosition.TOP,
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 3),
-                    flushbarStyle: FlushbarStyle.FLOATING,
-                    showProgressIndicator: true,
-                    progressIndicatorBackgroundColor: Colors.white,
-                  ).show(context);
+                  FlushHelper.flushbarAlert(context: context, title: 'Error', message: 'You are offline', seconds: 3);
                 }
               },
             )

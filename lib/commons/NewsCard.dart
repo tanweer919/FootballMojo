@@ -46,6 +46,8 @@ class NewsCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           news.title,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 4,
                         ),
                       ),
                       FittedBox(
@@ -60,7 +62,7 @@ class NewsCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '1hr',
+                              convertDateTime(dateTime: news.publishedAt),
                               style: TextStyle(
                                   fontSize: 11,
                                   color: Color(0xff808080)),
@@ -77,5 +79,22 @@ class NewsCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String convertDateTime({DateTime dateTime}) {
+    DateTime now = DateTime.now();
+    int diffMin = now.difference(dateTime).inMinutes;
+    int diffHr = now.difference(dateTime).inHours;
+    int diffDay = now.difference(dateTime).inDays;
+
+    if(diffMin < 60) {
+      return '$diffMin mins';
+    }
+    else if(diffMin < 1440) {
+      return '$diffHr hrs';
+    }
+    else {
+      return '$diffDay days';
+    }
   }
 }
