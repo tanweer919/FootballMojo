@@ -11,8 +11,7 @@ import '../services/FlushbarHelper.dart';
 import '../Provider/HomeViewModel.dart';
 import '../services/GetItLocator.dart';
 import '../Provider/AppProvider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../commons/NetworkAwareWidget.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   final Map<String, dynamic> message;
@@ -22,8 +21,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final _pageController = PageController(initialPage: 0);
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
   String teamName;
   @override
   void initState() {
@@ -55,34 +52,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
-              bottomNavigationBar: BottomNavbar(),
-              body: ChangeNotifierProvider<HomeViewModel>(
-                create: (context) => _viewModel,
-                child: Consumer<HomeViewModel>(
-                  builder: (context, model, child) => SafeArea(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Flexible(
-                                fit: FlexFit.loose,
-                                child:
-                                carousel(model: model, appProvider: appProvider)),
-                            appProvider.favouriteTeamScores != null
-                                ? UpcomingMatchesSection(appProvider: appProvider)
-                                : PKCardSkeleton(
-                              isCircularImage: true,
-                              isBottomLinesActive: true,
-                            ),
-                            NewsSection(model: model, appProvider: appProvider)
-                          ],
-                        ),
-                      ),
+        bottomNavigationBar: BottomNavbar(),
+        body: ChangeNotifierProvider<HomeViewModel>(
+          create: (context) => _viewModel,
+          child: Consumer<HomeViewModel>(
+            builder: (context, model, child) => SafeArea(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await _handleRefresh(appProvider: appProvider);
+                },
+                child: SingleChildScrollView(
+                  child: Container(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Flexible(
+                            fit: FlexFit.loose,
+                            child: carousel(
+                                model: model, appProvider: appProvider)),
+                        appProvider.favouriteTeamScores != null
+                            ? UpcomingMatchesSection(appProvider: appProvider)
+                            : PKCardSkeleton(
+                                isCircularImage: true,
+                                isBottomLinesActive: true,
+                              ),
+                        NewsSection(model: model, appProvider: appProvider)
+                      ],
                     ),
                   ),
                 ),
-              ));
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget UpcomingMatchesSection({AppProvider appProvider}) {
@@ -254,7 +256,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           ),
                                         ),
                                         Text(
-                                          convertDateTime(dateTime: favouriteNewsList[i].publishedAt),
+                                          convertDateTime(
+                                              dateTime: favouriteNewsList[i]
+                                                  .publishedAt),
                                           style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.amberAccent),
@@ -332,13 +336,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     int diffHr = now.difference(dateTime).inHours;
     int diffDay = now.difference(dateTime).inDays;
 
-    if(diffMin < 60) {
+    if (diffMin < 60) {
       return '$diffMin mins';
-    }
-    else if(diffMin < 1440) {
+    } else if (diffMin < 1440) {
       return '$diffHr hrs';
-    }
-    else {
+    } else {
       return '$diffDay days';
     }
   }
@@ -351,5 +353,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           message: widget.message['content'],
           seconds: 3);
     }
+  }
+
+  Future<void> _handleRefresh({AppProvider appProvider}) async {
+      await appProvider.loadAllNews();
+      await appProvider.loadFavouriteNews();
+      await appProvider.loadFavouriteScores();
+      await appProvider.loadLeagueWiseScores();
   }
 }

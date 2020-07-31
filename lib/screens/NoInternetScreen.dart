@@ -7,6 +7,7 @@ import '../services/FirebaseService.dart';
 import '../commons/CustomRaisedButton.dart';
 import '../Provider/AppProvider.dart';
 import '../services/FlushbarHelper.dart';
+import '../services/FirebaseMessagingService.dart';
 
 class NoInternetScreen extends StatefulWidget {
   final String from;
@@ -19,6 +20,8 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
   FirebaseService firebaseService = locator<FirebaseService>();
   final RemoteConfigService _remoteConfigService =
   locator<RemoteConfigService>();
+  final FirebaseMessagingService _fcmService = locator<FirebaseMessagingService>();
+
   bool inProgress = false;
   @override
   Widget build(BuildContext context) {
@@ -69,6 +72,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 bool result = await DataConnectionChecker().hasConnection;
 
                 if(result == true) {
+                  await _fcmService.initialise();
                   await _remoteConfigService.initialise();
                   final currentUser = await firebaseService.getCurrentUser();
                   appProvider.currentUser = currentUser;

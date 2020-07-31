@@ -39,28 +39,33 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
   @override
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
-    return SingleChildScrollView(
-      controller: _scrollController,
-      child: Container(
-        margin: EdgeInsets.only(top: 30.0),
-        child: _scores != null
-            ? _totalNoOfScores > 0
-                ? scoreList()
-                : NoContent(
-                    title: 'No matches found',
-                    description:
-                        'There are no past league matches matching your query',
-                  )
-            : ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 10,
-                itemBuilder: (BuildContext context, int index) {
-                  return PKCardSkeleton(
-                    isCircularImage: true,
-                    isBottomLinesActive: true,
-                  );
-                }),
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _handleRefresh(appProvider: appProvider);
+      },
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Container(
+          margin: EdgeInsets.only(top: 30.0),
+          child: _scores != null
+              ? _totalNoOfScores > 0
+                  ? scoreList()
+                  : NoContent(
+                      title: 'No matches found',
+                      description:
+                          'There are no past league matches matching your query',
+                    )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: 10,
+                  itemBuilder: (BuildContext context, int index) {
+                    return PKCardSkeleton(
+                      isCircularImage: true,
+                      isBottomLinesActive: true,
+                    );
+                  }),
+        ),
       ),
     );
   }
@@ -137,5 +142,10 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
         _getMoreScores(favouriteTeamScores);
       }
     });
+  }
+
+  Future<void> _handleRefresh({AppProvider appProvider}) async {
+    await appProvider.loadFavouriteScores();
+    Navigator.of(context).pushReplacementNamed('/score');
   }
 }

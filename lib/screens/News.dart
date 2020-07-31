@@ -7,7 +7,6 @@ import '../commons/NewsCard.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import '../services/LocalStorage.dart';
 import '../Provider/AppProvider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class NewsScreen extends StatefulWidget {
   @override
@@ -17,7 +16,6 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   TabController _tabController;
   String teamName;
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
   void initState(){
     final initialState = Provider.of<AppProvider>(context, listen: false);
     if(initialState.newsList == null) {
@@ -82,53 +80,13 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   }
 
   Widget allNews({AppProvider model}) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Latest News',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                textAlign: TextAlign.left,
-              ),
-            ),
-            model.newsList == null ? ListView.builder(
-                      itemCount: 5,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, int index) {
-                        return PKCardSkeleton(
-                          isCircularImage: true,
-                          isBottomLinesActive: true,
-                        );
-                      }) : ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: model.newsList.length,
-                      separatorBuilder: (BuildContext context, int index) {
-                        return Divider();
-                      },
-                      itemBuilder: (BuildContext context, int index) {
-                        return NewsCard(
-                          index: index,
-                          news: model.newsList[index],
-                        );
-                      })
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget favouriteTeamNews({AppProvider model}) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _handleAllNewsRefresh(appProvider: model);
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -140,7 +98,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   textAlign: TextAlign.left,
                 ),
               ),
-              model.favouriteNewsList == null ? ListView.builder(
+              model.newsList == null ? ListView.builder(
                         itemCount: 5,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -149,18 +107,17 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                             isCircularImage: true,
                             isBottomLinesActive: true,
                           );
-                        })
-                  : ListView.separated(
+                        }) : ListView.separated(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: model.favouriteNewsList.length,
+                        itemCount: model.newsList.length,
                         separatorBuilder: (BuildContext context, int index) {
                           return Divider();
                         },
                         itemBuilder: (BuildContext context, int index) {
                           return NewsCard(
                             index: index,
-                            news: model.favouriteNewsList[index],
+                            news: model.newsList[index],
                           );
                         })
             ],
@@ -170,15 +127,62 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> _onLoading({AppProvider appProvider}) async {
-    appProvider.newsList = null;
-    appProvider.favouriteNewsList = null;
-    _refreshController.loadComplete();
+  Widget favouriteTeamNews({AppProvider model}) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _handleFavouriteNewsRefresh(appProvider: model);
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Latest News',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                model.favouriteNewsList == null ? ListView.builder(
+                          itemCount: 5,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext context, int index) {
+                            return PKCardSkeleton(
+                              isCircularImage: true,
+                              isBottomLinesActive: true,
+                            );
+                          })
+                    : ListView.separated(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: model.favouriteNewsList.length,
+                          separatorBuilder: (BuildContext context, int index) {
+                            return Divider();
+                          },
+                          itemBuilder: (BuildContext context, int index) {
+                            return NewsCard(
+                              index: index,
+                              news: model.favouriteNewsList[index],
+                            );
+                          })
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
-  Future<void> _onRefresh({AppProvider appProvider}) async {
-    await appProvider.loadFavouriteNews();
+  Future<void> _handleAllNewsRefresh({AppProvider appProvider}) async {
     await appProvider.loadAllNews();
-    _refreshController.refreshCompleted();
+  }
+
+  Future<void> _handleFavouriteNewsRefresh({AppProvider appProvider}) async {
+    await appProvider.loadFavouriteNews();
   }
 }

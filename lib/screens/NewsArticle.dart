@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../models/News.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
 
 class NewsArticleScreen extends StatelessWidget {
   final int index;
@@ -13,9 +14,18 @@ class NewsArticleScreen extends StatelessWidget {
       child: Scaffold(
           extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: Color(0x04000000),
             elevation: 0,
             iconTheme: IconThemeData(color: Colors.white),
+            actions: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(child: Icon(Icons.share),
+                onTap: () {
+                  Share.share('${news.title}\n${news.url}');
+                },),
+              )
+            ],
           ),
           body: LayoutBuilder(builder: (context, constraint) {
             return Stack(

@@ -65,7 +65,7 @@ class NewsCard extends StatelessWidget {
                               convertDateTime(dateTime: news.publishedAt),
                               style: TextStyle(
                                   fontSize: 11,
-                                  color: Color(0xff808080)),
+                                  color: Theme.of(context).primaryColorDark),
                             )
                           ],
                         ),

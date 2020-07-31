@@ -7,6 +7,7 @@ import '../services/LocalStorage.dart';
 import '../services/GetItLocator.dart';
 import '../Provider/AppProvider.dart';
 import '../models/User.dart';
+import '../services/FirebaseMessagingService.dart';
 
 class IntroductionScreen extends StatefulWidget {
   @override
@@ -14,10 +15,12 @@ class IntroductionScreen extends StatefulWidget {
 }
 
 class _IntroductionScreenState extends State<IntroductionScreen> {
-  FirebaseService firebaseService = locator<FirebaseService>();
+  final FirebaseService _firebaseService = locator<FirebaseService>();
 
-  FirestoreService firestoreService = locator<FirestoreService>();
+  final FirestoreService _firestoreService = locator<FirestoreService>();
 
+  final FirebaseMessagingService _fcmService =
+      locator<FirebaseMessagingService>();
   bool inProgress = false;
 
   @override
@@ -76,10 +79,15 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                     inProgress = true;
                                   });
                                   final User user =
-                                      await firebaseService.signInWithGoogle();
+                                      await _firebaseService.signInWithGoogle();
                                   model.currentUser = user;
+                                  await _firestoreService.setData(
+                                      userId: user.uid,
+                                      data: {
+                                        'fcmToken': await _fcmService.getToken()
+                                      });
                                   final Map<String, dynamic> data =
-                                      await firestoreService.getData(
+                                      await _firestoreService.getData(
                                           userId: user.uid);
                                   if (data.containsKey('teamName') &&
                                       data['teamName'] != null &&
@@ -108,43 +116,50 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                     model.favouriteNewsList = null;
                                     model.leagueTableEntries = null;
                                     model.navbarIndex = 0;
-                                    Navigator.of(context)
-                                        .pushReplacementNamed('/home', arguments: {
-                                      'favouriteTeamMessage': {
-                                        'title': 'Success',
-                                        'content': '${data['teamName']} added as your favourite team'
-                                      }
-                                    });
+                                    Navigator.of(context).pushReplacementNamed(
+                                        '/home',
+                                        arguments: {
+                                          'favouriteTeamMessage': {
+                                            'title': 'Success',
+                                            'content':
+                                                '${data['teamName']} added as your favourite team'
+                                          }
+                                        });
                                   } else {
                                     Navigator.of(context)
                                         .pushReplacementNamed('/selectleague');
                                   }
                                 },
                                 padding: EdgeInsets.symmetric(horizontal: 4.0),
-                                child: inProgress ? CircularProgressIndicator(
-                                  valueColor:
-                                  new AlwaysStoppedAnimation<Color>(Color(0xfff5f5f5)),
-                                ) : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Container(
-                                        color: Colors.white,
-                                        height: 30,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Image.asset(
-                                              'assets/images/google_logo.png'),
-                                        )),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: AutoSizeText(
-                                        'Sign in with Google',
-                                        style: TextStyle(color: Colors.white),
+                                child: inProgress
+                                    ? CircularProgressIndicator(
+                                        valueColor:
+                                            new AlwaysStoppedAnimation<Color>(
+                                                Color(0xfff5f5f5)),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Container(
+                                              color: Colors.white,
+                                              height: 30,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Image.asset(
+                                                    'assets/images/google_logo.png'),
+                                              )),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: AutoSizeText(
+                                              'Sign in with Google',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
                                 color: Color(0xff4285f4),
                               ),
                             )

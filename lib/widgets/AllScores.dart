@@ -59,64 +59,69 @@ class _AllScoresState extends State<AllScores> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
-        builder: (context, model, child) => SingleChildScrollView(
-              controller: _scrollController,
-              child: Container(
-                margin: EdgeInsets.only(top: 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8.0, right: 8.0, top: 4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          LeagueDropdown(
-                            items: getLeagueItems(),
-                            selectedLeague: model.selectedLeague,
-                            backgroundColor: Color(0xfffafafa),
-                            fontColor: Colors.black,
-                            purpose: "score",
-                          ),
-                          FlatButton(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(Icons.filter_list),
-                                Text('Filter')
-                              ],
+        builder: (context, model, child) => RefreshIndicator(
+          onRefresh: () async {
+            await _handleRefresh(model: model);
+          },
+          child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Container(
+                  margin: EdgeInsets.only(top: 10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8.0, right: 8.0, top: 4.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            LeagueDropdown(
+                              items: getLeagueItems(),
+                              selectedLeague: model.selectedLeague,
+                              backgroundColor: Color(0xfffafafa),
+                              fontColor: Colors.black,
+                              purpose: "score",
                             ),
-                            color: Color(0xfffafafa),
-                            onPressed: () {
-                              onSettingPressed();
-                            },
-                          )
-                        ],
+                            FlatButton(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Icon(Icons.filter_list),
+                                  Text('Filter')
+                                ],
+                              ),
+                              color: Color(0xfffafafa),
+                              onPressed: () {
+                                onSettingPressed();
+                              },
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                    (model.leagueWiseScores != null && _scores != null)
-                        ? _totalNoOfScores > 0
-                            ? scoreList()
-                            : NoContent(
-                                title: 'No matches found',
-                                description:
-                                    'There are no league matches matching your query',
-                              )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: 10,
-                            itemBuilder: (BuildContext context, int index) {
-                              return PKCardSkeleton(
-                                isCircularImage: true,
-                                isBottomLinesActive: true,
-                              );
-                            }),
-                  ],
+                      (model.leagueWiseScores != null && _scores != null)
+                          ? _totalNoOfScores > 0
+                              ? scoreList()
+                              : NoContent(
+                                  title: 'No matches found',
+                                  description:
+                                      'There are no league matches matching your query',
+                                )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: 10,
+                              itemBuilder: (BuildContext context, int index) {
+                                return PKCardSkeleton(
+                                  isCircularImage: true,
+                                  isBottomLinesActive: true,
+                                );
+                              }),
+                    ],
+                  ),
                 ),
               ),
-            ));
+        ));
   }
 
   Widget scoreList() {
@@ -243,5 +248,11 @@ class _AllScoresState extends State<AllScores> {
     } else {
       return DateFormat('E, d MMMM').format(date_time);
     }
+  }
+
+  Future<void> _handleRefresh({AppProvider model}) async {
+    await model.loadLeagueTable(
+        leagueName: model.selectedLeague);
+    Navigator.of(context).pushReplacementNamed('/league');
   }
 }

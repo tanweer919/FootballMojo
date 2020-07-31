@@ -12,6 +12,7 @@ import '../services/LocalStorage.dart';
 import '../services/FirestoreService.dart';
 import '../constants.dart';
 import '../commons/CustomRaisedButton.dart';
+import '../services/FirebaseMessagingService.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -19,8 +20,9 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  FirebaseService firebaseService = locator<FirebaseService>();
-  FirestoreService firestoreService = locator<FirestoreService>();
+  final FirebaseService _firebaseService = locator<FirebaseService>();
+  final FirestoreService _firestoreService = locator<FirestoreService>();
+  final FirebaseMessagingService _fcmService = locator<FirebaseMessagingService>();
   bool inProgress = false;
   String teamLogo, teamName, leagueName, leagueLogo;
 
@@ -58,7 +60,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20.0),
                     topLeft: Radius.circular(20.0)),
-                color: Colors.white),
+                color: Theme.of(context).primaryColor),
             margin: EdgeInsets.only(top: 40.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -104,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         '${model.currentUser.email}',
                                         style: TextStyle(
                                             fontSize: 12,
-                                            color: Color(0X8A000000)),
+                                            color: Theme.of(context).primaryColorDark),
                                       )
                                     ],
                                   ),
@@ -113,7 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     minWidth: 75,
                                     label: 'Logout',
                                     onPressed: () async {
-                                      await firebaseService.signOutGoogle();
+                                      await _firebaseService.signOutGoogle();
                                       model.currentUser = null;
                                     },
                                     inProgress: false,
@@ -134,7 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     inProgress = true;
                                   });
                                   final User user =
-                                      await firebaseService.signInWithGoogle();
+                                      await _firebaseService.signInWithGoogle();
                                   model.currentUser = user;
                                   final Map<String, dynamic> data = {
                                     'name': user.name,
@@ -152,9 +154,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         'leagueName'),
                                     'leagueId': await LocalStorage.getString(
                                       'leagueId',
-                                    )
+                                    ),
+                                    'fcmToken': await _fcmService.getToken()
                                   };
-                                  await firestoreService.setData(
+                                  await _firestoreService.setData(
                                       userId: user.uid, data: data);
                                   setState(() {
                                     inProgress = false;
@@ -213,7 +216,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       'Your Favourites',
                                       style: TextStyle(
                                           fontSize: 20,
-                                          color: Color(0X8A000000)),
+                                          color: Theme.of(context).primaryColorDark),
                                     ),
                                   ],
                                 ),

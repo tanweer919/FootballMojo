@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:sportsmojo/models/Score.dart';
 import 'package:sportsmojo/screens/MatchStatScreen.dart';
 import '../screens/HomeScreen.dart';
@@ -15,7 +15,8 @@ import '../start.dart';
 import '../screens/NoInternetScreen.dart';
 import '../commons/NetworkAwareWidget.dart';
 
-class Router {
+class RouterService {
+  final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
   Route<dynamic> generateRoutes(RouteSettings settings) {
     final List<String> validRoutes = [
       '/start',

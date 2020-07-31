@@ -60,124 +60,129 @@ class _MatchStatScreenState extends State<MatchStatScreen>
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(
-                        '${widget.score.competition} - ${convertDateTime(date_time: widget.score.date_time)}',
-                        style:
-                            TextStyle(fontSize: 12, color: Color(0X8A000000)),
+        body: RefreshIndicator(
+          onRefresh: () async {
+
+          },
+          child: SingleChildScrollView(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          '${widget.score.competition} - ${convertDateTime(date_time: widget.score.date_time)}',
+                          style:
+                              TextStyle(fontSize: 12, color: Theme.of(context).primaryColorDark),
+                        ),
                       ),
-                    ),
-                    Spacer(),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          width: 20.0,
-                          child: Text(
-                            (widget.score.minuteElapsed != null &&
-                                    widget.score.minuteElapsed != 90 &&
-                                    widget.score.minuteElapsed != 120)
-                                ? "${widget.score.minuteElapsed}'"
-                                : "${widget.score.status}",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                        if (widget.score.minuteElapsed != null &&
-                            widget.score.minuteElapsed != 90 &&
-                            widget.score.minuteElapsed != 120)
-                          Container(
-                            width: animation.value,
-                            height: 2.0,
-                            color: Colors.red,
-                          )
-                      ],
-                    )
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
-                          child: Container(
-                              height: 60,
-                              child: CachedNetworkImage(
-                                  imageUrl: widget.score.homeTeamLogo,
-                                  placeholder:
-                                      (BuildContext context, String url) =>
-                                          Icon(MyFlutterApp.football))),
-                        ),
-                        FittedBox(child: Text(widget.score.homeTeam)),
-                      ],
-                    ),
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Spacer(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          (widget.score.minuteElapsed != null)
-                              ? Text(
-                                  '${widget.score.homeScore} - ${widget.score.awayScore}',
-                                  style: TextStyle(fontSize: 30),
-                                )
-                              : Text(
-                                  'VS',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Color(0XAA000000)),
-                                ),
+                          Container(
+                            width: 20.0,
+                            child: Text(
+                              (widget.score.minuteElapsed != null &&
+                                      widget.score.minuteElapsed != 90 &&
+                                      widget.score.minuteElapsed != 120)
+                                  ? "${widget.score.minuteElapsed}'"
+                                  : "${widget.score.status}",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                          if (widget.score.minuteElapsed != null &&
+                              widget.score.minuteElapsed != 90 &&
+                              widget.score.minuteElapsed != 120)
+                            Container(
+                              width: animation.value,
+                              height: 2.0,
+                              color: Colors.red,
+                            )
+                        ],
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: Container(
+                                height: 60,
+                                child: CachedNetworkImage(
+                                    imageUrl: widget.score.homeTeamLogo,
+                                    placeholder:
+                                        (BuildContext context, String url) =>
+                                            Icon(MyFlutterApp.football))),
+                          ),
+                          FittedBox(child: Text(widget.score.homeTeam)),
                         ],
                       ),
-                    ),
-                    Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Container(
-                              height: 60,
-                              child: CachedNetworkImage(
-                                  imageUrl: widget.score.awayTeamLogo,
-                                  placeholder:
-                                      (BuildContext context, String url) =>
-                                          Icon(MyFlutterApp.football))),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            (widget.score.minuteElapsed != null)
+                                ? Text(
+                                    '${widget.score.homeScore} - ${widget.score.awayScore}',
+                                    style: TextStyle(fontSize: 30),
+                                  )
+                                : Text(
+                                    'VS',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Color(0XAA000000)),
+                                  ),
+                          ],
                         ),
-                        FittedBox(child: Text(widget.score.awayTeam))
-                      ],
-                    )
-                  ],
-                ),
-                Divider(
-                  thickness: 0.7,
-                ),
-                (widget.score.status != 'NS')
-                    ? ChangeNotifierProvider(
-                        create: (context) => _matchEventViewModel,
-                        child: Scorer(
-                          score: widget.score,
-                        ),
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Container(
+                                height: 60,
+                                child: CachedNetworkImage(
+                                    imageUrl: widget.score.awayTeamLogo,
+                                    placeholder:
+                                        (BuildContext context, String url) =>
+                                            Icon(MyFlutterApp.football))),
+                          ),
+                          FittedBox(child: Text(widget.score.awayTeam))
+                        ],
                       )
-                    : getScorer(),
-                Divider(
-                  thickness: 0.7,
-                ),
-                (widget.score.status != 'NS')
-                    ? ChangeNotifierProvider(
-                        create: (contet) => _matchStatViewModel,
-                      child: Stats(
-                          score: widget.score,
-                        ),
-                    )
-                    : getStats()
-              ],
+                    ],
+                  ),
+                  Divider(
+                    thickness: 0.7,
+                  ),
+                  (widget.score.status != 'NS')
+                      ? ChangeNotifierProvider(
+                          create: (context) => _matchEventViewModel,
+                          child: Scorer(
+                            score: widget.score,
+                          ),
+                        )
+                      : getScorer(),
+                  Divider(
+                    thickness: 0.7,
+                  ),
+                  (widget.score.status != 'NS')
+                      ? ChangeNotifierProvider(
+                          create: (contet) => _matchStatViewModel,
+                        child: Stats(
+                            score: widget.score,
+                          ),
+                      )
+                      : getStats()
+                ],
+              ),
             ),
           ),
         ),

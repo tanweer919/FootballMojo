@@ -114,21 +114,21 @@ class _TopScorersState extends State<TopScorers> {
             width: MediaQuery.of(context).size.width * 0.45,
             child: Text(
               'Player',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.left,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.21,
             child: Text(
               'Goals(P)',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.21,
             child: Text(
               'Assists',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
       ],
@@ -181,7 +181,7 @@ class _TopScorersState extends State<TopScorers> {
                     ),
                     Text(
                       '${topScorer.teamName}',
-                      style: TextStyle(fontSize: 13, color: Color(0X8A000000)),
+                      style: TextStyle(fontSize: 13, color: Theme.of(context).primaryColorDark),
                     )
                   ],
                 ),

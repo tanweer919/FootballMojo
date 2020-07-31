@@ -11,27 +11,27 @@ class BottomNavbar extends StatelessWidget {
   Widget build(BuildContext context){
     final List<BottomNavigationBarItem> bottomNavbarItems = [
       new BottomNavigationBarItem(
-          activeIcon: Icon(MyFlutterApp.home__1_, color: Colors.orange,),
+          activeIcon: Icon(MyFlutterApp.home__1_, color: Theme.of(context).primaryColor,),
           icon: Icon(MyFlutterApp.home__1_),
           title: Text('Home', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(MyFlutterApp.score, color: Colors.orange,),
+          activeIcon: Icon(MyFlutterApp.score, color: Theme.of(context).primaryColor,),
           icon: Icon(MyFlutterApp.score),
           title: Text('Matches', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(Icons.table_chart, color: Colors.orange,),
+          activeIcon: Icon(Icons.table_chart, color: Theme.of(context).primaryColor,),
           icon: Icon(Icons.table_chart),
           title: Text('League', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(MyFlutterApp.news, color: Colors.orange,),
+          activeIcon: Icon(MyFlutterApp.news, color: Theme.of(context).primaryColor,),
           icon: Icon(MyFlutterApp.news),
           title: Text('News', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(Icons.dashboard, color: Colors.orange,),
+          activeIcon: Icon(Icons.dashboard, color: Theme.of(context).primaryColor,),
           icon: Icon(Icons.dashboard),
           title: Text('Dasboard', style: _bottomNavBarStyle,)
       )

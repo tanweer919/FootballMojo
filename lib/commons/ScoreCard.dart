@@ -59,7 +59,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                     child: Text(
                       '${widget.score.competition} - ${convertDateTime(date_time: widget.score.date_time)}',
                       style: TextStyle(
-                          fontSize: 12, color: Color(0X8A000000)),
+                          fontSize: 12, color: Theme.of(context).primaryColorDark),
                     ),
                   ),
                   Spacer(),
@@ -128,7 +128,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                             'VS',
                             style: TextStyle(
                                 fontSize: 18,
-                                color: Color(0X8A000000)),
+                                color: Theme.of(context).primaryColorDark),
                           ),
                         ],
                       ),

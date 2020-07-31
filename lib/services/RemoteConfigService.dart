@@ -23,7 +23,8 @@ class RemoteConfigService {
       'scoreApiKey': "",
       'newsApiKey': "",
       'scoreUrl': "",
-      'newsUrl': ""
+      'newsUrl': "",
+      'xRapidapiHost': ""
     };
     await _remoteConfig.setDefaults(defaults);
     await _remoteConfig.fetch(expiration: Duration(hours: 1));

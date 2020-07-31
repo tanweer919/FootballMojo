@@ -11,6 +11,7 @@ import '../services/TeamService.dart';
 import '../services/LocalStorage.dart';
 import '../services/GetItLocator.dart';
 import '../services/FirestoreService.dart';
+import '../services/FirebaseMessagingService.dart';
 
 class FavouriteTeam extends StatefulWidget {
   final int leagueId;
@@ -27,6 +28,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
   Future<List<Team>> futureTeamList;
   final TextEditingController _controller = new TextEditingController();
   final FirestoreService _firestoreService = locator<FirestoreService>();
+  final FirebaseMessagingService _fcmService = locator<FirebaseMessagingService>();
 
   @override
   void initState() {
@@ -282,6 +284,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
         await _firestoreService.setData(userId: user.uid, data: data);
         EasyLoading.dismiss();
       }
+      await _fcmService.subscribeToTopic(topic : team.name.replaceAll(' ', ''));
       Navigator.of(context).pushReplacementNamed('/home', arguments: {
         'favouriteTeamMessage': {
           'title': 'Success',

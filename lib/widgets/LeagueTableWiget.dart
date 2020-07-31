@@ -125,63 +125,63 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
             width: MediaQuery.of(context).size.width * 0.35,
             child: Text(
               'Club',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.left,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'MP',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'W',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'L',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'D',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'Pts.',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GF',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GA',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GD',
-              style: TextStyle(fontSize: 15, color: Color(0X8A000000)),
+              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             ))
       ],
