@@ -19,6 +19,7 @@ import 'RemoteConfigService.dart';
 import 'NetworkStatusService.dart';
 import 'FirebaseMessagingService.dart';
 import 'CustomRouter.dart';
+import '../Provider/ThemeProvider.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -43,4 +44,5 @@ Future setupLocator() async{
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));
   locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>((scores, index) => FavouriteScoresViewModel(scores, index));
   locator.registerFactoryParam<AppProvider, String, User>((leagueName, currentUser) => AppProvider(0, leagueName, now.subtract(Duration(days: 30)), now.add(Duration(days: 7)), currentUser));
+  locator.registerFactoryParam<ThemeProvider, AppTheme, void>((theme, _) => ThemeProvider(theme));
 }

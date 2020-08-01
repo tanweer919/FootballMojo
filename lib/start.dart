@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'services/LocalStorage.dart';
 import 'dart:async';
-import 'screens/IntroductionScreen.dart';
 
 
 class Start extends StatefulWidget {
@@ -14,6 +13,7 @@ class StartState extends State<Start> {
     if (teamName != null) {
       Navigator.of(context).pushReplacementNamed('/home');
     } else {
+      await LocalStorage.setString('appTheme', "light");
       Navigator.of(context).pushReplacementNamed('/introduction');
     }
   }

@@ -45,6 +45,7 @@ dependencies:
   connectivity: ^0.4.9
   firebase_messaging: ^6.0.16
   share: ^0.6.4+3
+  lite_rolling_switch: ^0.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

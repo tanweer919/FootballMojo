@@ -13,6 +13,9 @@ import 'package:data_connection_checker/data_connection_checker.dart';
 import 'screens/NoInternetScreen.dart';
 import 'services/NetworkStatusService.dart';
 import 'services/FirebaseMessagingService.dart';
+import 'Provider/ThemeProvider.dart';
+import 'services/LocalStorage.dart';
+import 'App.dart';
 
 void main() async {
   final ThemeData lightTheme = ThemeData(
@@ -20,54 +23,40 @@ void main() async {
       primaryColorDark: Color(0X8A000000),
       brightness: Brightness.light);
   final ThemeData darkTheme = ThemeData(
-      primaryColor: Color(0xFF1D1D1D),
+      primaryColor: Color(0xFF54B2FB),
       primaryColorDark: Color(0XFFF1F1F1),
       brightness: Brightness.dark);
 
   WidgetsFlutterBinding.ensureInitialized();
-  await setupLocator();
-  final leagueName = await LocalStorage.getString('leagueName');
-  User currentUser = null;
-  FirebaseService firebaseService = locator<FirebaseService>();
-  final RemoteConfigService _remoteConfigService =
-      locator<RemoteConfigService>();
-  final NetworkStatusService _networkStatusService =
-      locator<NetworkStatusService>();
-  final FirebaseMessagingService _fcmService =
-      locator<FirebaseMessagingService>();
-  final RouterService _routerService = locator<RouterService>();
-  final result = await DataConnectionChecker().hasConnection;
-  if (result) {
-    await _fcmService.initialise();
-    await _remoteConfigService.initialise();
-    currentUser = await firebaseService.getCurrentUser();
-  }
-
-  AppProvider appProvider =
-      locator<AppProvider>(param1: leagueName, param2: currentUser);
+  await App.initialiseApp();
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-        create: (context) => appProvider,
+        create: (context) => App.appProvider,
       ),
       StreamProvider<NetworkStatus>(
         create: (context) =>
-            _networkStatusService.networkStatusController.stream,
+            App.networkStatusService.networkStatusController.stream,
+      ),
+      ChangeNotifierProvider(
+        create: (context) => App.themeProvider,
       )
     ],
     child: FlutterEasyLoading(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        themeMode: ThemeMode.dark,
-        navigatorKey: _routerService.navigationKey,
-        home: WillPopScope(
-            onWillPop: () => Future.value(false),
-            child: result ? Start() : NoInternetScreen()),
-        onGenerateRoute: _routerService.generateRoutes,
-        navigatorObservers: [HeroController()],
+      child: Consumer<ThemeProvider>(
+        builder: (context, model, child) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: model.appTheme == AppTheme.Light ? ThemeMode.light : ThemeMode.dark,
+          navigatorKey: App.routerService.navigationKey,
+          home: WillPopScope(
+              onWillPop: () => Future.value(false),
+              child: App.result ? Start() : NoInternetScreen()),
+          onGenerateRoute: App.routerService.generateRoutes,
+          navigatorObservers: [HeroController()],
+        ),
       ),
     ),
   ));
