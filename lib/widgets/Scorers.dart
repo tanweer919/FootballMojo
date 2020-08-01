@@ -50,7 +50,7 @@ class _ScorerState extends State<Scorer> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: getHomeGoals(model: model),
+                          children: getHomeGoals(model: model, themeModel: themeModel),
                         ),
                       ),
                     ),
@@ -58,7 +58,7 @@ class _ScorerState extends State<Scorer> {
                       height: 10,
                       child: Icon(
                         MyFlutterApp.football,
-                        color: Color(0XAA000000),
+                        color: themeModel.appTheme == AppTheme.Light ? Color(0XAA000000) : Colors.white,
                         size: 20,
                       ),
                     ),
@@ -70,7 +70,7 @@ class _ScorerState extends State<Scorer> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: getAwayGoals(model: model),
+                          children: getAwayGoals(model: model, themeModel: themeModel),
                         ),
                       ),
                     )
@@ -90,7 +90,7 @@ class _ScorerState extends State<Scorer> {
     );
   }
 
-  List<Widget> getHomeGoals({MatchEventViewModel model}) {
+  List<Widget> getHomeGoals({MatchEventViewModel model, ThemeProvider themeModel}) {
     final List<Widget> homeTeamGoals = model.events
         .where((event) =>
             (event.team == widget.score.homeTeam && event.type == "Goal"))
@@ -99,7 +99,7 @@ class _ScorerState extends State<Scorer> {
         padding: const EdgeInsets.all(2.0),
         child: Text(
           "${event.player1} ${event.minute}'${(event.detail == "Penalty") ? "(P)" : (event.detail == "Own Goal") ? "(OG)" : ""}",
-          style: TextStyle(fontSize: 14, color: Color(0XAA000000)),
+          style: TextStyle(fontSize: 14, color: themeModel.appTheme == AppTheme.Light ? Color(0XAA000000): Colors.white),
           textAlign: TextAlign.left,
         ),
       );
@@ -107,7 +107,7 @@ class _ScorerState extends State<Scorer> {
     return (homeTeamGoals.length > 0) ? homeTeamGoals : [Container()];
   }
 
-  List<Widget> getAwayGoals({MatchEventViewModel model}) {
+  List<Widget> getAwayGoals({MatchEventViewModel model, ThemeProvider themeModel}) {
     final List<Widget> awayTeamGoals = model.events
         .where((event) =>
             (event.team == widget.score.awayTeam && event.type == "Goal"))
@@ -116,7 +116,7 @@ class _ScorerState extends State<Scorer> {
         padding: const EdgeInsets.all(2.0),
         child: Text(
           "${event.player1} ${event.minute}'${(event.detail == "Penalty") ? "(P)" : (event.detail == "Own Goal") ? "(OG)" : ""}",
-          style: TextStyle(fontSize: 14, color: Color(0XAA000000)),
+          style: TextStyle(fontSize: 14, color: themeModel.appTheme == AppTheme.Light ? Color(0XAA000000) : Colors.white),
           textAlign: TextAlign.right,
         ),
       );

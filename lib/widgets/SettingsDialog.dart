@@ -6,6 +6,8 @@ import '../Provider/AppProvider.dart';
 import '../commons/CustomRaisedButton.dart';
 
 class SettingsDialog extends StatefulWidget {
+  final Color borderColor;
+  SettingsDialog({Key key, this.borderColor}) : super(key:key);
   @override
   _SettingsDialogState createState() => _SettingsDialogState();
 }
@@ -66,7 +68,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(width: 2, color: Colors.black),
+                        border: Border.all(width: 2, color: widget.borderColor),
                         borderRadius: BorderRadius.circular(4.0)),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -105,7 +107,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(width: 2, color: Colors.black),
+                        border: Border.all(width: 2, color: widget.borderColor),
                         borderRadius: BorderRadius.circular(4.0)),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

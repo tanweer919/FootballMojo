@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:provider/provider.dart';
@@ -61,7 +62,20 @@ class _AllScoresState extends State<AllScores> {
     return Consumer<AppProvider>(
         builder: (context, model, child) => RefreshIndicator(
               onRefresh: () async {
+                EasyLoading.instance
+                  ..displayDuration = const Duration(milliseconds: 2000)
+                  ..indicatorType = EasyLoadingIndicatorType.chasingDots
+                  ..loadingStyle = EasyLoadingStyle.custom
+                  ..indicatorSize = 45.0
+                  ..radius = 10.0
+                  ..backgroundColor = Theme.of(context).primaryColor
+                  ..indicatorColor = Colors.white
+                  ..maskColor = Colors.blue.withOpacity(0.5)
+                  ..progressColor = Theme.of(context).primaryColor
+                  ..textColor = Colors.white;
+                EasyLoading.show(status: 'Fetching latest scores');
                 await _handleRefresh(model: model);
+                EasyLoading.dismiss();
               },
               child: Consumer<ThemeProvider>(
                   builder: (context, themeModel, child) =>
@@ -82,8 +96,11 @@ class _AllScoresState extends State<AllScores> {
                                     LeagueDropdown(
                                       items: getLeagueItems(),
                                       selectedLeague: model.selectedLeague,
-                                      backgroundColor: Color(0xfffafafa),
-                                      fontColor: Colors.black,
+                                      backgroundColor:
+                                          themeModel.appTheme == AppTheme.Light
+                                              ? Color(0xfffafafa)
+                                              : Color(0xff1d1d1d),
+                                      fontColor: themeModel.appTheme == AppTheme.Light ? Colors.black : Colors.white,
                                       purpose: "score",
                                     ),
                                     FlatButton(
@@ -95,9 +112,13 @@ class _AllScoresState extends State<AllScores> {
                                           Text('Filter')
                                         ],
                                       ),
-                                      color: Color(0xfffafafa),
+                                      color:
+                                          themeModel.appTheme == AppTheme.Light
+                                              ? Color(0xfffafafa)
+                                              : Color(0xff1d1d1d),
                                       onPressed: () {
-                                        onSettingPressed();
+                                        onSettingPressed(
+                                            themeModel: themeModel);
                                       },
                                     )
                                   ],
@@ -237,13 +258,17 @@ class _AllScoresState extends State<AllScores> {
     });
   }
 
-  void onSettingPressed() {
+  void onSettingPressed({ThemeProvider themeModel}) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
           return Container(
             height: 150,
-            child: SettingsDialog(),
+            child: SettingsDialog(
+              borderColor: themeModel.appTheme == AppTheme.Light
+                  ? Colors.black
+                  : Colors.white,
+            ),
           );
         });
   }

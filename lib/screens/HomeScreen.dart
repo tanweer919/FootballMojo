@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsmojo/commons/ScoreCard.dart';
 import 'package:sportsmojo/models/Score.dart';
@@ -62,7 +63,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               builder: (context, model, child) => SafeArea(
                 child: RefreshIndicator(
                   onRefresh: () async {
+                    EasyLoading.instance
+                      ..displayDuration = const Duration(milliseconds: 2000)
+                      ..indicatorType = EasyLoadingIndicatorType.chasingDots
+                      ..loadingStyle = EasyLoadingStyle.custom
+                      ..indicatorSize = 45.0
+                      ..radius = 10.0
+                      ..backgroundColor = Theme.of(context).primaryColor
+                      ..indicatorColor = Colors.white
+                      ..maskColor = Colors.blue.withOpacity(0.5)
+                      ..progressColor = Theme.of(context).primaryColor
+                      ..textColor = Colors.white;
+                    EasyLoading.show(status: 'Fetching latest content');
                     await _handleRefresh(appProvider: appProvider);
+                    EasyLoading.dismiss();
+
                   },
                   child: SingleChildScrollView(
                     child: Container(

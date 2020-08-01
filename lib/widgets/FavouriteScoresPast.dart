@@ -6,6 +6,7 @@ import '../models/Score.dart';
 import '../commons/ScoreCard.dart';
 import '../commons/NoContent.dart';
 import '../Provider/ThemeProvider.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class FavouriteScoresPast extends StatefulWidget {
   @override
@@ -42,7 +43,20 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return RefreshIndicator(
         onRefresh: () async {
+          EasyLoading.instance
+            ..displayDuration = const Duration(milliseconds: 2000)
+            ..indicatorType = EasyLoadingIndicatorType.chasingDots
+            ..loadingStyle = EasyLoadingStyle.custom
+            ..indicatorSize = 45.0
+            ..radius = 10.0
+            ..backgroundColor = Theme.of(context).primaryColor
+            ..indicatorColor = Colors.white
+            ..maskColor = Colors.blue.withOpacity(0.5)
+            ..progressColor = Theme.of(context).primaryColor
+            ..textColor = Colors.white;
+          EasyLoading.show(status: 'Fetching latest scores');
           await _handleRefresh(appProvider: appProvider);
+          EasyLoading.dismiss();
         },
         child: Consumer<ThemeProvider>(
           builder: (context, themeModel, child) => SingleChildScrollView(

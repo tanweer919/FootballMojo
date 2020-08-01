@@ -53,8 +53,8 @@ class _TopScorersState extends State<TopScorers> {
                       child: LeagueDropdown(
                         items: getLeagueItems(),
                         selectedLeague: model.selectedLeague,
-                        backgroundColor: Color(0xfffafafa),
-                        fontColor: Colors.black,
+                        backgroundColor: themeModel.appTheme == AppTheme.Light ? Color(0xfffafafa) : Color(0xff1d1d1d),
+                        fontColor: themeModel.appTheme == AppTheme.Light ? Colors.black : Colors.white,
                         purpose: "topscorer",
                       ),
                     ),

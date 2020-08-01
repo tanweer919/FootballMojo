@@ -40,7 +40,6 @@ class _ScoreScreenState extends State<ScoreScreen>
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
         bottomNavigationBar: BottomNavbar(),
-        backgroundColor: Color(0xfff1f1f1),
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(100.0),
             child: AppBar(

@@ -24,7 +24,7 @@ void main() async {
       brightness: Brightness.light);
   final ThemeData darkTheme = ThemeData(
       primaryColor: Color(0xFF54B2FB),
-      primaryColorDark: Color(0XFFF1F1F1),
+      primaryColorDark: Color(0XFFD1D1D1),
       brightness: Brightness.dark);
 
   WidgetsFlutterBinding.ensureInitialized();

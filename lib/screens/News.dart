@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import '../commons/BottomNavbar.dart';
 import '../commons/NewsCard.dart';
@@ -95,7 +96,20 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   Widget allNews({AppProvider model, ThemeProvider themeModel}) {
     return RefreshIndicator(
       onRefresh: () async {
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 2000)
+          ..indicatorType = EasyLoadingIndicatorType.chasingDots
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..indicatorSize = 45.0
+          ..radius = 10.0
+          ..backgroundColor = Theme.of(context).primaryColor
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.blue.withOpacity(0.5)
+          ..progressColor = Theme.of(context).primaryColor
+          ..textColor = Colors.white;
+        EasyLoading.show(status: 'Fetching latest news');
         await _handleAllNewsRefresh(appProvider: model);
+        EasyLoading.dismiss();
       },
       child: SingleChildScrollView(
         child: Padding(
@@ -150,54 +164,66 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   Widget favouriteTeamNews({AppProvider model, ThemeProvider themeModel}) {
     return RefreshIndicator(
       onRefresh: () async {
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 2000)
+          ..indicatorType = EasyLoadingIndicatorType.chasingDots
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..indicatorSize = 45.0
+          ..radius = 10.0
+          ..backgroundColor = Theme.of(context).primaryColor
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.blue.withOpacity(0.5)
+          ..progressColor = Theme.of(context).primaryColor
+          ..textColor = Colors.white;
+        EasyLoading.show(status: 'Fetching latest news');
         await _handleFavouriteNewsRefresh(appProvider: model);
+        EasyLoading.dismiss();
+
       },
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Latest News',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.left,
-                  ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Latest News',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.left,
                 ),
-                model.favouriteNewsList == null
-                    ? ListView.builder(
-                        itemCount: 5,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          return themeModel.appTheme == AppTheme.Light
-                              ? PKCardSkeleton(
-                                  isCircularImage: true,
-                                  isBottomLinesActive: true,
-                                )
-                              : PKDarkCardSkeleton(
-                                  isCircularImage: true,
-                                  isBottomLinesActive: true,
-                                );
-                        })
-                    : ListView.separated(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: model.favouriteNewsList.length,
-                        separatorBuilder: (BuildContext context, int index) {
-                          return Divider();
-                        },
-                        itemBuilder: (BuildContext context, int index) {
-                          return NewsCard(
-                            index: index,
-                            news: model.favouriteNewsList[index],
-                          );
-                        })
-              ],
-            ),
+              ),
+              model.favouriteNewsList == null
+                  ? ListView.builder(
+                      itemCount: 5,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return themeModel.appTheme == AppTheme.Light
+                            ? PKCardSkeleton(
+                                isCircularImage: true,
+                                isBottomLinesActive: true,
+                              )
+                            : PKDarkCardSkeleton(
+                                isCircularImage: true,
+                                isBottomLinesActive: true,
+                              );
+                      })
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: model.favouriteNewsList.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider();
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        return NewsCard(
+                          index: index,
+                          news: model.favouriteNewsList[index],
+                        );
+                      })
+            ],
           ),
         ),
       ),
