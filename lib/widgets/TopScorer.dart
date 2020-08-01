@@ -8,6 +8,7 @@ import '../models/Player.dart';
 import '../Provider/AppProvider.dart';
 import 'LeagueDropdown.dart';
 import '../constants.dart';
+import '../Provider/ThemeProvider.dart';
 
 class TopScorers extends StatefulWidget {
   @override
@@ -37,72 +38,76 @@ class _TopScorersState extends State<TopScorers> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
-        builder: (context, model, child) => SingleChildScrollView(
-              child: Container(
-                margin: EdgeInsets.only(top: 10.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 4.0),
-                        child: LeagueDropdown(
-                          items: getLeagueItems(),
-                          selectedLeague: model.selectedLeague,
-                          backgroundColor: Color(0xfffafafa),
-                          fontColor: Colors.black,
-                          purpose: "topscorer",
-                        ),
+        builder: (context, model, child) => Consumer<ThemeProvider>(
+          builder: (context, themeModel, child) => SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(top: 10.0),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 4.0),
+                      child: LeagueDropdown(
+                        items: getLeagueItems(),
+                        selectedLeague: model.selectedLeague,
+                        backgroundColor: Color(0xfffafafa),
+                        fontColor: Colors.black,
+                        purpose: "topscorer",
                       ),
-                      model.topScorers != null
-                          ? model.topScorers.length > 0
-                              ? Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 2.0),
-                                    child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: model.topScorers.length,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          if (index == 0) {
-                                            return Column(
-                                              children: <Widget>[
-                                                tableHeader(),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(vertical: 8.0),
-                                                  child: tableRow(
-                                                      model.topScorers[index]),
-                                                )
-                                              ],
-                                            );
-                                          }
-                                          return Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: tableRow(
-                                                model.topScorers[index]),
-                                          );
-                                        }),
-                                  ),
-                                )
-                              : NoContent(
-                                  title: 'Top scorers not found',
-                                  description:
-                                      'Cannot find league topscorers matching your query',
-                                )
-                          : PKCardPageSkeleton(
-                              totalLines: 15,
-                            ),
-                    ],
-                  ),
+                    ),
+                    model.topScorers != null
+                        ? model.topScorers.length > 0
+                        ? Card(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 2.0),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: model.topScorers.length,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder:
+                                (BuildContext context, int index) {
+                              if (index == 0) {
+                                return Column(
+                                  children: <Widget>[
+                                    tableHeader(),
+                                    Padding(
+                                      padding: const EdgeInsets
+                                          .symmetric(vertical: 8.0),
+                                      child: tableRow(
+                                          model.topScorers[index]),
+                                    )
+                                  ],
+                                );
+                              }
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.0),
+                                child: tableRow(
+                                    model.topScorers[index]),
+                              );
+                            }),
+                      ),
+                    )
+                        : NoContent(
+                      title: 'Top scorers not found',
+                      description:
+                      'Cannot find league topscorers matching your query',
+                    )
+                        : themeModel.appTheme == AppTheme.Light ? PKCardPageSkeleton(
+                      totalLines: 15,
+                    ) :  PKDarkCardPageSkeleton(
+                      totalLines: 15,
+                    ),
+                  ],
                 ),
               ),
-            ));
+            ),
+          ),
+        ));
   }
 
   Widget tableHeader() {

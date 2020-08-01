@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../commons/BottomNavbar.dart';
-import '../models/News.dart';
-import '../services/GetItLocator.dart';
 import '../commons/NewsCard.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import '../services/LocalStorage.dart';
 import '../Provider/AppProvider.dart';
+import '../Provider/ThemeProvider.dart';
 
 class NewsScreen extends StatefulWidget {
   @override
@@ -16,12 +15,12 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   TabController _tabController;
   String teamName;
-  void initState(){
+  void initState() {
     final initialState = Provider.of<AppProvider>(context, listen: false);
-    if(initialState.newsList == null) {
+    if (initialState.newsList == null) {
       initialState.loadAllNews();
     }
-    if(initialState.favouriteNewsList == null) {
+    if (initialState.favouriteNewsList == null) {
       initialState.loadFavouriteNews();
     }
     super.initState();
@@ -40,46 +39,60 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
 
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
-      builder: (context, model, child) => Scaffold(
-          bottomNavigationBar: BottomNavbar(),
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(100.0),
-            child: AppBar(
-              leading: Container(),
-              backgroundColor: Theme.of(context).primaryColor,
-              title: Text('News', style: TextStyle(color: Colors.white),),
-              bottom: TabBar(
-                  controller: _tabController,
-                  tabs: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text('All', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w400),),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text('$teamName', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w400),),
-                    )
-                  ],
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: UnderlineTabIndicator(
-                      borderSide: BorderSide(
-                          width: 3.0,
-                          color: Colors.white))
+      builder: (context, model, child) => Consumer<ThemeProvider>(
+        builder: (context, themeModel, child) => Scaffold(
+            bottomNavigationBar: BottomNavbar(),
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(100.0),
+              child: AppBar(
+                leading: Container(),
+                backgroundColor: Theme.of(context).primaryColor,
+                title: Text(
+                  'News',
+                  style: TextStyle(color: Colors.white),
+                ),
+                bottom: TabBar(
+                    controller: _tabController,
+                    tabs: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          'All',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          '$teamName',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      )
+                    ],
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicator: UnderlineTabIndicator(
+                        borderSide:
+                            BorderSide(width: 3.0, color: Colors.white))),
               ),
             ),
-          ),
-          body: TabBarView(
-            controller: _tabController,
-            children: <Widget>[
-              allNews(model: model),
-              favouriteTeamNews(model: model)
-            ],
-          )
+            body: TabBarView(
+              controller: _tabController,
+              children: <Widget>[
+                allNews(model: model, themeModel: themeModel),
+                favouriteTeamNews(model: model, themeModel: themeModel)
+              ],
+            )),
       ),
     );
   }
 
-  Widget allNews({AppProvider model}) {
+  Widget allNews({AppProvider model, ThemeProvider themeModel}) {
     return RefreshIndicator(
       onRefresh: () async {
         await _handleAllNewsRefresh(appProvider: model);
@@ -98,28 +111,35 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   textAlign: TextAlign.left,
                 ),
               ),
-              model.newsList == null ? ListView.builder(
-                        itemCount: 5,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          return PKCardSkeleton(
-                            isCircularImage: true,
-                            isBottomLinesActive: true,
-                          );
-                        }) : ListView.separated(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: model.newsList.length,
-                        separatorBuilder: (BuildContext context, int index) {
-                          return Divider();
-                        },
-                        itemBuilder: (BuildContext context, int index) {
-                          return NewsCard(
-                            index: index,
-                            news: model.newsList[index],
-                          );
-                        })
+              model.newsList == null
+                  ? ListView.builder(
+                      itemCount: 5,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return themeModel.appTheme == AppTheme.Light
+                            ? PKCardSkeleton(
+                                isCircularImage: true,
+                                isBottomLinesActive: true,
+                              )
+                            : PKDarkCardSkeleton(
+                                isCircularImage: true,
+                                isBottomLinesActive: true,
+                              );
+                      })
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: model.newsList.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider();
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        return NewsCard(
+                          index: index,
+                          news: model.newsList[index],
+                        );
+                      })
             ],
           ),
         ),
@@ -127,7 +147,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget favouriteTeamNews({AppProvider model}) {
+  Widget favouriteTeamNews({AppProvider model, ThemeProvider themeModel}) {
     return RefreshIndicator(
       onRefresh: () async {
         await _handleFavouriteNewsRefresh(appProvider: model);
@@ -147,29 +167,35 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                     textAlign: TextAlign.left,
                   ),
                 ),
-                model.favouriteNewsList == null ? ListView.builder(
-                          itemCount: 5,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (BuildContext context, int index) {
-                            return PKCardSkeleton(
-                              isCircularImage: true,
-                              isBottomLinesActive: true,
-                            );
-                          })
+                model.favouriteNewsList == null
+                    ? ListView.builder(
+                        itemCount: 5,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return themeModel.appTheme == AppTheme.Light
+                              ? PKCardSkeleton(
+                                  isCircularImage: true,
+                                  isBottomLinesActive: true,
+                                )
+                              : PKDarkCardSkeleton(
+                                  isCircularImage: true,
+                                  isBottomLinesActive: true,
+                                );
+                        })
                     : ListView.separated(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: model.favouriteNewsList.length,
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Divider();
-                          },
-                          itemBuilder: (BuildContext context, int index) {
-                            return NewsCard(
-                              index: index,
-                              news: model.favouriteNewsList[index],
-                            );
-                          })
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: model.favouriteNewsList.length,
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider();
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          return NewsCard(
+                            index: index,
+                            news: model.favouriteNewsList[index],
+                          );
+                        })
               ],
             ),
           ),

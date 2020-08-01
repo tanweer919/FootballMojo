@@ -6,6 +6,7 @@ import '../models/MatchEvent.dart';
 import '../commons/custom_icons.dart';
 import '../models/Score.dart';
 import '../Provider/MatchEventViewModel.dart';
+import '../Provider/ThemeProvider.dart';
 
 class Scorer extends StatefulWidget {
   Score score;
@@ -33,51 +34,59 @@ class _ScorerState extends State<Scorer> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MatchEventViewModel>(
-      builder: (context, model, child) {
-        return (model.events != null)
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                        minHeight: 50,
-                        minWidth: MediaQuery.of(context).size.width * 0.4),
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: getHomeGoals(model: model),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeModel, child) => Consumer<MatchEventViewModel>(
+        builder: (context, model, child) {
+          return (model.events != null)
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                          minHeight: 50,
+                          minWidth: MediaQuery.of(context).size.width * 0.4),
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: getHomeGoals(model: model),
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    height: 10,
-                    child: Icon(
-                      MyFlutterApp.football,
-                      color: Color(0XAA000000),
-                      size: 20,
-                    ),
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                        minHeight: 50,
-                        minWidth: MediaQuery.of(context).size.width * 0.4),
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: getAwayGoals(model: model),
+                    Container(
+                      height: 10,
+                      child: Icon(
+                        MyFlutterApp.football,
+                        color: Color(0XAA000000),
+                        size: 20,
                       ),
                     ),
-                  )
-                ],
-              )
-            : Card(
-          child: PKCardPageSkeleton(totalLines: 2,),
-        );
-      },
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                          minHeight: 50,
+                          minWidth: MediaQuery.of(context).size.width * 0.4),
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: getAwayGoals(model: model),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              : Card(
+                  child: themeModel.appTheme == AppTheme.Light
+                      ? PKCardPageSkeleton(
+                          totalLines: 2,
+                        )
+                      : PKDarkCardPageSkeleton(
+                          totalLines: 2,
+                        ),
+                );
+        },
+      ),
     );
   }
 

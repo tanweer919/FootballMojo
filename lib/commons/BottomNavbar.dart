@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'custom_icons.dart';
 import '../Provider/AppProvider.dart';
+import '../Provider/ThemeProvider.dart';
 class BottomNavbar extends StatelessWidget {
-  static final _bottomNavBarStyle = TextStyle(
-    fontWeight: FontWeight.w400,
-    color: Colors.black,
-  );
   final List<String> routes = ['/home', '/score', '/league', '/news', '/dashboard'];
   Widget build(BuildContext context){
+    final ThemeProvider _themeProvider = Provider.of<ThemeProvider>(context);
+    final _bottomNavBarStyle = TextStyle(
+      fontWeight: FontWeight.w400,
+      color: _themeProvider.appTheme == AppTheme.Light ? Colors.black : Colors.white,
+    );
     final List<BottomNavigationBarItem> bottomNavbarItems = [
       new BottomNavigationBarItem(
           activeIcon: Icon(MyFlutterApp.home__1_, color: Theme.of(context).primaryColor,),

@@ -5,6 +5,7 @@ import '../Provider/AppProvider.dart';
 import '../models/Score.dart';
 import '../commons/ScoreCard.dart';
 import '../commons/NoContent.dart';
+import '../Provider/ThemeProvider.dart';
 
 class FavouriteScoresPast extends StatefulWidget {
   @override
@@ -40,34 +41,38 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return RefreshIndicator(
-      onRefresh: () async {
-        await _handleRefresh(appProvider: appProvider);
-      },
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        child: Container(
-          margin: EdgeInsets.only(top: 30.0),
-          child: _scores != null
-              ? _totalNoOfScores > 0
-                  ? scoreList()
-                  : NoContent(
-                      title: 'No matches found',
-                      description:
-                          'There are no past league matches matching your query',
-                    )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: 10,
-                  itemBuilder: (BuildContext context, int index) {
-                    return PKCardSkeleton(
-                      isCircularImage: true,
-                      isBottomLinesActive: true,
-                    );
-                  }),
-        ),
-      ),
-    );
+        onRefresh: () async {
+          await _handleRefresh(appProvider: appProvider);
+        },
+        child: Consumer<ThemeProvider>(
+          builder: (context, themeModel, child) => SingleChildScrollView(
+            controller: _scrollController,
+            child: Container(
+              margin: EdgeInsets.only(top: 30.0),
+              child: _scores != null
+                  ? _totalNoOfScores > 0
+                      ? scoreList()
+                      : NoContent(
+                          title: 'No matches found',
+                          description:
+                              'There are no past league matches matching your query',
+                        )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: 10,
+                      itemBuilder: (BuildContext context, int index) {
+                        return themeModel.appTheme == AppTheme.Light ? PKCardSkeleton(
+                          isCircularImage: true,
+                          isBottomLinesActive: true,
+                        ) : PKDarkCardSkeleton(
+                          isCircularImage: true,
+                          isBottomLinesActive: true,
+                        );
+                      }),
+            ),
+          ),
+        ));
   }
 
   Widget scoreList() {

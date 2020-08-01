@@ -30,6 +30,10 @@ class FirebaseMessagingService {
     await _fcm.subscribeToTopic(topic);
   }
 
+  Future unsubscribeFromTopic({String topic}) async {
+    await _fcm.unsubscribeFromTopic(topic);
+  }
+
   Future<String> getToken() async {
     final String token = await _fcm.getToken();
     return token;

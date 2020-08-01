@@ -11,6 +11,7 @@ import '../services/FlushbarHelper.dart';
 import '../Provider/HomeViewModel.dart';
 import '../services/GetItLocator.dart';
 import '../Provider/AppProvider.dart';
+import '../Provider/ThemeProvider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -53,31 +54,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
         bottomNavigationBar: BottomNavbar(),
-        body: ChangeNotifierProvider<HomeViewModel>(
-          create: (context) => _viewModel,
-          child: Consumer<HomeViewModel>(
-            builder: (context, model, child) => SafeArea(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  await _handleRefresh(appProvider: appProvider);
-                },
-                child: SingleChildScrollView(
-                  child: Container(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Flexible(
-                            fit: FlexFit.loose,
-                            child: carousel(
-                                model: model, appProvider: appProvider)),
-                        appProvider.favouriteTeamScores != null
-                            ? UpcomingMatchesSection(appProvider: appProvider)
-                            : PKCardSkeleton(
-                                isCircularImage: true,
-                                isBottomLinesActive: true,
-                              ),
-                        NewsSection(model: model, appProvider: appProvider)
-                      ],
+        body: Consumer<ThemeProvider>(
+          builder: (context, themeModel, child) =>
+              ChangeNotifierProvider<HomeViewModel>(
+            create: (context) => _viewModel,
+            child: Consumer<HomeViewModel>(
+              builder: (context, model, child) => SafeArea(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await _handleRefresh(appProvider: appProvider);
+                  },
+                  child: SingleChildScrollView(
+                    child: Container(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Flexible(
+                              fit: FlexFit.loose,
+                              child: carousel(
+                                  model: model, appProvider: appProvider)),
+                          appProvider.favouriteTeamScores != null
+                              ? UpcomingMatchesSection(appProvider: appProvider)
+                              : themeModel.appTheme == AppTheme.Light
+                                  ? PKCardSkeleton(
+                                      isCircularImage: true,
+                                      isBottomLinesActive: true,
+                                    )
+                                  : PKDarkCardSkeleton(
+                                      isCircularImage: true,
+                                      isBottomLinesActive: true,
+                                    ),
+                          NewsSection(
+                              model: model,
+                              themeModel: themeModel,
+                              appProvider: appProvider)
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -139,7 +151,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget NewsSection({HomeViewModel model, AppProvider appProvider}) {
+  Widget NewsSection(
+      {HomeViewModel model,
+      ThemeProvider themeModel,
+      AppProvider appProvider}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -173,10 +188,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-                      return PKCardSkeleton(
-                        isCircularImage: true,
-                        isBottomLinesActive: true,
-                      );
+                      return themeModel.appTheme == AppTheme.Light
+                          ? PKCardSkeleton(
+                              isCircularImage: true,
+                              isBottomLinesActive: true,
+                            )
+                          : PKDarkCardSkeleton(
+                              isCircularImage: true,
+                              isBottomLinesActive: true,
+                            );
                     })
           ],
         ),
@@ -356,9 +376,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _handleRefresh({AppProvider appProvider}) async {
-      await appProvider.loadAllNews();
-      await appProvider.loadFavouriteNews();
-      await appProvider.loadFavouriteScores();
-      await appProvider.loadLeagueWiseScores();
+    await appProvider.loadAllNews();
+    await appProvider.loadFavouriteNews();
+    await appProvider.loadFavouriteScores();
+    await appProvider.loadLeagueWiseScores();
   }
 }

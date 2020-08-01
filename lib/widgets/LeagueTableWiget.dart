@@ -9,6 +9,7 @@ import '../commons/custom_icons.dart';
 import '../constants.dart';
 import '../widgets/LeagueDropdown.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import '../Provider/ThemeProvider.dart';
 
 class LeagueTableWidget extends StatefulWidget {
   @override
@@ -38,82 +39,91 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
-        builder: (context, model, child) => SingleChildScrollView(
-              child: Container(
-                margin: EdgeInsets.only(top: 10.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 4.0),
-                        child: LeagueDropdown(
-                          items: getLeagueItems(),
-                          selectedLeague: model.selectedLeague,
-                          backgroundColor: Color(0xfffafafa),
-                          fontColor: Colors.black,
-                          purpose: "table",
-                        ),
-                      ),
-                      model.leagueTableEntries != null
-                          ? (model.leagueTableEntries.length > 0
-                              ? Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                1.3,
-                                        child: ListView.builder(
-                                            shrinkWrap: true,
-                                            itemCount:
-                                                model.leagueTableEntries.length,
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              if (index == 0) {
-                                                return Column(
-                                                  children: <Widget>[
-                                                    tableHeader(),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 8.0),
-                                                      child: tableRow(model
-                                                              .leagueTableEntries[
-                                                          index]),
-                                                    )
-                                                  ],
-                                                );
-                                              }
-                                              return Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 8.0),
-                                                child: tableRow(model
-                                                    .leagueTableEntries[index]),
-                                              );
-                                            }),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : NoContent(
-                                  title: 'No league table found',
-                                  description:
-                                      'There are no league table matching your query'))
-                          : PKCardPageSkeleton(
-                              totalLines: 15,
+        builder: (context, model, child) => Consumer<ThemeProvider>(
+            builder: (context, themeModel, child) => SingleChildScrollView(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 10.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 4.0),
+                            child: LeagueDropdown(
+                              items: getLeagueItems(),
+                              selectedLeague: model.selectedLeague,
+                              backgroundColor: Color(0xfffafafa),
+                              fontColor: Colors.black,
+                              purpose: "table",
                             ),
-                    ],
+                          ),
+                          model.leagueTableEntries != null
+                              ? (model.leagueTableEntries.length > 0
+                                  ? Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                1.3,
+                                            child: ListView.builder(
+                                                shrinkWrap: true,
+                                                itemCount: model
+                                                    .leagueTableEntries.length,
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int index) {
+                                                  if (index == 0) {
+                                                    return Column(
+                                                      children: <Widget>[
+                                                        tableHeader(),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical:
+                                                                      8.0),
+                                                          child: tableRow(model
+                                                                  .leagueTableEntries[
+                                                              index]),
+                                                        )
+                                                      ],
+                                                    );
+                                                  }
+                                                  return Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.0),
+                                                    child: tableRow(model
+                                                            .leagueTableEntries[
+                                                        index]),
+                                                  );
+                                                }),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : NoContent(
+                                      title: 'No league table found',
+                                      description:
+                                          'There are no league table matching your query'))
+                              : themeModel.appTheme == AppTheme.Light ? PKCardPageSkeleton(
+                                  totalLines: 15,
+                                ) : PKDarkCardPageSkeleton(
+                            totalLines: 15,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ));
+                )));
   }
 
   Widget tableHeader() {
@@ -125,63 +135,72 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
             width: MediaQuery.of(context).size.width * 0.35,
             child: Text(
               'Club',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.left,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'MP',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'W',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'L',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'D',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'Pts.',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GF',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GA',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.1,
             child: Text(
               'GD',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             ))
       ],

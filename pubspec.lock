@@ -141,6 +141,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4"
+  day_night_switcher:
+    dependency: "direct main"
+    description:
+      name: day_night_switcher
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   dio:
     dependency: "direct main"
     description:
@@ -324,13 +331,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.1+1"
-  lite_rolling_switch:
-    dependency: "direct main"
-    description:
-      name: lite_rolling_switch
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
   matcher:
     dependency: transitive
     description:
