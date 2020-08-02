@@ -64,22 +64,19 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                   ),
                   Spacer(),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       Container(
-                        width: 20.0,
+                        width: 40.0,
                         child: Text(
-                          (widget.score.minuteElapsed != null &&
-                              widget.score.minuteElapsed != 90 &&
-                              widget.score.minuteElapsed != 120)
+                          (widget.score.status == 'LV')
                               ? "${widget.score.minuteElapsed}'"
                               : "${widget.score.status}",
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(color: Colors.red, fontSize: widget.score.status == 'LV' ? 14 : 12),
+                          textAlign: TextAlign.right,
                         ),
                       ),
-                      if (widget.score.minuteElapsed != null &&
-                          widget.score.minuteElapsed != 90 &&
-                          widget.score.minuteElapsed != 120)
+                      if (widget.score.status == 'LV')
                         Container(
                           width: animation.value,
                           height: 2.0,

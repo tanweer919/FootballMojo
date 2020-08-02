@@ -13,19 +13,16 @@ class FirebaseMessagingService {
     }
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
         _routerService.navigationKey.currentState
-            .pushReplacementNamed('/score');
+            .pushReplacementNamed('${message['data']['route']}');
       },
       onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
         _routerService.navigationKey.currentState
-            .pushReplacementNamed('/score');
+            .pushReplacementNamed('${message['data']['route']}');
       },
       onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
         _routerService.navigationKey.currentState
-            .pushReplacementNamed('/score');
+            .pushNamed('${message['data']['route']}');
       },
     );
   }

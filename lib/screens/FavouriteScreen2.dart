@@ -12,6 +12,7 @@ import '../services/LocalStorage.dart';
 import '../services/GetItLocator.dart';
 import '../services/FirestoreService.dart';
 import '../services/FirebaseMessagingService.dart';
+import '../Provider/ThemeProvider.dart';
 
 class FavouriteTeam extends StatefulWidget {
   final int leagueId;
@@ -28,7 +29,8 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
   Future<List<Team>> futureTeamList;
   final TextEditingController _controller = new TextEditingController();
   final FirestoreService _firestoreService = locator<FirestoreService>();
-  final FirebaseMessagingService _fcmService = locator<FirebaseMessagingService>();
+  final FirebaseMessagingService _fcmService =
+      locator<FirebaseMessagingService>();
 
   @override
   void initState() {
@@ -47,162 +49,170 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
   @override
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
-    return SafeArea(
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(40.0),
-          child: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            iconTheme: IconThemeData(color: Colors.white),
-          ),
-        ),
-        body: FutureBuilder<List<Team>>(
-            future: futureTeamList,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container(
-                  color: Theme.of(context).primaryColor,
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Text(
-                          'Loading teams',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SpinKitFadingCube(
-                        color: Colors.white,
-                      )
-                    ],
+    return Consumer<ThemeProvider>(
+        builder: (context, themeModel, child) => SafeArea(
+              child: Scaffold(
+                extendBodyBehindAppBar: true,
+                appBar: PreferredSize(
+                  preferredSize: Size.fromHeight(40.0),
+                  child: AppBar(
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    iconTheme: IconThemeData(color: Colors.white),
                   ),
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.done) {
-                originalTeamList = snapshot.data;
-                teamList = originalTeamList
-                    .where((team) => team.name
-                        .toLowerCase()
-                        .contains(_controller.text.toLowerCase()))
-                    .toList();
-                return Column(
-                  children: <Widget>[
-                    Container(
-                      color: Theme.of(context).primaryColor,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 30.0, bottom: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 10.0),
-                              child: Text(
-                                'Select your favourite team',
-                                style: TextStyle(
+                ),
+                body: FutureBuilder<List<Team>>(
+                    future: futureTeamList,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          color: Theme.of(context).primaryColor,
+                          height: MediaQuery.of(context).size.height,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: Text(
+                                  'Loading teams',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w400,
                                     color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  vertical: 10.0),
-                              child: Material(
-                                elevation: 12,
-                                child: Container(
-                                  child: TextField(
-                                    controller: _controller,
-                                    cursorColor: Theme.of(context).primaryColor,
-                                    decoration: InputDecoration(
-                                      hintText: 'Search teams',
-                                      suffixIcon: Icon(
-                                        Icons.search,
-                                        color:
-                                            Theme.of(context).primaryColorDark,
-                                      ),
-                                      border: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      disabledBorder: InputBorder.none,
-                                      contentPadding: EdgeInsets.only(
-                                          left: 15,
-                                          bottom: 11,
-                                          top: 11,
-                                          right: 15),
-                                    ),
-                                    style: TextStyle(fontSize: 18),
-                                    onChanged: (String val) {
-                                      setState(() {
-                                        teamList = originalTeamList
-                                            .where((team) => team.name
-                                                .toLowerCase()
-                                                .contains(_controller.text
-                                                    .toLowerCase()))
-                                            .toList();
-                                      });
-                                    },
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
+                              SpinKitFadingCube(
+                                color: Colors.white,
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        originalTeamList = snapshot.data;
+                        teamList = originalTeamList
+                            .where((team) => team.name
+                                .toLowerCase()
+                                .contains(_controller.text.toLowerCase()))
+                            .toList();
+                        return Column(
                           children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 10.0),
-                              child: Text(
-                                'Select your favourite club',
-                                style: TextStyle(fontSize: 18),
-                                textAlign: TextAlign.center,
+                            Container(
+                              color: Theme.of(context).primaryColor,
+                              child: Padding(
+                                padding:
+                                    EdgeInsets.only(top: 30.0, bottom: 10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: 10.0),
+                                      child: Text(
+                                        'Select your favourite team',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.1,
+                                          vertical: 10.0),
+                                      child: Material(
+                                        elevation: 12,
+                                        child: Container(
+                                          child: TextField(
+                                            controller: _controller,
+                                            cursorColor:
+                                                Theme.of(context).primaryColor,
+                                            decoration: InputDecoration(
+                                              hintText: 'Search teams',
+                                              hintStyle: TextStyle(color: Theme.of(context).primaryColorDark),
+                                              suffixIcon: Icon(
+                                                Icons.search,
+                                                color: Theme.of(context)
+                                                    .primaryColorDark,
+                                              ),
+                                              border: InputBorder.none,
+                                              focusedBorder: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              errorBorder: InputBorder.none,
+                                              disabledBorder: InputBorder.none,
+                                              contentPadding: EdgeInsets.only(
+                                                  left: 15,
+                                                  bottom: 11,
+                                                  top: 11,
+                                                  right: 15),
+                                            ),
+                                            style: TextStyle(fontSize: 18),
+                                            onChanged: (String val) {
+                                              setState(() {
+                                                teamList = originalTeamList
+                                                    .where((team) => team.name
+                                                        .toLowerCase()
+                                                        .contains(_controller
+                                                            .text
+                                                            .toLowerCase()))
+                                                    .toList();
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            teamList.length > 0
-                                ? teamListView(appProvider)
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text(
-                                        'No team matched your query',
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0),
+                                      child: Text(
+                                        'Select your favourite club',
+                                        style: TextStyle(fontSize: 18),
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: 20,
-                                            color: Theme.of(context)
-                                                .primaryColorDark),
-                                      )
-                                    ],
-                                  )
+                                      ),
+                                    ),
+                                    teamList.length > 0
+                                        ? teamListView(appProvider: appProvider, themeModel: themeModel)
+                                        : Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Text(
+                                                'No team matched your query',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w300,
+                                                    fontSize: 20,
+                                                    color: Theme.of(context)
+                                                        .primaryColorDark),
+                                              )
+                                            ],
+                                          )
+                                  ],
+                                ),
+                              ),
+                            )
                           ],
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              }
-            }),
-      ),
-    );
+                        );
+                      }
+                    }),
+              ),
+            ));
   }
 
-  Widget teamListView(AppProvider appProvider) {
+  Widget teamListView({AppProvider appProvider, ThemeProvider themeModel}) {
     return Column(
         children: teamList
             .map<Widget>((team) => Padding(
@@ -213,7 +223,6 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                     },
                     child: Container(
                       height: 40,
-                      color: Colors.white,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
@@ -222,12 +231,14 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
                             child: Container(
                               height: 40,
                               width: 40,
-                              child: CachedNetworkImage(
-                                imageUrl: team.logo,
-                                fit: BoxFit.contain,
-                                placeholder:
-                                    (BuildContext context, String url) =>
-                                        Icon(MyFlutterApp.football),
+                              child: Container(
+                                child: CachedNetworkImage(
+                                  imageUrl: team.logo,
+                                  fit: BoxFit.contain,
+                                  placeholder:
+                                      (BuildContext context, String url) =>
+                                          Icon(MyFlutterApp.football),
+                                ),
                               ),
                             ),
                           ),
@@ -284,7 +295,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
         await _firestoreService.setData(userId: user.uid, data: data);
         EasyLoading.dismiss();
       }
-      await _fcmService.subscribeToTopic(topic : team.name.replaceAll(' ', ''));
+      await _fcmService.subscribeToTopic(topic: team.name.replaceAll(' ', ''));
       Navigator.of(context).pushReplacementNamed('/home', arguments: {
         'favouriteTeamMessage': {
           'title': 'Success',

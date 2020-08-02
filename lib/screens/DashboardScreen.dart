@@ -17,6 +17,7 @@ import '../constants.dart';
 import '../commons/CustomRaisedButton.dart';
 import '../services/FirebaseMessagingService.dart';
 import '../Provider/ThemeProvider.dart';
+import 'dart:math' show pi;
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -392,11 +393,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: InkWell(
                                 onTap: () {
                                   Navigator.of(context)
-                                      .pushReplacementNamed('/selectleague');
+                                      .pushNamed('/selectleague');
                                 },
                                 child: Icon(
                                   Icons.edit,
-                                  color: themeModel.appTheme == AppTheme.Light ? Color(0X7A0000) : Color(0XFFF5F5F5),
+                                  color: themeModel.appTheme == AppTheme.Light ? Color(0X7A000000) : Color(0XFFF5F5F5),
                                   size: 25,
                                 ),
                               ),

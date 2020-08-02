@@ -77,7 +77,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     EasyLoading.show(status: 'Fetching latest content');
                     await _handleRefresh(appProvider: appProvider);
                     EasyLoading.dismiss();
-
                   },
                   child: SingleChildScrollView(
                     child: Container(
@@ -118,22 +117,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final List<Score> matches = appProvider.favouriteTeamScores;
     Score score;
     String caption;
-    final Score liveMatch = matches.firstWhere(
-        (score) =>
-            score.status != "FT" &&
-            score.status != "PEN" &&
-            score.homeScore != null,
-        orElse: () => null);
+    final Score liveMatch =
+        matches.firstWhere((score) => score.status == "LV", orElse: () => null);
     if (liveMatch == null) {
-      final int index = matches
-          .indexWhere((score) => score.status == "FT" || score.status == "PEN");
+      final int index = matches.indexWhere((score) => score.status == "FT");
       final Score latestScore = matches[index];
       if (index > 0) {
         final Score nextScore = matches[index - 1];
         if (nextScore.date_time.difference(DateTime.now()).inSeconds <
             DateTime.now().difference(latestScore.date_time).inSeconds) {
-          score = nextScore;
-          caption = 'Upcoming Match';
+          if(nextScore.date_time.difference(DateTime.now()).inSeconds < 0) {
+            score = nextScore;
+            caption = 'Latest Match';
+          } else {
+            score = nextScore;
+            caption = 'Upcoming Match';
+          }
         } else {
           score = latestScore;
           caption = 'Latest Match';
@@ -221,6 +220,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget carousel({HomeViewModel model, AppProvider appProvider}) {
     List<News> favouriteNewsList = appProvider.favouriteNewsList;
+    List<News> allNewsList = appProvider.newsList;
+    int totalCount;
+    int circleCount;
+    if(favouriteNewsList != null) {
+      totalCount =
+      favouriteNewsList.length > 5 ? 5 : favouriteNewsList.length;
+      circleCount = totalCount == 0 ? 5 : totalCount;
+    }
     return Container(
         height: MediaQuery.of(context).size.height * 0.35,
         child: favouriteNewsList != null
@@ -229,84 +236,174 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 children: <Widget>[
                   PageView(
                     controller: _pageController,
-                    children: <Widget>[
-                      for (int i = 0; i < 5; i++)
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed('/newsarticle',
-                                arguments: {
-                                  'index': i + 100,
-                                  'news': favouriteNewsList[i]
-                                });
-                          },
-                          child: Stack(
-                            alignment: Alignment.bottomLeft,
-                            children: <Widget>[
-                              Container(
-                                child: CachedNetworkImage(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.35,
-                                  imageUrl: favouriteNewsList[i].imageUrl,
-                                  fit: BoxFit.cover,
-                                  placeholder:
-                                      (BuildContext context, String url) =>
-                                          Image.asset(
-                                    'assets/images/news_default.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                color: Colors.black.withOpacity(0.4),
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context).size.height *
-                                        0.02,
-                                    left: 12.0,
-                                    right: 12.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                    children: (totalCount != 0)
+                        ? <Widget>[
+                            for (int i = 0; i < totalCount; i++)
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .pushNamed('/newsarticle', arguments: {
+                                    'index': i + 100,
+                                    'news': favouriteNewsList[i]
+                                  });
+                                },
+                                child: Stack(
+                                  alignment: Alignment.bottomLeft,
                                   children: <Widget>[
-                                    Flexible(
-                                      child: Text(
-                                        favouriteNewsList[i].title,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: 16,
-                                            color: Colors.white),
+                                    Container(
+                                      child: CachedNetworkImage(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.35,
+                                        imageUrl: favouriteNewsList[i].imageUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (BuildContext context,
+                                                String url) =>
+                                            Image.asset(
+                                          'assets/images/news_default.png',
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                    Row(
-                                      children: <Widget>[
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 4.0),
-                                          child: Text(
-                                            favouriteNewsList[i].source,
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.amberAccent),
+                                    Container(
+                                      color: Colors.black.withOpacity(0.4),
+                                      padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.02,
+                                          left: 12.0,
+                                          right: 12.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Flexible(
+                                            child: Text(
+                                              favouriteNewsList[i].title,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w300,
+                                                  fontSize: 16,
+                                                  color: Colors.white),
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          convertDateTime(
-                                              dateTime: favouriteNewsList[i]
-                                                  .publishedAt),
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.amberAccent),
-                                        )
-                                      ],
+                                          Row(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 4.0),
+                                                child: Text(
+                                                  favouriteNewsList[i].source,
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          Colors.amberAccent),
+                                                ),
+                                              ),
+                                              Text(
+                                                convertDateTime(
+                                                    dateTime:
+                                                        favouriteNewsList[i]
+                                                            .publishedAt),
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.amberAccent),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
-                    ],
+                              ),
+                          ]
+                        : <Widget>[
+                            for (int i = 0; i < 5; i++)
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .pushNamed('/newsarticle', arguments: {
+                                    'index': i + 100,
+                                    'news': allNewsList[i]
+                                  });
+                                },
+                                child: Stack(
+                                  alignment: Alignment.bottomLeft,
+                                  children: <Widget>[
+                                    Container(
+                                      child: CachedNetworkImage(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.35,
+                                        imageUrl: allNewsList[i].imageUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (BuildContext context,
+                                                String url) =>
+                                            Image.asset(
+                                          'assets/images/news_default.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      color: Colors.black.withOpacity(0.4),
+                                      padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.02,
+                                          left: 12.0,
+                                          right: 12.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Flexible(
+                                            child: Text(
+                                              allNewsList[i].title,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w300,
+                                                  fontSize: 16,
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 4.0),
+                                                child: Text(
+                                                  allNewsList[i].source,
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          Colors.amberAccent),
+                                                ),
+                                              ),
+                                              Text(
+                                                convertDateTime(
+                                                    dateTime: allNewsList[i]
+                                                        .publishedAt),
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.amberAccent),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                          ],
                     onPageChanged: (int index) {
                       model.carouselIndex = index;
                     },
@@ -320,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          for (int i = 0; i < 5; i++)
+                          for (int i = 0; i < circleCount; i++)
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 4.0),
                               child: InkWell(

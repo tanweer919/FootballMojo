@@ -33,9 +33,9 @@ class BottomNavbar extends StatelessWidget {
           title: Text('News', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(Icons.dashboard, color: Theme.of(context).primaryColor,),
-          icon: Icon(Icons.dashboard),
-          title: Text('Dasboard', style: _bottomNavBarStyle,)
+          activeIcon: Icon(Icons.settings, color: Theme.of(context).primaryColor,),
+          icon: Icon(Icons.settings),
+          title: Text('Settings', style: _bottomNavBarStyle,)
       )
     ];
     return Consumer<AppProvider>(
