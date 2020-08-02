@@ -14,6 +14,8 @@ class StartState extends State<Start> {
       Navigator.of(context).pushReplacementNamed('/home');
     } else {
       await LocalStorage.setString('appTheme', "light");
+      await LocalStorage.setString("notificationEnabled", "yes");
+      await LocalStorage.setString('lastTopic', null);
       Navigator.of(context).pushReplacementNamed('/introduction');
     }
   }

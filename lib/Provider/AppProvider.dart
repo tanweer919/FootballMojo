@@ -14,7 +14,7 @@ import '../models/User.dart';
 import '../services/RemoteConfigService.dart';
 
 class AppProvider extends ChangeNotifier {
-  AppProvider(this._navbarIndex, this._selectedLeague, this._startDate, this._endDate, this._currentUser);
+  AppProvider(this._navbarIndex, this._selectedLeague, this._notificationEnabled, this._startDate, this._endDate, this._currentUser);
   int _navbarIndex;
   List<News> _newsList;
   List<News> _favouriteNewsList;
@@ -26,6 +26,7 @@ class AppProvider extends ChangeNotifier {
   String _selectedLeague;
   List<Player> _topScorers;
   User _currentUser;
+  bool _notificationEnabled;
 
   NewsService _newsService = locator<NewsService>();
   ScoreService _scoreService = locator<ScoreService>();
@@ -47,6 +48,8 @@ class AppProvider extends ChangeNotifier {
   List<LeagueTableEntry> get leagueTableEntries => _leagueTableEntries;
   List<Player> get topScorers => _topScorers;
   User get currentUser => _currentUser;
+
+  bool get notificationEnabled => _notificationEnabled;
 
   void set selectedLeague(String league) {
     _selectedLeague = league;
@@ -105,6 +108,11 @@ class AppProvider extends ChangeNotifier {
 
   void set topScorers(List<Player> scorers) {
     _topScorers = scorers;
+    notifyListeners();
+  }
+
+  void set notificationEnabled(bool value) {
+    _notificationEnabled = value;
     notifyListeners();
   }
 

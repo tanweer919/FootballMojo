@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:share/share.dart';
 import '../services/FirebaseService.dart';
 import '../models/User.dart';
@@ -16,7 +17,6 @@ import '../constants.dart';
 import '../commons/CustomRaisedButton.dart';
 import '../services/FirebaseMessagingService.dart';
 import '../Provider/ThemeProvider.dart';
-import 'package:day_night_switcher/day_night_switcher.dart';
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -486,8 +486,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               padding: const EdgeInsets.only(right: 4.0),
                               child: CupertinoSwitch(
                                 activeColor: Theme.of(context).primaryColor,
-                                  trackColor: Colors.black,
-                                  value: true, onChanged: null),
+                                  trackColor: Color(0xff56727c),
+                                  value: model.notificationEnabled, onChanged: (bool value) async{
+                                  model.notificationEnabled = !model.notificationEnabled;
+                                  if(value) {
+                                    LocalStorage.setString('notificationEnabled', "yes");
+                                    await _fcmService.subscribeToTopic(topic: teamName.replaceAll(' ', ''));
+                                  } else {
+                                    LocalStorage.setString('notificationEnabled', "no");
+                                    await _fcmService.unsubscribeFromTopic(topic: teamName.replaceAll(' ', ''));
+                                    await LocalStorage.setString('lastTopic', null);
+                                  }
+                              }),
                             )
                           ],
                         ),

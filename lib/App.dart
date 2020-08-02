@@ -20,14 +20,19 @@ class App {
   static Future initialiseApp() async {
     await setupLocator();
     final leagueName = await LocalStorage.getString('leagueName');
+    final notificationEnabledPreference =
+        await LocalStorage.getString('notificationEnabled');
+    final bool notificationEnabled = notificationEnabledPreference == null ||
+            notificationEnabledPreference == "yes"
+        ? true
+        : false;
     User currentUser = null;
     FirebaseService firebaseService = locator<FirebaseService>();
     final RemoteConfigService _remoteConfigService =
-    locator<RemoteConfigService>();
-    networkStatusService =
-    locator<NetworkStatusService>();
+        locator<RemoteConfigService>();
+    networkStatusService = locator<NetworkStatusService>();
     final FirebaseMessagingService _fcmService =
-    locator<FirebaseMessagingService>();
+        locator<FirebaseMessagingService>();
     routerService = locator<RouterService>();
     result = await DataConnectionChecker().hasConnection;
     if (result) {
@@ -36,8 +41,11 @@ class App {
       currentUser = await firebaseService.getCurrentUser();
     }
     final _theme = await LocalStorage.getString('appTheme');
-    appProvider =
-        locator<AppProvider>(param1: leagueName, param2: currentUser);
-    themeProvider = locator<ThemeProvider>(param1: _theme == "dark" ? AppTheme.Dark : AppTheme.Light);
+    appProvider = locator<AppProvider>(param1: {
+      'leagueName': leagueName,
+      'notificationEnabled': notificationEnabled
+    }, param2: currentUser);
+    themeProvider = locator<ThemeProvider>(
+        param1: _theme == "dark" ? AppTheme.Dark : AppTheme.Light);
   }
 }

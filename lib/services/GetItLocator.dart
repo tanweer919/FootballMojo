@@ -23,9 +23,11 @@ import '../Provider/ThemeProvider.dart';
 
 GetIt locator = GetIt.instance;
 
-Future setupLocator() async{
-  DateTime now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-  RemoteConfigService remoteConfigService = await RemoteConfigService.getInstance();
+Future setupLocator() async {
+  DateTime now =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  RemoteConfigService remoteConfigService =
+      await RemoteConfigService.getInstance();
   locator.registerLazySingleton<NewsService>(() => NewsService());
   locator.registerLazySingleton<TeamService>(() => TeamService());
   locator.registerLazySingleton<ScoreService>(() => ScoreService());
@@ -35,14 +37,25 @@ Future setupLocator() async{
   locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
   locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
   locator.registerLazySingleton<FirestoreService>(() => FirestoreService());
-  locator.registerLazySingleton<NetworkStatusService>(() => NetworkStatusService());
+  locator.registerLazySingleton<NetworkStatusService>(
+      () => NetworkStatusService());
   locator.registerSingleton<RemoteConfigService>(remoteConfigService);
-  locator.registerLazySingleton<FirebaseMessagingService>(() => FirebaseMessagingService());
+  locator.registerLazySingleton<FirebaseMessagingService>(
+      () => FirebaseMessagingService());
   locator.registerLazySingleton<RouterService>(() => RouterService());
   locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
   locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
   locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));
-  locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>((scores, index) => FavouriteScoresViewModel(scores, index));
-  locator.registerFactoryParam<AppProvider, String, User>((leagueName, currentUser) => AppProvider(0, leagueName, now.subtract(Duration(days: 30)), now.add(Duration(days: 7)), currentUser));
-  locator.registerFactoryParam<ThemeProvider, AppTheme, void>((theme, _) => ThemeProvider(theme));
+  locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>(
+      (scores, index) => FavouriteScoresViewModel(scores, index));
+  locator.registerFactoryParam<AppProvider, Map<String, dynamic>, User>(
+      (map, currentUser) => AppProvider(
+          0,
+          map['leagueName'],
+          map['notificationEnabled'],
+          now.subtract(Duration(days: 30)),
+          now.add(Duration(days: 7)),
+          currentUser));
+  locator.registerFactoryParam<ThemeProvider, AppTheme, void>(
+      (theme, _) => ThemeProvider(theme));
 }
