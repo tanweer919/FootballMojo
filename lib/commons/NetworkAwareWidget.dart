@@ -12,7 +12,7 @@ class NetworkAwareWidget extends StatelessWidget {
     return Consumer<NetworkStatus>(builder: (context, model, oldChild) {
       if (model == NetworkStatus.Offline) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          bottomNavigationBar: BottomNavbar(),
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +31,6 @@ class NetworkAwareWidget extends StatelessWidget {
                     "No internet available",
                     style: TextStyle(
                         fontSize: 24,
-                        color: Colors.black,
                         fontWeight: FontWeight.w500),
                   ),
                 ),

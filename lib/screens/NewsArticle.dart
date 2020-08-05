@@ -193,7 +193,7 @@ class NewsArticleScreen extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
-                                    'Tap here to read full article',
+                                    'Tap here to read full story',
                                     style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.w400,

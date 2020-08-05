@@ -47,15 +47,15 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                     child: Image.asset('assets/images/football_cover.png'),
                   ),
                   Text(
-                    'Football just it was meant to be',
+                    'Welcome to Football Mojo',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
                   ),
                   Flexible(
                       child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      'You can get football scores and news directly from your home...',
+                      'Your football companion who keeps you updated about football latest happenings',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,

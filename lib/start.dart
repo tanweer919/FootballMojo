@@ -9,13 +9,19 @@ class Start extends StatefulWidget {
 
 class StartState extends State<Start> {
   Future checkTeam() async {
+    final String firstOpen = await LocalStorage.getString('firstOpen');
     final String teamName = await LocalStorage.getString('teamName');
-    if (teamName != null) {
-      Navigator.of(context).pushReplacementNamed('/home');
+    if (firstOpen != null && firstOpen == "no") {
+      if(teamName == null) {
+        Navigator.of(context).pushReplacementNamed('/selectleague');
+      } else {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     } else {
       await LocalStorage.setString('appTheme', "light");
       await LocalStorage.setString("notificationEnabled", "yes");
       await LocalStorage.setString('lastTopic', null);
+      await LocalStorage.setString('firstOpen', 'no');
       Navigator.of(context).pushReplacementNamed('/introduction');
     }
   }

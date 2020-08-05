@@ -9,12 +9,15 @@ import 'package:data_connection_checker/data_connection_checker.dart';
 import 'services/NetworkStatusService.dart';
 import 'services/FirebaseMessagingService.dart';
 import 'Provider/ThemeProvider.dart';
+import 'services/AnalyticsService.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class App {
   static ThemeProvider themeProvider;
   static AppProvider appProvider;
   static RouterService routerService;
   static NetworkStatusService networkStatusService;
+  static FirebaseAnalytics analytics;
   static bool result;
 
   static Future initialiseApp() async {
@@ -27,6 +30,8 @@ class App {
         ? true
         : false;
     User currentUser = null;
+    final AnalyticsService analyticsService = locator<AnalyticsService>();
+    analytics = analyticsService.analytics;
     FirebaseService firebaseService = locator<FirebaseService>();
     final RemoteConfigService _remoteConfigService =
         locator<RemoteConfigService>();

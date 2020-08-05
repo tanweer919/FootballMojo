@@ -117,15 +117,21 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadAllNews() async{
+    String placeholderUrl = 'https://res.cloudinary.com/doy9hqxr1/image/upload/q_70/v1596572656/Football-Class-Cover-Page_sjrsaq.jpg';
     List<News> allNews = await _newsService.fetchNews('european football');
-    _newsList = allNews.where((news) => news.imageUrl != null).toList();
+    List<News> allNewsFirst = allNews.where((news) => news.imageUrl != placeholderUrl).toList();
+    List<News> allNewsSecond = allNews.where((news) => news.imageUrl == placeholderUrl).toList();
+    _newsList = allNewsFirst + allNewsSecond;
     notifyListeners();
   }
 
   Future<void> loadFavouriteNews() async {
+    String placeholderUrl = 'https://res.cloudinary.com/doy9hqxr1/image/upload/q_70/v1596572656/Football-Class-Cover-Page_sjrsaq.jpg';
     String teamName = await LocalStorage.getString('teamName');
     List<News> favouriteNews = await  _newsService.fetchNews(teamName);;
-    _favouriteNewsList = favouriteNews.where((news) => news.imageUrl != null).toList();
+    List<News> favouriteNewsFirst = favouriteNews.where((news) => news.imageUrl != placeholderUrl).toList();
+    List<News> favouriteNewsSecond = favouriteNews.where((news) => news.imageUrl == placeholderUrl).toList();
+    _favouriteNewsList = favouriteNewsFirst + favouriteNewsSecond;
     notifyListeners();
   }
 

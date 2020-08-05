@@ -33,7 +33,7 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(100.0),
             child: AppBar(
-              leading: Container(),
+              automaticallyImplyLeading: false,
               backgroundColor: Theme.of(context).primaryColor,
               title: Text(
                 'League',

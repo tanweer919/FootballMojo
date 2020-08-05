@@ -20,6 +20,7 @@ import 'NetworkStatusService.dart';
 import 'FirebaseMessagingService.dart';
 import 'CustomRouter.dart';
 import '../Provider/ThemeProvider.dart';
+import 'AnalyticsService.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -37,6 +38,7 @@ Future setupLocator() async {
   locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
   locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
   locator.registerLazySingleton<FirestoreService>(() => FirestoreService());
+  locator.registerLazySingleton<AnalyticsService>(() => AnalyticsService());
   locator.registerLazySingleton<NetworkStatusService>(
       () => NetworkStatusService());
   locator.registerSingleton<RemoteConfigService>(remoteConfigService);

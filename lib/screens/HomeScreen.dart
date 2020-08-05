@@ -13,6 +13,10 @@ import '../Provider/HomeViewModel.dart';
 import '../services/GetItLocator.dart';
 import '../Provider/AppProvider.dart';
 import '../Provider/ThemeProvider.dart';
+import '../services/tutorial.dart';
+import '../commons/GlobalKeys.dart';
+import '../services/LocalStorage.dart';
+import '../commons/HomeBottomNavbar.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     final initialState = Provider.of<AppProvider>(context, listen: false);
+    final tutorial = Tutorial();
+    tutorial.initTargets(GlobalKeys.globalKeys);
     if (initialState.newsList == null) {
       initialState.loadAllNews();
     }
@@ -37,10 +43,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       initialState.loadFavouriteScores();
     }
     if (initialState.leagueWiseScores == null) {
-      initialState.loadLeagueWiseScores();
+      initialState.loadLeagueWiseScores().then((value) {
+        LocalStorage.getString('tutorialShown').then((value) {
+          if (value == null || value == "no") {
+            tutorial.showAfterLayout(context);
+            LocalStorage.setString('tutorialShown', "yes");
+          }
+        });
+      });
     }
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => showAlert());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showAlert();
+    });
   }
 
   @override
@@ -54,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
-        bottomNavigationBar: BottomNavbar(),
+        bottomNavigationBar: HomeBottomNavbar(),
         body: Consumer<ThemeProvider>(
           builder: (context, themeModel, child) =>
               ChangeNotifierProvider<HomeViewModel>(
@@ -126,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final Score nextScore = matches[index - 1];
         if (nextScore.date_time.difference(DateTime.now()).inSeconds <
             DateTime.now().difference(latestScore.date_time).inSeconds) {
-          if(nextScore.date_time.difference(DateTime.now()).inSeconds < 0) {
+          if (nextScore.date_time.difference(DateTime.now()).inSeconds < 0) {
             score = nextScore;
             caption = 'Latest Match';
           } else {
@@ -146,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       caption = 'Live Match';
     }
     return Padding(
+      key: GlobalKeys.matchCardKey,
       padding: const EdgeInsets.all(8.0),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
+        key: GlobalKeys.allNewsCardKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -223,16 +240,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     List<News> allNewsList = appProvider.newsList;
     int totalCount;
     int circleCount;
-    if(favouriteNewsList != null) {
-      totalCount =
-      favouriteNewsList.length > 5 ? 5 : favouriteNewsList.length;
+    if (favouriteNewsList != null) {
+      totalCount = favouriteNewsList.length > 5 ? 5 : favouriteNewsList.length;
       circleCount = totalCount == 0 ? 5 : totalCount;
     }
     return Container(
         height: MediaQuery.of(context).size.height * 0.35,
+        key: GlobalKeys.carouselKey,
         child: favouriteNewsList != null
             ? Stack(
-                alignment: Alignment.bottomLeft,
+          alignment: Alignment.bottomLeft,
                 children: <Widget>[
                   PageView(
                     controller: _pageController,

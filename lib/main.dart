@@ -1,20 +1,12 @@
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:sportsmojo/models/User.dart';
 import 'start.dart';
 import 'package:provider/provider.dart';
-import 'Provider/AppProvider.dart';
-import 'services/CustomRouter.dart';
-import 'services/GetItLocator.dart';
-import 'services/LocalStorage.dart';
-import 'services/FirebaseService.dart';
-import 'services/RemoteConfigService.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'screens/NoInternetScreen.dart';
 import 'services/NetworkStatusService.dart';
-import 'services/FirebaseMessagingService.dart';
 import 'Provider/ThemeProvider.dart';
-import 'services/LocalStorage.dart';
 import 'App.dart';
 
 void main() async {
@@ -29,7 +21,7 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await App.initialiseApp();
-
+  FlutterError.onError = Crashlytics.instance.recordFlutterError;
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
@@ -49,13 +41,18 @@ void main() async {
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
           darkTheme: darkTheme,
-          themeMode: model.appTheme == AppTheme.Light ? ThemeMode.light : ThemeMode.dark,
+          themeMode: model.appTheme == AppTheme.Light
+              ? ThemeMode.light
+              : ThemeMode.dark,
           navigatorKey: App.routerService.navigationKey,
           home: WillPopScope(
               onWillPop: () => Future.value(false),
               child: App.result ? Start() : NoInternetScreen()),
           onGenerateRoute: App.routerService.generateRoutes,
-          navigatorObservers: [HeroController()],
+          navigatorObservers: [
+            HeroController(),
+            FirebaseAnalyticsObserver(analytics: App.analytics)
+          ],
         ),
       ),
     ),

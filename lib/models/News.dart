@@ -24,6 +24,6 @@ class News {
         url = parsedJson['url'],
         imageUrl = parsedJson['image'] != null
             ? parsedJson['image']['contentUrl']
-            : null,
+            : 'https://res.cloudinary.com/doy9hqxr1/image/upload/q_70/v1596572656/Football-Class-Cover-Page_sjrsaq.jpg',
         publishedAt = DateTime.parse(parsedJson['datePublished']);
 }

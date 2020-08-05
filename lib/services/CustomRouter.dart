@@ -3,7 +3,7 @@ import 'package:sportsmojo/models/Score.dart';
 import 'package:sportsmojo/screens/MatchStatScreen.dart';
 import '../screens/HomeScreen.dart';
 import '../screens/ScoreScreen.dart';
-import '../screens/News.dart';
+import '../screens/NewsScreen.dart';
 import '../screens/NewsArticle.dart';
 import '../models/News.dart';
 import '../screens/FavouriteScreen2.dart';
@@ -14,6 +14,7 @@ import '../screens/IntroductionScreen.dart';
 import '../start.dart';
 import '../screens/NoInternetScreen.dart';
 import '../commons/NetworkAwareWidget.dart';
+import '../screens/NotFound.dart';
 
 class RouterService {
   final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
@@ -34,6 +35,10 @@ class RouterService {
     ];
     if (validRoutes.contains(settings.name)) {
       return customRoutes(settings.name, settings.arguments);
+    } else {
+      return MaterialPageRoute(builder: (_) {
+        return NotFound();
+      });
     }
   }
 
@@ -108,6 +113,6 @@ class RouterService {
                   opacity: anim, child: NetworkAwareWidget(child: child));
         },
         transitionDuration:
-            Duration(milliseconds: route == '/newsarticle' ? 500 : 300));
+            Duration(milliseconds: route == '/newsarticle' ? 500 : 250));
   }
 }

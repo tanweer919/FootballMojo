@@ -4,6 +4,7 @@ import '../models/Score.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'custom_icons.dart';
 import '../constants.dart';
+import 'GlobalKeys.dart';
 
 class ScoreCard extends StatefulWidget {
   final Score score;
