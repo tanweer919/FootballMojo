@@ -52,7 +52,6 @@ class _LeagueDropdownState extends State<LeagueDropdown> {
                                   await model.loadLeagueWiseScores(leagueName: value);
                                 }
                                 if(widget.purpose == "score") {
-                                  await model.loadLeagueWiseScores(leagueName: value);
                                   await model.loadLeagueTable(
                                       leagueName: value);
                                   Navigator.of(context).pushReplacementNamed('/league');

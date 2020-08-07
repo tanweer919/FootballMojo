@@ -40,10 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       initialState.loadFavouriteNews();
     }
     if (initialState.favouriteTeamScores == null) {
-      initialState.loadFavouriteScores();
-    }
-    if (initialState.leagueWiseScores == null) {
-      initialState.loadLeagueWiseScores().then((value) {
+      initialState.loadFavouriteScores().then((value) {
         LocalStorage.getString('tutorialShown').then((value) {
           if (value == null || value == "no") {
             tutorial.showAfterLayout(context);
@@ -51,6 +48,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         });
       });
+    }
+    if (initialState.leagueWiseScores == null) {
+      initialState.loadLeagueWiseScores();
     }
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {

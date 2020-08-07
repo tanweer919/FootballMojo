@@ -54,7 +54,12 @@ class NewsArticleScreen extends StatelessWidget {
                                         fit: BoxFit.cover,
                                         placeholder: (BuildContext context,
                                                 String url) =>
-                                            CircularProgressIndicator(),
+                                            Image.asset(
+                                              'assets/images/news_default.png',
+                                              width: 50,
+                                              fit: BoxFit
+                                                  .cover,
+                                            ),
                                       ),
                                     ),
                                   ),

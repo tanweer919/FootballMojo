@@ -55,7 +55,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                       child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      'Your football companion who keeps you updated about football latest happenings',
+                      'The football companion which keeps updated about latest scores and news.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,

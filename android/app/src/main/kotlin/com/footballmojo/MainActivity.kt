@@ -1,4 +1,4 @@
-package com.example.sportsmojo
+package com.footballmojo
 
 import io.flutter.embedding.android.FlutterActivity
 
