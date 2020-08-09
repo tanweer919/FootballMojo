@@ -50,6 +50,7 @@ class RouterService {
     String from;
     Map<String, dynamic> favouriteTeamMessage = null;
     Score score = null;
+    bool showTutorial = false;
     if (args != null) {
       if (args.containsKey('index')) {
         index = args['index'];
@@ -72,11 +73,15 @@ class RouterService {
       if (args.containsKey('from')) {
         from = args['from'];
       }
+      if (args.containsKey('showTutorial')) {
+        showTutorial = args['showTutorial'];
+      }
     }
     Map<String, Widget> screens = {
       '/start': Start(),
       '/home': HomeScreen(
         message: favouriteTeamMessage,
+        showTutorial: showTutorial
       ),
       '/score': ScoreScreen(),
       '/league': LeagueTableScreen(),

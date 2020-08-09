@@ -7,7 +7,7 @@ import '../commons/CustomRaisedButton.dart';
 
 class SettingsDialog extends StatefulWidget {
   final Color borderColor;
-  SettingsDialog({Key key, this.borderColor}) : super(key:key);
+  SettingsDialog({Key key, this.borderColor}) : super(key: key);
   @override
   _SettingsDialogState createState() => _SettingsDialogState();
 }
@@ -23,13 +23,15 @@ class _SettingsDialogState extends State<SettingsDialog> {
     now = DateTime(now.year, now.month, now.day);
     setState(() {
       startDate = dayDifference(
-                  date_time1: getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"],
+                  date_time1: getFirstAndLastDate(
+                      appProvider.leagueWiseScores)["firstDate"],
                   date_time2: appProvider.startDate) <
               0
           ? appProvider.startDate
           : getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"];
       endDate = dayDifference(
-                  date_time1: getFirstAndLastDate(appProvider.leagueWiseScores)["lastDate"],
+                  date_time1: getFirstAndLastDate(
+                      appProvider.leagueWiseScores)["lastDate"],
                   date_time2: appProvider.endDate) >
               0
           ? appProvider.endDate
@@ -49,7 +51,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
       builder: (context, model, child) => Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -58,8 +61,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     final DateTime date = await showDatePicker(
                         context: context,
                         initialDate: startDate,
-                        firstDate: getFirstAndLastDate(model.leagueWiseScores)["firstDate"],
-                        lastDate: getFirstAndLastDate(model.leagueWiseScores)["lastDate"]);
+                        firstDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["firstDate"],
+                        lastDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["lastDate"]);
                     if (date != null) {
                       setState(() {
                         startDate = date;
@@ -97,8 +102,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     final DateTime date = await showDatePicker(
                         context: context,
                         initialDate: endDate,
-                        firstDate: getFirstAndLastDate(model.leagueWiseScores)["firstDate"],
-                        lastDate: getFirstAndLastDate(model.leagueWiseScores)["lastDate"]);
+                        firstDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["firstDate"],
+                        lastDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["lastDate"]);
                     if (date != null) {
                       setState(() {
                         endDate = date;

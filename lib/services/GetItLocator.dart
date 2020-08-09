@@ -55,7 +55,7 @@ Future setupLocator() async {
           0,
           map['leagueName'],
           map['notificationEnabled'],
-          now.subtract(Duration(days: 30)),
+          now.subtract(Duration(days: 90)),
           now.add(Duration(days: 7)),
           currentUser));
   locator.registerFactoryParam<ThemeProvider, AppTheme, void>(

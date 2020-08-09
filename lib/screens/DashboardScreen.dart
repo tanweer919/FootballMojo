@@ -20,6 +20,7 @@ import '../commons/CustomRaisedButton.dart';
 import '../services/FirebaseMessagingService.dart';
 import '../Provider/ThemeProvider.dart';
 import '../services/FlushbarHelper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -596,14 +597,24 @@ class _DashboardScreenState extends State<DashboardScreen>
                                         model.notificationEnabled =
                                             !model.notificationEnabled;
                                         if (value) {
-                                          FlushHelper.flushbarAlert(context: context, title: 'Success', message: 'Push Notications Enabled', seconds: 2);
+                                          FlushHelper.flushbarAlert(
+                                              context: context,
+                                              title: 'Success',
+                                              message:
+                                                  'Push Notications Enabled',
+                                              seconds: 2);
                                           LocalStorage.setString(
                                               'notificationEnabled', "yes");
                                           await _fcmService.subscribeToTopic(
                                               topic:
                                                   teamName.replaceAll(' ', ''));
                                         } else {
-                                          FlushHelper.flushbarAlert(context: context, title: 'Success', message: 'Push Notications Disabled', seconds: 2);
+                                          FlushHelper.flushbarAlert(
+                                              context: context,
+                                              title: 'Success',
+                                              message:
+                                                  'Push Notications Disabled',
+                                              seconds: 2);
                                           LocalStorage.setString(
                                               'notificationEnabled', "no");
                                           await _fcmService
@@ -616,6 +627,50 @@ class _DashboardScreenState extends State<DashboardScreen>
                                       }),
                                 )
                               ],
+                            ),
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.height / 12,
+                            child: InkWell(
+                              onTap: () async {
+                                await launchUrl(
+                                    'https://play.google.com/store/apps/details?id=com.footballmojo');
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Container(
+                                    width: 50,
+                                    child: Icon(
+                                      Icons.star_border,
+                                      color: Color(0xff808080),
+                                      size: 30,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 12.0),
+                                      child: Text(
+                                        'Rate this app on play store',
+                                        style: TextStyle(
+                                            color: Color(0xff808080),
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 50,
+                                    child: Icon(
+                                      Icons.chevron_right,
+                                      color: Theme.of(context).primaryColor,
+                                      size: 30,
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                           Container(
@@ -682,7 +737,8 @@ class _DashboardScreenState extends State<DashboardScreen>
       builder: (BuildContext context) => AnimatedBuilder(
           animation: _sunController,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.25),
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.25),
             child: Image.asset('assets/images/sun.png'),
           ),
           builder: (BuildContext context, Widget _widget) {
@@ -709,20 +765,29 @@ class _DashboardScreenState extends State<DashboardScreen>
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) => Container(
-          padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.3),
-          child: Center(
-            child: SlideTransition(
-              position: _moonAnimation,
-              child: Container(
-                child: Image.asset('assets/images/moon.png'),
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.3),
+              child: Center(
+                child: SlideTransition(
+                  position: _moonAnimation,
+                  child: Container(
+                    child: Image.asset('assets/images/moon.png'),
+                  ),
+                ),
               ),
-            ),
-          ),
-        )).then((value) {
+            )).then((value) {
       // dispose the timer in case something else has triggered the dismiss.
       timer?.cancel();
       timer = null;
     });
     ;
+  }
+
+  Future launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

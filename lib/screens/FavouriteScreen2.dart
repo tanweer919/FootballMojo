@@ -13,6 +13,7 @@ import '../services/GetItLocator.dart';
 import '../services/FirestoreService.dart';
 import '../services/FirebaseMessagingService.dart';
 import '../Provider/ThemeProvider.dart';
+import '../services/LocalStorage.dart';
 
 class FavouriteTeam extends StatefulWidget {
   final int leagueId;
@@ -31,6 +32,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
   final FirestoreService _firestoreService = locator<FirestoreService>();
   final FirebaseMessagingService _fcmService =
       locator<FirebaseMessagingService>();
+  bool showTutorial = false;
 
   @override
   void initState() {
@@ -38,6 +40,14 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
     super.initState();
     setState(() {
       futureTeamList = _teamService.fetchTeams(id: widget.leagueId);
+    });
+    LocalStorage.getString('showTutorial').then((value) {
+      if(value == null || value == "yes") {
+        setState(() {
+          showTutorial = true;
+        });
+        LocalStorage.setString('showTutorial', 'no');
+      }
     });
   }
 
@@ -300,7 +310,8 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
         'favouriteTeamMessage': {
           'title': 'Success',
           'content': '${team.name} added as your favourite team'
-        }
+        },
+        'showTutorial': showTutorial
       });
     }
     ;

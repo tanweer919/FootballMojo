@@ -123,7 +123,8 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                             'title': 'Success',
                                             'content':
                                                 '${data['teamName']} added as your favourite team'
-                                          }
+                                          },
+                                          'showTutorial': true
                                         });
                                   } else {
                                     Navigator.of(context)

@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsmojo/commons/ScoreCard.dart';
-import 'package:sportsmojo/models/Score.dart';
+import '../commons/ScoreCard.dart';
+import '../models/Score.dart';
 import '../commons/BottomNavbar.dart';
 import '../commons/NewsCard.dart';
 import '../models/News.dart';
@@ -16,12 +16,11 @@ import '../Provider/ThemeProvider.dart';
 import '../services/tutorial.dart';
 import '../commons/GlobalKeys.dart';
 import '../services/LocalStorage.dart';
-import '../commons/HomeBottomNavbar.dart';
-
 class HomeScreen extends StatefulWidget {
   @override
   final Map<String, dynamic> message;
-  HomeScreen({this.message});
+  bool showTutorial;
+  HomeScreen({this.message, this.showTutorial});
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -42,9 +41,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (initialState.favouriteTeamScores == null) {
       initialState.loadFavouriteScores().then((value) {
         LocalStorage.getString('tutorialShown').then((value) {
-          if (value == null || value == "no") {
+          if (widget.showTutorial) {
             tutorial.showAfterLayout(context);
-            LocalStorage.setString('tutorialShown', "yes");
           }
         });
       });
@@ -69,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
-        bottomNavigationBar: HomeBottomNavbar(),
+        bottomNavigationBar: BottomNavbar(),
         body: Consumer<ThemeProvider>(
           builder: (context, themeModel, child) =>
               ChangeNotifierProvider<HomeViewModel>(
@@ -161,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       caption = 'Live Match';
     }
     return Padding(
-      key: GlobalKeys.matchCardKey,
+      key: widget.showTutorial ? GlobalKeys.matchCardKey : null,
       padding: const EdgeInsets.all(8.0),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -188,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        key: GlobalKeys.allNewsCardKey,
+        key: widget.showTutorial ? GlobalKeys.allNewsCardKey : null,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -246,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     return Container(
         height: MediaQuery.of(context).size.height * 0.35,
-        key: GlobalKeys.carouselKey,
+        key: widget.showTutorial ? GlobalKeys.carouselKey : null,
         child: favouriteNewsList != null
             ? Stack(
           alignment: Alignment.bottomLeft,

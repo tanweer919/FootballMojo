@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../Provider/ThemeProvider.dart';
+import '../commons/custom_icons.dart';
 
 class FavouriteLeague extends StatefulWidget {
   @override
@@ -162,6 +163,9 @@ class _FavouriteLeagueState extends State<FavouriteLeague> {
                           child: CachedNetworkImage(
                             imageUrl: league.value["logo"],
                             fit: BoxFit.contain,
+                            placeholder:
+                                (BuildContext context, String url) =>
+                                Icon(MyFlutterApp.football),
                           ),
                         ),
                       ),

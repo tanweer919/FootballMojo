@@ -21,6 +21,7 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await App.initialiseApp();
+  Crashlytics.instance.enableInDevMode = true;
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
   runApp(MultiProvider(
     providers: [

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'custom_icons.dart';
 import '../Provider/AppProvider.dart';
 import '../Provider/ThemeProvider.dart';
-import 'GlobalKeys.dart';
 class BottomNavbar extends StatelessWidget {
   final List<String> routes = ['/home', '/score', '/league', '/news', '/dashboard'];
   Widget build(BuildContext context){
@@ -24,8 +23,8 @@ class BottomNavbar extends StatelessWidget {
           title: Text('Matches', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
-          activeIcon: Icon(Icons.table_chart, color: Theme.of(context).primaryColor,),
-          icon: Icon(Icons.table_chart,),
+          activeIcon: Icon(MyFlutterApp.football, color: Theme.of(context).primaryColor,),
+          icon: Icon(MyFlutterApp.football,),
           title: Text('League', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(

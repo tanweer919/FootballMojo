@@ -18,26 +18,6 @@ class Tutorial {
         "This section will show general footballing news.",
         AlignContent.top,
       ],
-      [
-        "This is your home screen",
-        AlignContent.top,
-      ],
-      [
-        "This screen will show you all the matches for your favourite team",
-        AlignContent.top,
-      ],
-      [
-        "This screen will show you matchdays, table and topscorers for a league.",
-        AlignContent.top,
-      ],
-      [
-        "This screen is for all the footballing news",
-        AlignContent.top,
-      ],
-      [
-        "This is your dashboard screen for managing sign-in, changing theme and other prefrences for the app.",
-        AlignContent.top,
-      ]
     ];
     for (int i = 0; i < targetContent.length; i++) {
       targets.add(TargetFocus(
