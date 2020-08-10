@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../models/MatchStat.dart';
 import 'HttpService.dart';
+
 class StatService {
   final Dio dio = HttpService.getApiClient();
 
@@ -9,7 +10,7 @@ class StatService {
     Map<String, MatchStat> stats = {};
     try {
       final response =
-          await dio.get('https://v3.football.api-sports.io/fixtures/statistics?fixture=${fixtureId}');
+          await dio.get('fixtures/statistics?fixture=${fixtureId}');
       if (response.statusCode == 200) {
         final unparsedJson = response.data['response'].toList();
         stats["home"] = MatchStat.fromJson(unparsedJson[0]["statistics"]);

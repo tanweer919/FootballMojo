@@ -8,7 +8,7 @@ class MatchEventService {
   Future<List<MatchEvent>> fetchEvents({@required int fixtureId}) async{
     List<MatchEvent> events = [];
     try {
-      final response = await dio.get('https://v3.football.api-sports.io/fixtures/events?fixture=${fixtureId}');
+      final response = await dio.get('fixtures/events?fixture=${fixtureId}');
       if(response.statusCode == 200) {
         final unparsedJson = response.data['response'].toList();
         for(int i = 0; i < unparsedJson.length; i++) {

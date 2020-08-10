@@ -14,6 +14,12 @@ class LeagueDropdown extends StatefulWidget {
 }
 
 class _LeagueDropdownState extends State<LeagueDropdown> {
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, model, child) => Theme(
@@ -46,7 +52,6 @@ class _LeagueDropdownState extends State<LeagueDropdown> {
                                   await model.loadLeagueWiseScores(leagueName: value);
                                 }
                                 if(widget.purpose == "score") {
-                                  await model.loadLeagueWiseScores(leagueName: value);
                                   await model.loadLeagueTable(
                                       leagueName: value);
                                   Navigator.of(context).pushReplacementNamed('/league');

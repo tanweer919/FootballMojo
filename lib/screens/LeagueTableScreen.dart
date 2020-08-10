@@ -21,6 +21,11 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
     return Scaffold(
@@ -28,7 +33,7 @@ class _LeagueTableScreenState extends State<LeagueTableScreen>
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(100.0),
             child: AppBar(
-              leading: Container(),
+              automaticallyImplyLeading: false,
               backgroundColor: Theme.of(context).primaryColor,
               title: Text(
                 'League',

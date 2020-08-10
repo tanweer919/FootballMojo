@@ -3,8 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../Provider/AppProvider.dart';
+import '../commons/CustomRaisedButton.dart';
 
 class SettingsDialog extends StatefulWidget {
+  final Color borderColor;
+  SettingsDialog({Key key, this.borderColor}) : super(key: key);
   @override
   _SettingsDialogState createState() => _SettingsDialogState();
 }
@@ -20,13 +23,15 @@ class _SettingsDialogState extends State<SettingsDialog> {
     now = DateTime(now.year, now.month, now.day);
     setState(() {
       startDate = dayDifference(
-                  date_time1: getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"],
+                  date_time1: getFirstAndLastDate(
+                      appProvider.leagueWiseScores)["firstDate"],
                   date_time2: appProvider.startDate) <
               0
           ? appProvider.startDate
           : getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"];
       endDate = dayDifference(
-                  date_time1: getFirstAndLastDate(appProvider.leagueWiseScores)["lastDate"],
+                  date_time1: getFirstAndLastDate(
+                      appProvider.leagueWiseScores)["lastDate"],
                   date_time2: appProvider.endDate) >
               0
           ? appProvider.endDate
@@ -36,12 +41,18 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, model, child) => Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -50,8 +61,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     final DateTime date = await showDatePicker(
                         context: context,
                         initialDate: startDate,
-                        firstDate: getFirstAndLastDate(model.leagueWiseScores)["firstDate"],
-                        lastDate: getFirstAndLastDate(model.leagueWiseScores)["lastDate"]);
+                        firstDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["firstDate"],
+                        lastDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["lastDate"]);
                     if (date != null) {
                       setState(() {
                         startDate = date;
@@ -60,7 +73,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(width: 2, color: Colors.black),
+                        border: Border.all(width: 2, color: widget.borderColor),
                         borderRadius: BorderRadius.circular(4.0)),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -89,8 +102,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     final DateTime date = await showDatePicker(
                         context: context,
                         initialDate: endDate,
-                        firstDate: getFirstAndLastDate(model.leagueWiseScores)["firstDate"],
-                        lastDate: getFirstAndLastDate(model.leagueWiseScores)["lastDate"]);
+                        firstDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["firstDate"],
+                        lastDate: getFirstAndLastDate(
+                            model.leagueWiseScores)["lastDate"]);
                     if (date != null) {
                       setState(() {
                         endDate = date;
@@ -99,7 +114,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(width: 2, color: Colors.black),
+                        border: Border.all(width: 2, color: widget.borderColor),
                         borderRadius: BorderRadius.circular(4.0)),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -127,29 +142,21 @@ class _SettingsDialogState extends State<SettingsDialog> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                ButtonTheme(
+                CustomRaisedButton(
                   height: 40,
                   minWidth: 100,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
-                    ),
-                    color: Theme.of(context).primaryColor,
-                    child: Text(
-                      'Save',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () async {
-                      if (model.startDate == startDate &&
-                          model.endDate == endDate) {
-                        Navigator.of(context).pop();
-                      } else {
-                          model.startDate = startDate;
-                          model.endDate = endDate;
-                          Navigator.of(context).pushReplacementNamed('/league');
-                      }
-                    },
-                  ),
+                  label: 'Save',
+                  inProgress: false,
+                  onPressed: () async {
+                    if (model.startDate == startDate &&
+                        model.endDate == endDate) {
+                      Navigator.of(context).pop();
+                    } else {
+                      model.startDate = startDate;
+                      model.endDate = endDate;
+                      Navigator.of(context).pushReplacementNamed('/league');
+                    }
+                  },
                 ),
               ],
             ),

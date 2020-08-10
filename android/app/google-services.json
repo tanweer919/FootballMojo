@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:941839892238:android:cf75eb4875370f0cac215f",
+        "mobilesdk_app_id": "1:941839892238:android:d0657eb268d58fe8ac215f",
         "android_client_info": {
-          "package_name": "com.example.sportsmojo"
+          "package_name": "com.footballmojo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "941839892238-5brsr913u4pbe9cppcq6ch0s507msjjt.apps.googleusercontent.com",
+          "client_id": "941839892238-4kjeusgddi8jd3euohqngn9quts111bh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.sportsmojo",
+            "package_name": "com.footballmojo",
             "certificate_hash": "6ab1580b9c5164660d0fed14658959d0002689c2"
           }
         },

@@ -1,14 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../models/Score.dart';
+import 'RemoteConfigService.dart';
+import 'GetItLocator.dart';
 import 'HttpService.dart';
 class ScoreService {
   final Dio dio = HttpService.getApiClient();
+  final RemoteConfigService _remoteConfig = locator<RemoteConfigService>();
+
   Future<List<Score>> fetchScoresByLeague({@required String id}) async {
+    final String season = _remoteConfig.getString(key: 'season');
     List<Score> scoresList = [];
     try {
       final response =
-      await dio.get('https://v3.football.api-sports.io/fixtures?league=${id}&season=2019&timezone=Asia/Kolkata');
+      await dio.get('fixtures?league=${id}&season=$season&timezone=Asia/Kolkata');
       if (response.statusCode == 200) {
         final unparsedJson = response.data['response'].toList();
         for (int i = 0; i < unparsedJson.length; i++) {
@@ -25,10 +30,11 @@ class ScoreService {
   }
 
   Future<List<Score>> fetchScoresByTeam({@required String id}) async {
+    final String season = _remoteConfig.getString(key: 'season');
     List<Score> scoresList = [];
     try {
       final response =
-      await dio.get('https://v3.football.api-sports.io/fixtures?team=${id}&season=2019&timezone=Asia/Kolkata');
+      await dio.get('fixtures?team=${id}&season=$season&timezone=Asia/Kolkata');
       if (response.statusCode == 200) {
         final unparsedJson = response.data['response'].toList();
         for (int i = 0; i < unparsedJson.length; i++) {

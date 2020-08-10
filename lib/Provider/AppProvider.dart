@@ -11,9 +11,10 @@ import '../services/LeagueTableService.dart';
 import '../services/TopScorerService.dart';
 import '../models/Player.dart';
 import '../models/User.dart';
-import '../services/FirebaseService.dart';
+import '../services/RemoteConfigService.dart';
+
 class AppProvider extends ChangeNotifier {
-  AppProvider(this._navbarIndex, this._selectedLeague, this._startDate, this._endDate, this._currentUser);
+  AppProvider(this._navbarIndex, this._selectedLeague, this._notificationEnabled, this._startDate, this._endDate, this._currentUser);
   int _navbarIndex;
   List<News> _newsList;
   List<News> _favouriteNewsList;
@@ -25,6 +26,7 @@ class AppProvider extends ChangeNotifier {
   String _selectedLeague;
   List<Player> _topScorers;
   User _currentUser;
+  bool _notificationEnabled;
 
   NewsService _newsService = locator<NewsService>();
   ScoreService _scoreService = locator<ScoreService>();
@@ -46,6 +48,8 @@ class AppProvider extends ChangeNotifier {
   List<LeagueTableEntry> get leagueTableEntries => _leagueTableEntries;
   List<Player> get topScorers => _topScorers;
   User get currentUser => _currentUser;
+
+  bool get notificationEnabled => _notificationEnabled;
 
   void set selectedLeague(String league) {
     _selectedLeague = league;
@@ -107,14 +111,27 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void set notificationEnabled(bool value) {
+    _notificationEnabled = value;
+    notifyListeners();
+  }
+
   Future<void> loadAllNews() async{
-    _newsList = await _newsService.fetchNews('football');
+    String placeholderUrl = 'https://res.cloudinary.com/doy9hqxr1/image/upload/q_70/v1596572656/Football-Class-Cover-Page_sjrsaq.jpg';
+    List<News> allNews = await _newsService.fetchNews('european football');
+    List<News> allNewsFirst = allNews.where((news) => news.imageUrl != placeholderUrl).toList();
+    List<News> allNewsSecond = allNews.where((news) => news.imageUrl == placeholderUrl).toList();
+    _newsList = allNewsFirst + allNewsSecond;
     notifyListeners();
   }
 
   Future<void> loadFavouriteNews() async {
+    String placeholderUrl = 'https://res.cloudinary.com/doy9hqxr1/image/upload/q_70/v1596572656/Football-Class-Cover-Page_sjrsaq.jpg';
     String teamName = await LocalStorage.getString('teamName');
-    _favouriteNewsList = await  _newsService.fetchNews(teamName);
+    List<News> favouriteNews = await  _newsService.fetchNews(teamName);;
+    List<News> favouriteNewsFirst = favouriteNews.where((news) => news.imageUrl != placeholderUrl).toList();
+    List<News> favouriteNewsSecond = favouriteNews.where((news) => news.imageUrl == placeholderUrl).toList();
+    _favouriteNewsList = favouriteNewsFirst + favouriteNewsSecond;
     notifyListeners();
   }
 
