@@ -194,7 +194,7 @@ class _MatchStatScreenState extends State<MatchStatScreen>
           ),
           (widget.score.status != 'NS')
               ? ChangeNotifierProvider(
-                  create: (contet) => _matchStatViewModel,
+                  create: (context) => _matchStatViewModel,
                   child: Stats(
                     score: widget.score,
                   ),

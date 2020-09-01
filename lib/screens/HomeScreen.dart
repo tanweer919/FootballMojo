@@ -134,25 +134,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         matches.firstWhere((score) => score.status == "LV", orElse: () => null);
     if (liveMatch == null) {
       final int index = matches.indexWhere((score) => score.status == "FT");
-      final Score latestScore = matches[index];
-      if (index > 0) {
-        final Score nextScore = matches[index - 1];
-        if (nextScore.date_time.difference(DateTime.now()).inSeconds <
-            DateTime.now().difference(latestScore.date_time).inSeconds) {
-          if (nextScore.date_time.difference(DateTime.now()).inSeconds < 0) {
-            score = nextScore;
-            caption = 'Latest Match';
+      if(index == -1) {
+        score = matches.last;
+        caption = 'Upcoming Match';
+      } else {
+        final Score latestScore = matches[index];
+        if (index > 0) {
+          final Score nextScore = matches[index - 1];
+          if (nextScore.date_time.difference(DateTime.now()).inSeconds <
+              DateTime.now().difference(latestScore.date_time).inSeconds) {
+            if (nextScore.date_time.difference(DateTime.now()).inSeconds < 0) {
+              score = nextScore;
+              caption = 'Latest Match';
+            } else {
+              score = nextScore;
+              caption = 'Upcoming Match';
+            }
           } else {
-            score = nextScore;
-            caption = 'Upcoming Match';
+            score = latestScore;
+            caption = 'Latest Match';
           }
         } else {
           score = latestScore;
           caption = 'Latest Match';
         }
-      } else {
-        score = latestScore;
-        caption = 'Latest Match';
       }
     } else {
       score = liveMatch;

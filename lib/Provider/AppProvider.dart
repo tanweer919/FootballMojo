@@ -12,6 +12,7 @@ import '../services/TopScorerService.dart';
 import '../models/Player.dart';
 import '../models/User.dart';
 import '../services/RemoteConfigService.dart';
+import '../constants.dart';
 
 class AppProvider extends ChangeNotifier {
   AppProvider(this._navbarIndex, this._selectedLeague, this._notificationEnabled, this._startDate, this._endDate, this._currentUser);
@@ -143,6 +144,16 @@ class AppProvider extends ChangeNotifier {
     else {
       String leagueId = '${leagues[leagueName]['id']}';
       _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
+    }
+    DateTime now =
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    if(getFirstAndLastDate(_leagueWiseScores)["firstDate"].compareTo(now) > 0) {
+      _startDate = getFirstAndLastDate(_leagueWiseScores)["firstDate"];
+      _endDate = getFirstAndLastDate(_leagueWiseScores)["firstDate"].add(Duration(days: 7));
+    }
+    if(getFirstAndLastDate(_leagueWiseScores)["endDate"].compareTo(now) < 0) {
+      _startDate = getFirstAndLastDate(_leagueWiseScores)["endDate"].subtract(Duration(days: 90));
+      _endDate = getFirstAndLastDate(_leagueWiseScores)["endDate"];
     }
     notifyListeners();
   }
