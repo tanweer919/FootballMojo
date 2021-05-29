@@ -38,7 +38,7 @@ class RemoteConfigService {
 
   Future activateAndFetch() async {
     final Map<String, dynamic> defaults = {
-      'season': 2019,
+      'season': season,
       'scoreApiKey': scoreApiKey,
       'newsApiKey': newsApiKey,
       'scoreUrl': scoreUrl,
