@@ -8,18 +8,28 @@ This app uses **MVVM** architecture. **Models** contains data coming from differ
 
 ## Structure of the codebase
 **Commons/** - This directory all the common widgets which are used in multiple screens.
+
 **models/** - This directory contains different models used in the app.
-**Provider/** - This directory contains different providers for the app..
+
+**Provider/** - This directory contains different providers for the app.
+
 **screens/** - This directory individual screens of the app. 
+
 **services/** - This directory contains all the services contained in the app. Services are used to handle business logic like fetching scores nad news, handling authentication, checking network connectivity etc. Services helps to extract business logic away from UI.
+
 **widgets/** - This directory all the larger widgets which are jut used in a particular screen.
 
 ## External Services
 **Apis** - Api-Football and Azure Cognitive Services News api.
+
 **Firebase auth** - Used for user authentication.
+
 **Firestore** - Used to store user favourite teams for syncing purposes. And Firebase Cloud Messaging token to send notifcations based on user preferences.
+
 **Firebase remote config** - Used to store configs like newApiKey, scoreApiKey, newsUrl, scoreUrl etc. remotely. Firebase remote config allows to change config on the fly without the need for updating the app.
+
 **Firebase Cloud Messaging** - Used to send notification about user favourite team.
+
 **Firebase analytics** - Used to get analytics about the app usage.
 
 ## Setup
