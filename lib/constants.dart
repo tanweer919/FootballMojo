@@ -1,6 +1,7 @@
 import 'package:sportsmojo/models/Score.dart';
 import 'package:flutter/material.dart';
 
+//Leagues and its corresponding id and logo
 final Map<String, dynamic> leagues = {
   "Bundesliga": {
     "id": 78,
@@ -49,16 +50,19 @@ final Map<String, dynamic> leagues = {
 };
 
 
+///Get difference between two dates in days
 int dayDifference({DateTime date_time1, DateTime date_time2}) {
   final date1 = DateTime(date_time1.year, date_time1.month, date_time1.day);
   final date2 = DateTime(date_time2.year, date_time2.month, date_time2.day);
   return date1.difference(date2).inDays;
 }
 
+//
 List<Score> filterScores({List<Score> scores, DateTime after, DateTime before}) {
   return scores.where((score) => dayDifference(date_time1: score.date_time, date_time2: after) >=0 && dayDifference(date_time1: score.date_time, date_time2: before) <= 0).toList();
 }
 
+//Get first and last date of the matches in current league
 Map<String, DateTime> getFirstAndLastDate(List<Score> scores) {
   Map<String, DateTime> dates = {};
   final firstDate = scores.last.date_time;
@@ -68,6 +72,7 @@ Map<String, DateTime> getFirstAndLastDate(List<Score> scores) {
   return dates;
 }
 
+//Get List of DropdownMenuItem for league dropdown
 List<DropdownMenuItem> getLeagueItems() {
   return leagues.entries
       .map<DropdownMenuItem<String>>((entry) => DropdownMenuItem<String>(
