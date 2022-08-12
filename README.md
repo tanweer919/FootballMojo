@@ -1,4 +1,4 @@
-# Foobar
+# FootballMojo
 
 FootballMojo is an app for football livescore and news. Using this app you can follow your favourite team and leagues. This app is purely built in flutter with firebase as the backend.
 All the football scores are fetched from [Api-Football](https://www.api-football.com/) and news are fetched from [Bing News Search API](https://www.microsoft.com/en-us/bing/apis/bing-news-search-api).
