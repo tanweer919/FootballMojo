@@ -73,7 +73,11 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                           children: <Widget>[
                             Container(
                               width: MediaQuery.of(context).size.width * 0.5,
-                              child: RaisedButton(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xff4285f4),
+                                  padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                ),
                                 onPressed: () async {
                                   setState(() {
                                     inProgress = true;
@@ -161,18 +165,19 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                           )
                                         ],
                                       ),
-                                color: Color(0xff4285f4),
-                              ),
+                                ),
                             )
                           ],
                         ),
                       ),
-                      RaisedButton(
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                        ),
                         onPressed: () {
                           Navigator.of(context)
                               .pushReplacementNamed('/selectleague');
                         },
-                        color: Theme.of(context).primaryColor,
                         child: Text(
                           'Continue as guest',
                           textAlign: TextAlign.center,

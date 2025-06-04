@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsmojo/commons/NoContent.dart';
 import '../Provider/AppProvider.dart';
@@ -103,7 +103,13 @@ class _AllScoresState extends State<AllScores> {
                                       fontColor: themeModel.appTheme == AppTheme.Light ? Colors.black : Colors.white,
                                       purpose: "score",
                                     ),
-                                    FlatButton(
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        backgroundColor:
+                                            themeModel.appTheme == AppTheme.Light
+                                                ? Color(0xfffafafa)
+                                                : Color(0xff1d1d1d),
+                                      ),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
@@ -112,10 +118,6 @@ class _AllScoresState extends State<AllScores> {
                                           Text('Filter')
                                         ],
                                       ),
-                                      color:
-                                          themeModel.appTheme == AppTheme.Light
-                                              ? Color(0xfffafafa)
-                                              : Color(0xff1d1d1d),
                                       onPressed: () {
                                         onSettingPressed(
                                             themeModel: themeModel);
@@ -139,16 +141,7 @@ class _AllScoresState extends State<AllScores> {
                                       itemCount: 10,
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        return themeModel.appTheme ==
-                                                AppTheme.Light
-                                            ? PKCardSkeleton(
-                                                isCircularImage: true,
-                                                isBottomLinesActive: true,
-                                              )
-                                            : PKDarkCardSkeleton(
-                                                isCircularImage: true,
-                                                isBottomLinesActive: true,
-                                              );
+                                        return ScoreCardSkeleton(isDarkMode: themeModel.appTheme == AppTheme.Dark);
                                       }),
                             ],
                           ),
@@ -156,6 +149,45 @@ class _AllScoresState extends State<AllScores> {
                       )),
             ));
   }
+
+// Define a stateless widget for the skeleton of a ScoreCard
+class ScoreCardSkeleton extends StatelessWidget {
+  final bool isDarkMode;
+  const ScoreCardSkeleton({Key key, this.isDarkMode = false}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+      highlightColor: isDarkMode ? Colors.grey[700]! : Colors.grey[100]!,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.white,
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(width: double.infinity, height: 10.0, color: Colors.white),
+                  SizedBox(height: 6),
+                  Container(width: MediaQuery.of(context).size.width * 0.4, height: 10.0, color: Colors.white),
+                ],
+              ),
+            ),
+            SizedBox(width: 12),
+            Container(width: 50, height: 20, color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
   Widget scoreList() {
     return ListView.builder(

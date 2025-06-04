@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import '../services/FirebaseService.dart';
 import '../models/User.dart';
 import '../commons/BottomNavbar.dart';
@@ -171,7 +171,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                                         width:
                                             MediaQuery.of(context).size.width *
                                                 0.5,
-                                        child: RaisedButton(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xff4285f4),
+                                            padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                          ),
                                           onPressed: () async {
                                             setState(() {
                                               inProgress = true;
@@ -248,7 +252,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                     )
                                                   ],
                                                 ),
-                                          color: Color(0xff4285f4),
                                         ),
                                       )
                                     ],

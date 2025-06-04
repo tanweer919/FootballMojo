@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../services/GetItLocator.dart';
 import '../services/RemoteConfigService.dart';
 import '../services/FirebaseService.dart';
@@ -68,7 +68,8 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 setState(() {
                   inProgress = true;
                 });
-                bool result = await DataConnectionChecker().hasConnection;
+                List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
+                bool result = !(connectivityResult.contains(ConnectivityResult.none) || connectivityResult.isEmpty);
 
                 if(result == true) {
                   await _fcmService.initialise();

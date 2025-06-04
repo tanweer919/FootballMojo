@@ -5,7 +5,7 @@ import 'services/GetItLocator.dart';
 import 'services/LocalStorage.dart';
 import 'services/FirebaseService.dart';
 import 'services/RemoteConfigService.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'services/NetworkStatusService.dart';
 import 'services/FirebaseMessagingService.dart';
 import 'Provider/ThemeProvider.dart';
@@ -60,7 +60,10 @@ class App {
     routerService = locator<RouterService>();
 
     //Check current connection status
-    result = await DataConnectionChecker().hasConnection;
+    List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
+    // Consider online if it's not .none and not empty
+    result = !(connectivityResult.contains(ConnectivityResult.none) || connectivityResult.isEmpty);
+
 
     //If network coonectivity is present
     if (result) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar.dart';
 class FlushHelper {
   static void flushbarAlert({BuildContext context, String title, String message, int seconds}) {
     Flushbar(

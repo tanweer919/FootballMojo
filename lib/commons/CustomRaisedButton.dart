@@ -13,25 +13,29 @@ class CustomRaisedButton extends StatelessWidget {
         this.onPressed});
   @override
   Widget build(BuildContext context) {
-    return ButtonTheme(
-      height: height,
-      minWidth: minWidth,
-      child: RaisedButton(
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).primaryColor,
         shape: RoundedRectangleBorder(
-          borderRadius: new BorderRadius.circular(20.0),
+          borderRadius: BorderRadius.circular(20.0),
         ),
-        color: Theme.of(context).primaryColor,
-        child: inProgress
-            ? CircularProgressIndicator(
-          valueColor:
-          new AlwaysStoppedAnimation<Color>(Color(0xfff5f5f5)),
-        )
-            : Text(
-          '$label',
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: onPressed,
+        minimumSize: (height != null || minWidth != null) ? Size(minWidth ?? 0, height ?? 0) : null,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Default padding, can be adjusted
       ),
+      child: inProgress
+          ? SizedBox(
+              height: 20, // Adjust size of indicator as needed
+              width: 20,  // Adjust size of indicator as needed
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5f5f5)),
+                strokeWidth: 2.0, // Adjust strokeWidth as needed
+              ),
+            )
+          : Text(
+              label ?? '',
+              style: TextStyle(color: Colors.white),
+            ),
+      onPressed: onPressed,
     );
   }
 }
