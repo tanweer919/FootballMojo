@@ -1,12 +1,22 @@
 class Team {
-  String name;
-  String country;
-  String logo;
-  int id;
-  Team({this.name, this.country, this.logo, this.id});
-  Team.fromJson(Map<String, dynamic> parsedJson):
-      name = parsedJson['name'],
-      country = parsedJson['country'],
-      logo = parsedJson['logo'],
-      id = parsedJson['id'];
+  final String name;
+  final String country;
+  final String? logo; // Nullable
+  final int id;
+
+  Team({
+    required this.name,
+    required this.country,
+    this.logo,
+    required this.id,
+  });
+
+  factory Team.fromJson(Map<String, dynamic> parsedJson) {
+    return Team(
+      name: parsedJson['name'] as String? ?? 'N/A',
+      country: parsedJson['country'] as String? ?? 'N/A',
+      logo: parsedJson['logo'] as String?,
+      id: parsedJson['id'] as int? ?? 0,
+    );
+  }
 }

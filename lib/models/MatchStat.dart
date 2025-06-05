@@ -1,30 +1,55 @@
-
 class MatchStat {
-  int totalShots;
-  int shotsOnTarget;
-  String possession;
-  int fouls;
-  int yellowCards;
-  int redCards;
-  int offsides;
-  int corners;
-  int saves;
-  int totalPasses;
-  String accuratePasses;
+  final int totalShots;
+  final int shotsOnTarget;
+  final String possession;
+  final int fouls;
+  final int yellowCards;
+  final int redCards;
+  final int offsides;
+  final int corners;
+  final int saves;
+  final int totalPasses;
+  final String accuratePasses;
 
-  MatchStat(
-      {this.totalShots, this.shotsOnTarget, this.possession, this.fouls, this.yellowCards, this.redCards, this.offsides, this.corners, this.saves, this.accuratePasses, this.totalPasses});
+  MatchStat({
+    required this.totalShots,
+    required this.shotsOnTarget,
+    required this.possession,
+    required this.fouls,
+    required this.yellowCards,
+    required this.redCards,
+    required this.offsides,
+    required this.corners,
+    required this.saves,
+    required this.totalPasses,
+    required this.accuratePasses,
+  });
 
-  MatchStat.fromJson(List<dynamic> parsedJson)
-      : totalShots = parsedJson[2]["value"] ?? 0,
-        shotsOnTarget = parsedJson[0]["value"] ?? 0,
-        possession = parsedJson[9]["value"],
-        fouls = parsedJson[6]["value"] ?? 0,
-        yellowCards = parsedJson[10]["value"] ?? 0,
-        redCards = parsedJson[11]["value"] ?? 0,
-        offsides = parsedJson[8]["value"] ?? 0,
-        corners = parsedJson[7]["value"] ?? 0,
-        saves = parsedJson[12]["value"] ?? 0,
-        totalPasses = parsedJson[13]["value"] ?? 0,
-        accuratePasses = parsedJson[15]["value"];
+  static dynamic _getValue(List<dynamic> list, int index, String key) {
+    if (index < list.length) {
+      final item = list[index];
+      if (item is Map<String, dynamic>) {
+        return item[key];
+      }
+    }
+    return null;
+  }
+
+  factory MatchStat.fromJson(List<dynamic> parsedJson) {
+    // Assuming specific indices correspond to specific stats as per original logic.
+    // Providing defaults for all fields.
+    return MatchStat(
+      totalShots: _getValue(parsedJson, 2, "value") as int? ?? 0,
+      shotsOnTarget: _getValue(parsedJson, 0, "value") as int? ?? 0,
+      possession: _getValue(parsedJson, 9, "value") as String? ?? "0%",
+      fouls: _getValue(parsedJson, 6, "value") as int? ?? 0,
+      yellowCards: _getValue(parsedJson, 10, "value") as int? ?? 0,
+      redCards: _getValue(parsedJson, 11, "value") as int? ?? 0,
+      offsides: _getValue(parsedJson, 8, "value") as int? ?? 0,
+      corners: _getValue(parsedJson, 7, "value") as int? ?? 0,
+      saves: _getValue(parsedJson, 12, "value") as int? ?? 0,
+      totalPasses: _getValue(parsedJson, 13, "value") as int? ?? 0,
+      accuratePasses: _getValue(parsedJson, 15, "value") as String? ?? "0%",
+    );
+  }
 }

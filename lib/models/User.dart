@@ -1,8 +1,13 @@
-
 class User {
-  String uid;
-  String name;
-  String email;
-  String profilePic;
-  User({this.uid, this.name, this.email, this.profilePic});
+  final String uid;
+  final String? name; // Nullable
+  final String? email; // Nullable
+  final String? profilePic; // Nullable
+
+  User({
+    required this.uid,
+    this.name,
+    this.email,
+    this.profilePic,
+  });
 }

@@ -9,7 +9,7 @@ class NetworkStatusService {
 
   // Keep track of the last status to avoid unnecessary updates if the status hasn't changed.
   // Though ConnectivityPlus might already handle this, it's a good practice for custom streams.
-  NetworkStatus _lastStatus;
+  NetworkStatus? _lastStatus; // Explicitly nullable
 
   NetworkStatusService() {
     // Immediately check the initial status
