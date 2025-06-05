@@ -18,17 +18,12 @@ class StartState extends State<Start> {
     final String teamName = await LocalStorage.getString('teamName');
 
     //If not opened for first time
-    if (firstOpen != null && firstOpen == "no") {
+    if (firstOpen == "no") {
 
       //If favourite team name is not set
-      if(teamName == null) {
-        //Navigate to the screen for selecting favourite league and team
-        Navigator.of(context).pushReplacementNamed('/selectleague');
-      } else {
-        //Navigate to home
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    } else {
+      //Navigate to home
+      Navigator.of(context).pushReplacementNamed('/home');
+        } else {
       //Setup default preference during app first startup
       await LocalStorage.setString('appTheme', "light");
       await LocalStorage.setString("notificationEnabled", "yes");

@@ -15,27 +15,27 @@ class BottomNavbar extends StatelessWidget {
       new BottomNavigationBarItem(
           activeIcon: Icon(MyFlutterApp.home__1_, color: Theme.of(context).primaryColor,),
           icon: Icon(MyFlutterApp.home__1_,),
-          title: Text('Home', style: _bottomNavBarStyle,)
+          label: Text('Home', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
           activeIcon: Icon(MyFlutterApp.score, color: Theme.of(context).primaryColor,),
           icon: Icon(MyFlutterApp.score,),
-          title: Text('Matches', style: _bottomNavBarStyle,)
+          label: Text('Matches', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
           activeIcon: Icon(MyFlutterApp.football, color: Theme.of(context).primaryColor,),
           icon: Icon(MyFlutterApp.football,),
-          title: Text('League', style: _bottomNavBarStyle,)
+          label: Text('League', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
           activeIcon: Icon(MyFlutterApp.news, color: Theme.of(context).primaryColor,),
           icon: Icon(MyFlutterApp.news,),
-          title: Text('News', style: _bottomNavBarStyle,)
+          label: Text('News', style: _bottomNavBarStyle,)
       ),
       new BottomNavigationBarItem(
           activeIcon: Icon(Icons.settings, color: Theme.of(context).primaryColor,),
           icon: Icon(Icons.settings,),
-          title: Text('Settings', style: _bottomNavBarStyle,)
+          label: Text('Settings', style: _bottomNavBarStyle,)
       )
     ];
     return Consumer<AppProvider>(

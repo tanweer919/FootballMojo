@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsmojo/commons/NoContent.dart';
@@ -24,14 +23,8 @@ class _FavouriteScoresUpcomingState extends State<FavouriteScoresUpcoming> {
     super.initState();
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
-    if (appProvider.favouriteTeamScores == null) {
-      appProvider.loadFavouriteScores().whenComplete(() {
-        _setScores(appProvider);
-      });
-    } else {
-      _setScores(appProvider);
+    _setScores(appProvider);
     }
-  }
 
   @override
   void dispose() {

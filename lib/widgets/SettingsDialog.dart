@@ -65,12 +65,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                             model.leagueWiseScores)["firstDate"],
                         lastDate: getFirstAndLastDate(
                             model.leagueWiseScores)["lastDate"]);
-                    if (date != null) {
-                      setState(() {
-                        startDate = date;
-                      });
-                    }
-                  },
+                    setState(() {
+                      startDate = date;
+                    });
+                                    },
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(width: 2, color: widget.borderColor),
@@ -106,12 +104,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                             model.leagueWiseScores)["firstDate"],
                         lastDate: getFirstAndLastDate(
                             model.leagueWiseScores)["lastDate"]);
-                    if (date != null) {
-                      setState(() {
-                        endDate = date;
-                      });
-                    }
-                  },
+                    setState(() {
+                      endDate = date;
+                    });
+                                    },
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(width: 2, color: widget.borderColor),

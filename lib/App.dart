@@ -30,8 +30,7 @@ class App {
     //Get notification Preference
     final notificationEnabledPreference =
         await LocalStorage.getString('notificationEnabled');
-    final bool notificationEnabled = notificationEnabledPreference == null ||
-            notificationEnabledPreference == "yes"
+    final bool notificationEnabled = notificationEnabledPreference == "yes"
         ? true
         : false;
 

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsmojo/Provider/HomeViewModel.dart';
-import '../models/MatchEvent.dart';
 import '../commons/custom_icons.dart';
 import '../models/Score.dart';
 import '../Provider/MatchEventViewModel.dart';
@@ -22,9 +20,6 @@ class _ScorerState extends State<Scorer> {
     super.initState();
     final MatchEventViewModel initialState =
         Provider.of<MatchEventViewModel>(context, listen: false);
-    if (initialState.events == null) {
-      initialState.loadEvents(fixtureId: widget.score.id);
-    }
   }
 
   @override

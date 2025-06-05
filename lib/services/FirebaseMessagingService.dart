@@ -30,10 +30,8 @@ class FirebaseMessagingService {
   Future subscribeToTopic({String topic}) async {
     await _fcm.subscribeToTopic(topic);
     final String lastTopic = await LocalStorage.getString('lastTopic');
-    if (lastTopic != null) {
-      await _fcm.unsubscribeFromTopic(lastTopic);
-    }
-    await LocalStorage.setString('lastTopic', topic);
+    await _fcm.unsubscribeFromTopic(lastTopic);
+      await LocalStorage.setString('lastTopic', topic);
   }
 
   Future unsubscribeFromTopic({String topic}) async {

@@ -34,22 +34,8 @@ class _AllScoresState extends State<AllScores> {
     super.initState();
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
-    if (appProvider.leagueWiseScores == null) {
-      if (appProvider.selectedLeague == null) {
-        appProvider.loadLeagueWiseScores().whenComplete(() {
-          _setScores(appProvider);
-        });
-      } else {
-        appProvider
-            .loadLeagueWiseScores(leagueName: appProvider.selectedLeague)
-            .whenComplete(() {
-          _setScores(appProvider);
-        });
-      }
-    } else {
-      _setScores(appProvider);
+    _setScores(appProvider);
     }
-  }
 
   @override
   void dispose() {
@@ -126,8 +112,7 @@ class _AllScoresState extends State<AllScores> {
                                   ],
                                 ),
                               ),
-                              (model.leagueWiseScores != null &&
-                                      _scores != null)
+                              (_scores != null)
                                   ? _totalNoOfScores > 0
                                       ? scoreList()
                                       : NoContent(

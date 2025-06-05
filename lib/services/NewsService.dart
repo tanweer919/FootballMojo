@@ -30,7 +30,7 @@ class NewsService {
         }
         return newsList;
       }
-    } on DioError catch (e) {
+    } on DioException {
       return null;
     }
   }

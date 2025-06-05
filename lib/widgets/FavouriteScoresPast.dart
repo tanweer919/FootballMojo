@@ -23,14 +23,8 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
     super.initState();
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
-    if (appProvider.favouriteTeamScores == null) {
-      appProvider.loadFavouriteScores().whenComplete(() {
-        _setScores(appProvider);
-      });
-    } else {
-      _setScores(appProvider);
+    _setScores(appProvider);
     }
-  }
 
   @override
   void dispose() {

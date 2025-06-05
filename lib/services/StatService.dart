@@ -17,7 +17,7 @@ class StatService {
         stats["away"] = MatchStat.fromJson(unparsedJson[1]["statistics"]);
         return stats;
       }
-    } on DioError catch (e) {
+    } on DioException {
       return stats;
     }
   }

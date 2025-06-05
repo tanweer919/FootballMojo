@@ -11,7 +11,6 @@ import '../services/LeagueTableService.dart';
 import '../services/TopScorerService.dart';
 import '../models/Player.dart';
 import '../models/User.dart';
-import '../services/RemoteConfigService.dart';
 
 class AppProvider extends ChangeNotifier {
   AppProvider(this._navbarIndex, this._selectedLeague, this._notificationEnabled, this._startDate, this._endDate, this._currentUser);
@@ -67,13 +66,8 @@ class AppProvider extends ChangeNotifier {
   }
 
   void set favouriteNewsList(List<News> news) {
-    if(news != null) {
-      _favouriteNewsList = news.sublist(0, 4);
-    }
-    else {
-      _favouriteNewsList = news;
-    }
-    notifyListeners();
+    _favouriteNewsList = news.sublist(0, 4);
+      notifyListeners();
   }
 
   void set favouriteTeamScores(List<Score> scores) {
@@ -136,15 +130,9 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadLeagueWiseScores({String leagueName}) async {
-    if(leagueName == null) {
-      String storedLeagueId = await LocalStorage.getString('leagueId');
-      _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: storedLeagueId);
-    }
-    else {
-      String leagueId = '${leagues[leagueName]['id']}';
-      _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
-    }
-    notifyListeners();
+    String leagueId = '${leagues[leagueName]['id']}';
+    _leagueWiseScores = await _scoreService.fetchScoresByLeague(id: leagueId);
+      notifyListeners();
   }
 
   Future<void> loadFavouriteScores() async {
@@ -154,27 +142,15 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> loadLeagueTable({String leagueName}) async {
-    if(leagueName == null) {
-      String storedLeagueId = await LocalStorage.getString('leagueId');
-      _leagueTableEntries = await _leagueTableService.fetchLeagueTable(id: storedLeagueId);
-    }
-    else {
-      String leagueId = '${leagues[leagueName]['id']}';
-      _leagueTableEntries = await _leagueTableService.fetchLeagueTable(id: leagueId);
-    }
-    notifyListeners();
+    String leagueId = '${leagues[leagueName]['id']}';
+    _leagueTableEntries = await _leagueTableService.fetchLeagueTable(id: leagueId);
+      notifyListeners();
   }
 
   Future<void> loadTopScorers({String leagueName}) async {
-    if(leagueName == null) {
-      String storedLeagueId = await LocalStorage.getString('leagueId');
-      _topScorers = await _topScorerService.fetchTopScorer(leagueId: storedLeagueId);
-    }
-    else {
-      String leagueId = '${leagues[leagueName]['id']}';
-      _topScorers = await _topScorerService.fetchTopScorer(leagueId: leagueId);
-    }
-    notifyListeners();
+    String leagueId = '${leagues[leagueName]['id']}';
+    _topScorers = await _topScorerService.fetchTopScorer(leagueId: leagueId);
+      notifyListeners();
   }
 
 

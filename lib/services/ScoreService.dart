@@ -24,7 +24,7 @@ class ScoreService {
         return b.date_time.compareTo(a.date_time);
       });
       return scoresList;
-    } on DioError catch (e) {
+    } on DioException {
       return null;
     }
   }
@@ -45,7 +45,7 @@ class ScoreService {
         return b.date_time.compareTo(a.date_time);
       });
       return scoresList;
-    } on DioError catch (e) {
+    } on DioException {
       return null;
     }
   }

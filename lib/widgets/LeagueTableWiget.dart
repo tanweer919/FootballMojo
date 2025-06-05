@@ -21,13 +21,6 @@ class _LeagueTableWidgetState extends State<LeagueTableWidget> {
   void initState() {
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
-    if (appProvider.leagueTableEntries == null) {
-      if (appProvider.selectedLeague == null) {
-        appProvider.loadLeagueTable();
-      } else {
-        appProvider.loadLeagueTable(leagueName: appProvider.selectedLeague);
-      }
-    }
     super.initState();
   }
 

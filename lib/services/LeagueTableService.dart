@@ -24,7 +24,7 @@ class LeagueTableService {
         return a.position.compareTo(b.position);
       });
       return _leagueTableEntries;
-    } on DioError catch (e) {
+    } on DioException {
       return null;
     }
   }

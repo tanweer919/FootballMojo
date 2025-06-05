@@ -26,7 +26,7 @@ class TopScorerService {
         return a.rank.compareTo(b.rank);
       });
       return topScorers;
-    } on DioError catch (e) {
+    } on DioException {
       return null;
     }
   }

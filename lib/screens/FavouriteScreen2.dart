@@ -13,7 +13,6 @@ import '../services/GetItLocator.dart';
 import '../services/FirestoreService.dart';
 import '../services/FirebaseMessagingService.dart';
 import '../Provider/ThemeProvider.dart';
-import '../services/LocalStorage.dart';
 
 class FavouriteTeam extends StatefulWidget {
   final int leagueId;
@@ -42,7 +41,7 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
       futureTeamList = _teamService.fetchTeams(id: widget.leagueId);
     });
     LocalStorage.getString('showTutorial').then((value) {
-      if(value == null || value == "yes") {
+      if(value == "yes") {
         setState(() {
           showTutorial = true;
         });
@@ -279,33 +278,31 @@ class _FavouriteTeamState extends State<FavouriteTeam> {
       appProvider.favouriteNewsList = null;
       appProvider.leagueTableEntries = null;
       appProvider.navbarIndex = 0;
-      if (appProvider.currentUser != null) {
-        EasyLoading.instance
-          ..displayDuration = const Duration(milliseconds: 2000)
-          ..indicatorType = EasyLoadingIndicatorType.chasingDots
-          ..loadingStyle = EasyLoadingStyle.custom
-          ..indicatorSize = 45.0
-          ..radius = 10.0
-          ..backgroundColor = Theme.of(context).primaryColor
-          ..indicatorColor = Colors.white
-          ..maskColor = Colors.blue.withOpacity(0.5)
-          ..progressColor = Theme.of(context).primaryColor
-          ..textColor = Colors.white;
-        EasyLoading.show(status: 'Syncing data');
-        final User user = appProvider.currentUser;
-        final Map<String, dynamic> data = {
-          'name': user.name,
-          'email': user.email,
-          'teamName': team.name,
-          'teamId': '${team.id}',
-          'teamLogo': team.logo,
-          'leagueName': '${widget.leagueName}',
-          'leagueId': '${widget.leagueId}'
-        };
-        await _firestoreService.setData(userId: user.uid, data: data);
-        EasyLoading.dismiss();
-      }
-      await _fcmService.subscribeToTopic(topic: team.name.replaceAll(' ', ''));
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 2000)
+        ..indicatorType = EasyLoadingIndicatorType.chasingDots
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..indicatorSize = 45.0
+        ..radius = 10.0
+        ..backgroundColor = Theme.of(context).primaryColor
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.blue.withOpacity(0.5)
+        ..progressColor = Theme.of(context).primaryColor
+        ..textColor = Colors.white;
+      EasyLoading.show(status: 'Syncing data');
+      final User user = appProvider.currentUser;
+      final Map<String, dynamic> data = {
+        'name': user.name,
+        'email': user.email,
+        'teamName': team.name,
+        'teamId': '${team.id}',
+        'teamLogo': team.logo,
+        'leagueName': '${widget.leagueName}',
+        'leagueId': '${widget.leagueId}'
+      };
+      await _firestoreService.setData(userId: user.uid, data: data);
+      EasyLoading.dismiss();
+          await _fcmService.subscribeToTopic(topic: team.name.replaceAll(' ', ''));
       Navigator.of(context).pushReplacementNamed('/home', arguments: {
         'favouriteTeamMessage': {
           'title': 'Success',

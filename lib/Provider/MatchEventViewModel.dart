@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sportsmojo/models/MatchEvent.dart';
 import 'package:sportsmojo/services/MatchEventService.dart';
-import '../models/MatchStat.dart';
-import '../services/MatchEventService.dart';
 import '../services/GetItLocator.dart';
 class MatchEventViewModel extends ChangeNotifier {
   List<MatchEvent> _events;

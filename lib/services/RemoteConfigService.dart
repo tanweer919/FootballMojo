@@ -6,12 +6,6 @@ class RemoteConfigService {
 
   static RemoteConfigService _instance;
   static Future<RemoteConfigService> getInstance() async {
-    if (_instance == null) {
-      _instance = RemoteConfigService(
-        remoteConfig: await RemoteConfig.instance,
-      );
-    }
-
     return _instance;
   }
 
@@ -21,7 +15,7 @@ class RemoteConfigService {
   Future<void> initialise() async {
     try {
       activateAndFetch();
-    } on FetchThrottledException catch (exception) {
+    } on FetchThrottledException {
       try {
         activateAndFetch();
       } catch (e) {}

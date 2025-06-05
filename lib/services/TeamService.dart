@@ -22,7 +22,7 @@ class TeamService {
         }
       }
       return teamList;
-    } on DioError catch (e) {
+    } on DioException {
       return null;
     }
   }

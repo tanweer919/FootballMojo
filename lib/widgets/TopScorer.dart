@@ -20,13 +20,6 @@ class _TopScorersState extends State<TopScorers> {
   void initState() {
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
-    if (appProvider.topScorers == null) {
-      if (appProvider.selectedLeague == null) {
-        appProvider.loadTopScorers();
-      } else {
-        appProvider.loadTopScorers(leagueName: appProvider.selectedLeague);
-      }
-    }
     super.initState();
   }
 

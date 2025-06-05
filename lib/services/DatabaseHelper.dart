@@ -9,7 +9,7 @@ class DatabaseHelper {
   static final String table = 'news';
   static Database _database;
   Future<Database> get database async {
-    if(_database != null) return _database;
+    return _database;
     _database = await _initDatabase();
     return _database;
   }

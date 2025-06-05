@@ -51,33 +51,31 @@ class RouterService {
     Map<String, dynamic> favouriteTeamMessage = null;
     Score score = null;
     bool showTutorial = false;
-    if (args != null) {
-      if (args.containsKey('index')) {
-        index = args['index'];
-      }
-      if (args.containsKey('news')) {
-        news = args['news'];
-      }
-      if (args.containsKey('leagueId')) {
-        leagueId = args['leagueId'];
-      }
-      if (args.containsKey('leagueName')) {
-        leagueName = args['leagueName'];
-      }
-      if (args.containsKey('favouriteTeamMessage')) {
-        favouriteTeamMessage = args['favouriteTeamMessage'];
-      }
-      if (args.containsKey('score')) {
-        score = args['score'];
-      }
-      if (args.containsKey('from')) {
-        from = args['from'];
-      }
-      if (args.containsKey('showTutorial')) {
-        showTutorial = args['showTutorial'];
-      }
+    if (args.containsKey('index')) {
+      index = args['index'];
     }
-    Map<String, Widget> screens = {
+    if (args.containsKey('news')) {
+      news = args['news'];
+    }
+    if (args.containsKey('leagueId')) {
+      leagueId = args['leagueId'];
+    }
+    if (args.containsKey('leagueName')) {
+      leagueName = args['leagueName'];
+    }
+    if (args.containsKey('favouriteTeamMessage')) {
+      favouriteTeamMessage = args['favouriteTeamMessage'];
+    }
+    if (args.containsKey('score')) {
+      score = args['score'];
+    }
+    if (args.containsKey('from')) {
+      from = args['from'];
+    }
+    if (args.containsKey('showTutorial')) {
+      showTutorial = args['showTutorial'];
+    }
+      Map<String, Widget> screens = {
       '/start': Start(),
       '/home': HomeScreen(
         message: favouriteTeamMessage,

@@ -18,12 +18,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   String teamName;
   void initState() {
     final initialState = Provider.of<AppProvider>(context, listen: false);
-    if (initialState.newsList == null) {
-      initialState.loadAllNews();
-    }
-    if (initialState.favouriteNewsList == null) {
-      initialState.loadFavouriteNews();
-    }
     super.initState();
     _tabController = TabController(vsync: this, length: 2);
     LocalStorage.getString('teamName').then((value) {

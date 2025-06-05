@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsmojo/Provider/AppProvider.dart';
 import '../commons/BottomNavbar.dart';
-import '../commons/custom_icons.dart';
 import '../services/LocalStorage.dart';
-import '../widgets/AllScores.dart';
 import '../widgets/FavouriteScoresPast.dart';
 import '../widgets/FavouriteScoresUpcoming.dart';
 

@@ -16,7 +16,7 @@ class MatchEventService {
         }
       }
       return events;
-    } on DioError catch (e) {
+    } on DioException {
       return null;
     }
   }

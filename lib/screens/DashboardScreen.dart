@@ -592,9 +592,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                                 Padding(
                                   padding: const EdgeInsets.only(right: 4.0),
                                   child: CupertinoSwitch(
-                                      activeColor:
+                                      activeTrackColor:
                                           Theme.of(context).primaryColor,
-                                      trackColor: Color(0xff56727c),
+                                      inactiveTrackColor: Color(0xff56727c),
                                       value: model.notificationEnabled,
                                       onChanged: (bool value) async {
                                         model.notificationEnabled =
@@ -752,7 +752,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           }),
     ).then((value) {
       // dispose the timer in case something else has triggered the dismiss.
-      timer?.cancel();
+      timer.cancel();
       timer = null;
     });
     ;
@@ -780,7 +780,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
             )).then((value) {
       // dispose the timer in case something else has triggered the dismiss.
-      timer?.cancel();
+      timer.cancel();
       timer = null;
     });
     ;

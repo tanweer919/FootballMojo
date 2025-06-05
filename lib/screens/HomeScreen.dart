@@ -15,7 +15,6 @@ import '../Provider/AppProvider.dart';
 import '../Provider/ThemeProvider.dart';
 import '../services/tutorial.dart';
 import '../commons/GlobalKeys.dart';
-import '../services/LocalStorage.dart';
 class HomeScreen extends StatefulWidget {
   @override
   final Map<String, dynamic> message;
@@ -32,24 +31,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final initialState = Provider.of<AppProvider>(context, listen: false);
     final tutorial = Tutorial();
     tutorial.initTargets(GlobalKeys.globalKeys);
-    if (initialState.newsList == null) {
-      initialState.loadAllNews();
-    }
-    if (initialState.favouriteNewsList == null) {
-      initialState.loadFavouriteNews();
-    }
-    if (initialState.favouriteTeamScores == null) {
-      initialState.loadFavouriteScores().then((value) {
-        LocalStorage.getString('tutorialShown').then((value) {
-          if (widget.showTutorial) {
-            tutorial.showAfterLayout(context);
-          }
-        });
-      });
-    }
-    if (initialState.leagueWiseScores == null) {
-      initialState.loadLeagueWiseScores();
-    }
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showAlert();
@@ -132,33 +113,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     String caption;
     final Score liveMatch =
         matches.firstWhere((score) => score.status == "LV", orElse: () => null);
-    if (liveMatch == null) {
-      final int index = matches.indexWhere((score) => score.status == "FT");
-      final Score latestScore = matches[index];
-      if (index > 0) {
-        final Score nextScore = matches[index - 1];
-        if (nextScore.date_time.difference(DateTime.now()).inSeconds <
-            DateTime.now().difference(latestScore.date_time).inSeconds) {
-          if (nextScore.date_time.difference(DateTime.now()).inSeconds < 0) {
-            score = nextScore;
-            caption = 'Latest Match';
-          } else {
-            score = nextScore;
-            caption = 'Upcoming Match';
-          }
-        } else {
-          score = latestScore;
-          caption = 'Latest Match';
-        }
-      } else {
-        score = latestScore;
-        caption = 'Latest Match';
-      }
-    } else {
-      score = liveMatch;
-      caption = 'Live Match';
-    }
-    return Padding(
+    score = liveMatch;
+    caption = 'Live Match';
+      return Padding(
       key: widget.showTutorial ? GlobalKeys.matchCardKey : null,
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -238,11 +195,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     List<News> allNewsList = appProvider.newsList;
     int totalCount;
     int circleCount;
-    if (favouriteNewsList != null) {
-      totalCount = favouriteNewsList.length > 5 ? 5 : favouriteNewsList.length;
-      circleCount = totalCount == 0 ? 5 : totalCount;
-    }
-    return Container(
+    totalCount = favouriteNewsList.length > 5 ? 5 : favouriteNewsList.length;
+    circleCount = totalCount == 0 ? 5 : totalCount;
+      return Container(
         height: MediaQuery.of(context).size.height * 0.35,
         key: widget.showTutorial ? GlobalKeys.carouselKey : null,
         child: favouriteNewsList != null
@@ -493,14 +448,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void showAlert() {
-    if (widget.message != null) {
-      FlushHelper.flushbarAlert(
-          context: context,
-          title: widget.message['title'],
-          message: widget.message['content'],
-          seconds: 3);
+    FlushHelper.flushbarAlert(
+        context: context,
+        title: widget.message['title'],
+        message: widget.message['content'],
+        seconds: 3);
     }
-  }
 
   Future<void> _handleRefresh({AppProvider appProvider}) async {
     await appProvider.loadAllNews();
