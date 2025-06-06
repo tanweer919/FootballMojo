@@ -9,20 +9,37 @@ class TeamService {
   final Dio dio = HttpService.getApiClient();
   final RemoteConfigService _remoteConfig = locator<RemoteConfigService>();
 
-  Future<List<Team>> fetchTeams({@required int id}) async {
+  Future<List<Team>?> fetchTeams({required int id}) async { // Return type is now nullable
     final String season = _remoteConfig.getString(key: 'season');
     List<Team> teamList = [];
     try {
-      final response =
-          await dio.get('teams?league=${id}&season=$season');
-      if (response.statusCode == 200) {
-        final unparsedJson = response.data['response'].toList();
-        for (int i = 0; i < unparsedJson.length; i++) {
-          teamList.add(Team.fromJson(unparsedJson[i]['team']));
+      final response = await dio.get('teams?league=$id&season=$season');
+      if (response.statusCode == 200 && response.data != null) {
+        final dynamic responseData = response.data;
+        if (responseData is Map<String, dynamic>) {
+          final dynamic apiResponse = responseData['response'];
+          if (apiResponse is List) {
+            for (var itemData in apiResponse) {
+              if (itemData is Map<String, dynamic>) {
+                final dynamic teamData = itemData['team'];
+                if (teamData is Map<String, dynamic>) {
+                  // Assuming Team.fromJson handles its input safely
+                  teamList.add(Team.fromJson(teamData));
+                }
+              }
+            }
+          }
         }
+      } else {
+        print('Error fetching teams: Status code ${response.statusCode}');
+        return null;
       }
       return teamList;
-    } on DioException {
+    } on DioException catch (e) {
+      print('DioException fetching teams: $e');
+      return null;
+    } catch (e) {
+      print('Generic exception fetching teams: $e');
       return null;
     }
   }

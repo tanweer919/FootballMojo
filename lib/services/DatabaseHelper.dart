@@ -7,11 +7,11 @@ class DatabaseHelper {
   static final String _databaseName = 'News.db';
   static final int _databaseVersion = 1;
   static final String table = 'news';
-  static Database _database;
+  static Database? _database; // Made nullable
   Future<Database> get database async {
-    return _database;
+    if (_database != null) return _database!; // Check if already initialized
     _database = await _initDatabase();
-    return _database;
+    return _database!;
   }
 
   DatabaseHelper._privateConstructor();
@@ -23,7 +23,7 @@ class DatabaseHelper {
     return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
   }
 
-  Future _onCreate(Database db, int version) async {
+  Future<void> _onCreate(Database db, int version) async { // Return type Future<void>
     await db.execute('''
           CREATE TABLE $table(
             id INTEGER PRIMARY KEY,
@@ -32,9 +32,9 @@ class DatabaseHelper {
             content TEXT NOT NULL,
             url TEXT NOT NULL,
             imageUrl TEXT NOT NULL,
-            publishedAt TEXT NOT NULL,
+            publishedAt TEXT NOT NULL
           )
-          ''');
+          '''); // Removed trailing comma
   }
 
   // Inserts a row in the database where each key in the Map is a column name

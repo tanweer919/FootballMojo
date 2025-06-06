@@ -14,28 +14,26 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 
 ///Class containing all the services that needs to be initialised before running the app
 class App {
-  static ThemeProvider themeProvider;
-  static AppProvider appProvider;
-  static RouterService routerService;
-  static NetworkStatusService networkStatusService;
-  static FirebaseAnalytics analytics;
-  static bool result;
+  static late final ThemeProvider themeProvider;
+  static late final AppProvider appProvider;
+  static late final RouterService routerService;
+  static late final NetworkStatusService networkStatusService;
+  static late final FirebaseAnalytics analytics;
+  static late final bool result;
 
   static Future initialiseApp() async {
     //Setup GetIt Locator
     await setupLocator();
 
     //Get league name 
-    final leagueName = await LocalStorage.getString('leagueName');
+    final String? leagueName = await LocalStorage.getString('leagueName') ?? 'Premier League';
     //Get notification Preference
-    final notificationEnabledPreference =
+    final String? notificationEnabledPreference =
         await LocalStorage.getString('notificationEnabled');
-    final bool notificationEnabled = notificationEnabledPreference == "yes"
-        ? true
-        : false;
+    final bool notificationEnabled = notificationEnabledPreference == "yes";
 
     //Initial 
-    User currentUser = null;
+    User? currentUser = null;
 
     //Analytics Service
     final AnalyticsService analyticsService = locator<AnalyticsService>();
@@ -75,7 +73,7 @@ class App {
     }
 
     //Get theme preference
-    final _theme = await LocalStorage.getString('appTheme');
+    final String? _theme = await LocalStorage.getString('appTheme');
 
     //Setup app global state provider
     appProvider = locator<AppProvider>(param1: {

@@ -4,8 +4,9 @@ class FavouriteScoresViewModel extends ChangeNotifier {
   List<Score> _scores;
   int _lastRetrievedIndex;
 
-  FavouriteScoresViewModel(this._scores, this._lastRetrievedIndex);
-
+  FavouriteScoresViewModel({required List<Score> scores, required int lastRetrievedIndex})
+      : _scores = scores,
+        _lastRetrievedIndex = lastRetrievedIndex;
 
   List<Score> get allScores => _scores;
 

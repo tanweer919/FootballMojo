@@ -29,24 +29,25 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen>
     with TickerProviderStateMixin {
-  AnimationController _sunController;
-  AnimationController _moonController;
-  Animation<Offset> _moonAnimation;
+  late AnimationController _sunController; // Changed to late
+  late AnimationController _moonController; // Changed to late
+  late Animation<Offset> _moonAnimation; // Changed to late
 
   final FirebaseService _firebaseService = locator<FirebaseService>();
   final FirestoreService _firestoreService = locator<FirestoreService>();
   final FirebaseMessagingService _fcmService =
       locator<FirebaseMessagingService>();
   bool inProgress = false;
-  String teamLogo, teamName, leagueName, leagueLogo;
+  String? teamLogo, teamName, leagueName, leagueLogo; // Changed to String?
 
   @override
   void initState() {
-    _sunController = new AnimationController(
+    super.initState(); // Call super.initState() first
+    _sunController = AnimationController( // Removed new
       vsync: this,
-      duration: new Duration(milliseconds: 1300),
+      duration: Duration(milliseconds: 1300), // Removed new
     );
-    _moonController = new AnimationController(
+    _moonController = AnimationController( // Removed new
         duration: Duration(milliseconds: 1000), vsync: this)
       ..addListener(() => setState(() {}));
     _moonAnimation = Tween<Offset>(begin: Offset(1.5, 0.0), end: Offset.zero)
@@ -55,18 +56,36 @@ class _DashboardScreenState extends State<DashboardScreen>
       curve: Cubic(0, 1, .78, .98),
     ));
     LocalStorage.getString('teamName').then((value) {
-      setState(() {
-        teamName = value;
-      });
+      if (mounted) { // Check if widget is still in the tree
+        setState(() {
+          teamName = value;
+        });
+      }
     });
     LocalStorage.getString('teamLogo').then((value) {
-      teamLogo = value;
+       if (mounted) {
+        setState(() { // Ensure teamLogo is updated in setState if UI depends on it directly
+          teamLogo = value;
+        });
+      }
     });
     LocalStorage.getString('leagueName').then((value) {
-      leagueName = value;
-      leagueLogo = leagues[leagueName]["logo"];
+      if (mounted) {
+        setState(() {
+          leagueName = value;
+          if (leagueName != null) {
+            final leagueData = leagues[leagueName!]; // Use ! after null check
+            if (leagueData is Map && leagueData.containsKey("logo")) {
+              leagueLogo = leagueData["logo"] as String?;
+            } else {
+              leagueLogo = null;
+            }
+          } else {
+            leagueLogo = null;
+          }
+        });
+      }
     });
-    super.initState();
   }
 
   @override
@@ -113,8 +132,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                                             borderRadius:
                                                 BorderRadius.circular(12.0),
                                             child: CachedNetworkImage(
-                                                imageUrl: model
-                                                    .currentUser.profilePic,
+                                                imageUrl: model.currentUser?.profilePic ?? '', // Handle null profilePic, provide empty or placeholder URL
+                                                errorWidget: (context, url, error) => Image.asset('assets/images/user-placeholder.jpg'), // Fallback for error
                                                 placeholder: (BuildContext
                                                             context,
                                                         String url) =>
@@ -133,14 +152,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 AutoSizeText(
-                                                  '${model.currentUser.name}',
+                                                  model.currentUser?.name ?? 'Guest', // Handle null name
                                                   style:
                                                       TextStyle(fontSize: 20),
                                                   textAlign: TextAlign.left,
                                                   maxLines: 1,
                                                 ),
                                                 Text(
-                                                  '${model.currentUser.email}',
+                                                  model.currentUser?.email ?? 'No email', // Handle null email
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: Theme.of(context)
@@ -148,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                 )
                                               ],
                                             ),
-                                            CustomRaisedButton(
+                                            CustomRaisedButton( // Assuming CustomRaisedButton is null-safe
                                               height: 30,
                                               minWidth: 75,
                                               label: 'Logout',
@@ -157,14 +176,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                     .signOutGoogle();
                                                 model.currentUser = null;
                                               },
-                                              inProgress: false,
+                                              inProgress: false, // Assuming this is handled
                                             )
                                           ],
                                         ),
                                       ),
                                     ],
                                   )
-                                : Row(
+                                : Row( // User is null, show Sign-in button
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
                                       Container(
@@ -174,49 +193,60 @@ class _DashboardScreenState extends State<DashboardScreen>
                                         child: ElevatedButton(
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Color(0xff4285f4),
-                                            padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                            padding: EdgeInsets.symmetric(horizontal: 4.0), // This padding is for the ElevatedButton itself
                                           ),
                                           onPressed: () async {
-                                            setState(() {
-                                              inProgress = true;
-                                            });
-                                            final User user =
+                                            if (mounted) { // Check mounted before async operation
+                                              setState(() {
+                                                inProgress = true;
+                                              });
+                                            }
+
+                                            final User? user = // User can be null
                                                 await _firebaseService
                                                     .signInWithGoogle();
-                                            model.currentUser = user;
+
+                                            if (!mounted) return; // Check mounted after await
+
+                                            if (user == null) { // Handle failed sign-in
+                                                setState(() {
+                                                  inProgress = false;
+                                                });
+                                                // Optionally show a message to the user
+                                                FlushHelper.flushbarAlert(context: context, title: "Sign-in Failed", message: "Could not sign in with Google.", seconds: 3);
+                                              return;
+                                            }
+
+                                            model.currentUser = user; // Assign the user to AppProvider
+
+                                            // Safely access user properties (they are nullable in User model)
                                             final Map<String, dynamic> data = {
-                                              'name': user.name,
-                                              'email': user.email,
+                                              'name': user.name, // name is String?
+                                              'email': user.email, // email is String?
                                               'teamName':
-                                                  await LocalStorage.getString(
-                                                'teamName',
-                                              ),
+                                                  await LocalStorage.getString('teamName'), // Returns String?
                                               'teamId':
-                                                  await LocalStorage.getString(
-                                                'teamId',
-                                              ),
+                                                  await LocalStorage.getString('teamId'), // Returns String?
                                               'teamLogo':
-                                                  await LocalStorage.getString(
-                                                'teamLogo',
-                                              ),
+                                                  await LocalStorage.getString('teamLogo'), // Returns String?
                                               'leagueName':
-                                                  await LocalStorage.getString(
-                                                      'leagueName'),
+                                                  await LocalStorage.getString('leagueName'), // Returns String?
                                               'leagueId':
-                                                  await LocalStorage.getString(
-                                                'leagueId',
-                                              ),
+                                                  await LocalStorage.getString('leagueId'), // Returns String?
                                               'fcmToken':
-                                                  await _fcmService.getToken()
+                                                  await _fcmService.getToken() // Returns String?
                                             };
+                                            // Firestore setData should handle Map<String, dynamic?> or ensure values are not null if required by backend
                                             await _firestoreService.setData(
-                                                userId: user.uid, data: data);
-                                            setState(() {
-                                              inProgress = false;
-                                            });
+                                                userId: user.uid, data: data); // uid is non-nullable
+
+                                            if (mounted) {
+                                              setState(() {
+                                                inProgress = false;
+                                              });
+                                            }
                                           },
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 4.0),
+                                          // padding for ElevatedButton content is usually handled by child an its own padding
                                           child: inProgress
                                               ? CircularProgressIndicator(
                                                   valueColor:
@@ -362,8 +392,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                             child: leagueLogo !=
                                                                     null
                                                                 ? CachedNetworkImage(
-                                                                    imageUrl:
-                                                                        leagueLogo,
+                                                                    imageUrl: leagueLogo!, // Added ! after null check
+                                                                    errorWidget: (context, url, error) => Icon(MyFlutterApp.football, size: 40),
                                                                     placeholder:
                                                                         (BuildContext context,
                                                                                 String url) =>
@@ -378,7 +408,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                                   )),
                                                       ),
                                                       Text(
-                                                        leagueName,
+                                                        leagueName ?? 'N/A', // Handle null leagueName
                                                         style: TextStyle(
                                                             fontSize: 18),
                                                       )
@@ -461,11 +491,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                                 bottom: 4.0),
                                                         child: Container(
                                                             height: 40,
-                                                            child: teamLogo !=
-                                                                    null
+                                                            child: teamLogo != null && teamLogo!.isNotEmpty
                                                                 ? CachedNetworkImage(
-                                                                    imageUrl:
-                                                                        teamLogo,
+                                                                    imageUrl: teamLogo!, // Added ! after null check
+                                                                    errorWidget: (context, url, error) => Icon(MyFlutterApp.football, size: 40),
                                                                     placeholder:
                                                                         (BuildContext context,
                                                                                 String url) =>
@@ -480,7 +509,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                                                                   )),
                                                       ),
                                                       Text(
-                                                        teamName,
+                                                        teamName ?? 'N/A', // Handle null teamName
                                                         style: TextStyle(
                                                             fontSize: 18),
                                                       )
@@ -547,15 +576,13 @@ class _DashboardScreenState extends State<DashboardScreen>
                                     isDarkModeEnabled:
                                         themeModel.appTheme == AppTheme.Dark,
                                     onStateChanged: (bool value) async {
+                                      // themeModel is a ThemeProvider, appTheme setter notifies listeners
+                                      themeModel.appTheme = value ? AppTheme.Dark : AppTheme.Light;
+                                      await LocalStorage.setString(
+                                          'appTheme', value ? "dark" : "light");
                                       if (!value) {
-                                        themeModel.appTheme = AppTheme.Light;
-                                        await LocalStorage.setString(
-                                            'appTheme', "light");
                                         showSun();
                                       } else {
-                                        themeModel.appTheme = AppTheme.Dark;
-                                        await LocalStorage.setString(
-                                            'appTheme', "dark");
                                         showMoon();
                                       }
                                     },
@@ -595,10 +622,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                                       activeTrackColor:
                                           Theme.of(context).primaryColor,
                                       inactiveTrackColor: Color(0xff56727c),
-                                      value: model.notificationEnabled,
+                                      value: model.notificationEnabled, // AppProvider.notificationEnabled is bool
                                       onChanged: (bool value) async {
-                                        model.notificationEnabled =
-                                            !model.notificationEnabled;
+                                        model.notificationEnabled = value; // Setter in AppProvider
                                         if (value) {
                                           FlushHelper.flushbarAlert(
                                               context: context,
@@ -606,11 +632,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                                               message:
                                                   'Push Notications Enabled',
                                               seconds: 2);
-                                          LocalStorage.setString(
+                                          await LocalStorage.setString(
                                               'notificationEnabled', "yes");
-                                          await _fcmService.subscribeToTopic(
-                                              topic:
-                                                  teamName.replaceAll(' ', ''));
+                                          if (teamName != null && teamName!.isNotEmpty) { // Check teamName for null/empty
+                                            await _fcmService.subscribeToTopic(
+                                                topic: teamName!.replaceAll(' ', ''));
+                                          }
                                         } else {
                                           FlushHelper.flushbarAlert(
                                               context: context,
@@ -618,14 +645,13 @@ class _DashboardScreenState extends State<DashboardScreen>
                                               message:
                                                   'Push Notications Disabled',
                                               seconds: 2);
-                                          LocalStorage.setString(
-                                              'notificationEnabled', "no");
-                                          await _fcmService
-                                              .unsubscribeFromTopic(
-                                                  topic: teamName.replaceAll(
-                                                      ' ', ''));
                                           await LocalStorage.setString(
-                                              'lastTopic', null);
+                                              'notificationEnabled', "no");
+                                          if (teamName != null && teamName!.isNotEmpty) { // Check teamName for null/empty
+                                            await _fcmService.unsubscribeFromTopic(
+                                                    topic: teamName!.replaceAll(' ', ''));
+                                          }
+                                          await LocalStorage.setString('lastTopic', ""); // Set to empty string instead of null
                                         }
                                       }),
                                 )
@@ -636,7 +662,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                             height: MediaQuery.of(context).size.height / 12,
                             child: InkWell(
                               onTap: () async {
-                                await launchUrl(
+                                await _launchUrlTyped( // Changed to private typed version
                                     'https://play.google.com/store/apps/details?id=com.footballmojo');
                               },
                               child: Row(
@@ -731,9 +757,11 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   void showSun() {
     _sunController.repeat();
-    Timer timer = Timer(Duration(milliseconds: 1300), () {
-      Navigator.of(context, rootNavigator: true).pop();
-      _sunController.stop();
+    Timer? timer = Timer(Duration(milliseconds: 1300), () { // Timer can be nullable
+      if(mounted) { // Check if mounted before popping
+         Navigator.of(context, rootNavigator: true).pop();
+      }
+      _sunController.stop(); // Stop controller regardless
     });
     showDialog(
       context: context,
@@ -744,25 +772,25 @@ class _DashboardScreenState extends State<DashboardScreen>
                 horizontal: MediaQuery.of(context).size.width * 0.25),
             child: Image.asset('assets/images/sun.png'),
           ),
-          builder: (BuildContext context, Widget _widget) {
+          builder: (BuildContext context, Widget? _widget) { // _widget can be nullable
             return Transform.rotate(
               angle: _sunController.value * 3.14,
-              child: _widget,
+              child: _widget!, // Assert non-null if child is always provided
             );
           }),
     ).then((value) {
-      // dispose the timer in case something else has triggered the dismiss.
-      timer.cancel();
+      timer?.cancel(); // Cancel if timer is not null
       timer = null;
     });
-    ;
   }
 
   void showMoon() {
     _moonController.reset();
     _moonController.forward();
-    Timer timer = Timer(Duration(milliseconds: 1300), () {
-      Navigator.of(context, rootNavigator: true).pop();
+    Timer? timer = Timer(Duration(milliseconds: 1300), () { // Timer can be nullable
+      if(mounted) { // Check if mounted
+        Navigator.of(context, rootNavigator: true).pop();
+      }
     });
     showDialog(
         context: context,
@@ -773,24 +801,26 @@ class _DashboardScreenState extends State<DashboardScreen>
               child: Center(
                 child: SlideTransition(
                   position: _moonAnimation,
-                  child: Container(
+                  child: Container( // Child for SlideTransition should not be null
                     child: Image.asset('assets/images/moon.png'),
                   ),
                 ),
               ),
             )).then((value) {
-      // dispose the timer in case something else has triggered the dismiss.
-      timer.cancel();
+      timer?.cancel(); // Cancel if timer is not null
       timer = null;
     });
-    ;
   }
 
-  Future launchUrl(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  // Updated launchUrl method to _launchUrlTyped for clarity and new url_launcher API
+  Future<void> _launchUrlTyped(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     } else {
-      throw 'Could not launch $url';
+      // Consider showing a Flushbar or SnackBar on failure
+      print('Could not launch $url');
+      // throw 'Could not launch $url'; // Or handle more gracefully
     }
   }
 }

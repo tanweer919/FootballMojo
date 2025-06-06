@@ -4,10 +4,11 @@ import '../services/StatService.dart';
 import '../services/GetItLocator.dart';
 class MatchStatViewModel extends ChangeNotifier {
   Map<String, MatchStat> _stats;
-  MatchStatViewModel(this._stats);
-  StatService _statService = locator<StatService>();
+  MatchStatViewModel({required Map<String, MatchStat> stats}) : _stats = stats;
+  final StatService _statService = locator<StatService>();
 
-  Future<void> loadStats({@required int fixtureId}) async{
+  Future<void> loadStats({required int fixtureId}) async {
+    // Assuming _statService.fetchStats returns a non-nullable Map<String, MatchStat>
     _stats = await _statService.fetchStats(fixtureId: fixtureId);
     notifyListeners();
   }

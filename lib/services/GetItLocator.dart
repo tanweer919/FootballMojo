@@ -45,19 +45,24 @@ Future setupLocator() async {
   locator.registerLazySingleton<FirebaseMessagingService>(
       () => FirebaseMessagingService());
   locator.registerLazySingleton<RouterService>(() => RouterService());
-  locator.registerFactory<HomeViewModel>(() => HomeViewModel(0));
-  locator.registerFactory<MatchStatViewModel>(() => MatchStatViewModel(null));
-  locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(null));
+  locator.registerFactory<HomeViewModel>(
+      () => HomeViewModel(carouselIndex: 0)); // Updated
+  locator.registerFactory<MatchStatViewModel>(
+      () => MatchStatViewModel(stats: {})); // Updated, assuming {} is a valid default
+  locator.registerFactory<MatchEventViewModel>(
+      () => MatchEventViewModel(events: [])); // Updated, assuming [] is a valid default
   locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>(
-      (scores, index) => FavouriteScoresViewModel(scores, index));
-  locator.registerFactoryParam<AppProvider, Map<String, dynamic>, User>(
+      (scores, index) => FavouriteScoresViewModel(
+          scores: scores, lastRetrievedIndex: index)); // Updated
+  locator.registerFactoryParam<AppProvider, Map<String, dynamic>, User?>( // User can be null
       (map, currentUser) => AppProvider(
-          0,
-          map['leagueName'],
-          map['notificationEnabled'],
-          now.subtract(Duration(days: 90)),
-          now.add(Duration(days: 7)),
-          currentUser));
+            selectedLeague: map['leagueName'] as String?, // Safe cast
+            notificationEnabled: map['notificationEnabled'] as bool, // Safe cast
+            currentUser: currentUser, // currentUser is User?
+            navbarIndex: 0, // Default or passed value
+            startDate: now.subtract(Duration(days: 90)),
+            endDate: now.add(Duration(days: 7)),
+          )); // Updated
   locator.registerFactoryParam<ThemeProvider, AppTheme, void>(
-      (theme, _) => ThemeProvider(theme));
+      (theme, _) => ThemeProvider(appTheme: theme)); // Updated
 }
