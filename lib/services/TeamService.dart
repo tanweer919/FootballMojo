@@ -6,11 +6,14 @@ import 'GetItLocator.dart';
 import 'RemoteConfigService.dart';
 
 class TeamService {
-  final Dio dio = HttpService.getApiClient();
   final RemoteConfigService _remoteConfig = locator<RemoteConfigService>();
 
   Future<List<Team>?> fetchTeams({required int id}) async { // Return type is now nullable
-    final String season = _remoteConfig.getString(key: 'season');
+    final Dio dio = await HttpService.getApiClient();
+    final String? season = _remoteConfig.getString(key: 'season');
+    if (season == null) {
+      throw Exception('Season not found in remote config');
+    }
     List<Team> teamList = [];
     try {
       final response = await dio.get('teams?league=$id&season=$season');

@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/News.dart';
+
 class NewsCard extends StatelessWidget {
   final int index;
   final News news;
-  NewsCard({this.index, this.news});
+  NewsCard({required this.index, required this.news});
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: InkWell(
         onTap: () {
-          Navigator.of(context).pushNamed('/newsarticle', arguments: {'index': index, 'news': news});
+          Navigator.of(context).pushNamed('/newsarticle',
+              arguments: {'index': index, 'news': news});
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,10 +25,10 @@ class NewsCard extends StatelessWidget {
               child: Hero(
                 tag: 'hero${index}',
                 child: CachedNetworkImage(
-                  imageUrl:
-                  news.imageUrl,
+                  imageUrl: news.imageUrl,
                   fit: BoxFit.cover,
-                  placeholder: (BuildContext context, String url) => Image.asset('assets/images/news_source_default.png'),
+                  placeholder: (BuildContext context, String url) =>
+                      Image.asset('assets/images/news_source_default.png'),
                 ),
               ),
             ),
@@ -34,12 +36,10 @@ class NewsCard extends StatelessWidget {
               child: Container(
                 height: 80,
                 child: Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Flexible(
@@ -80,19 +80,17 @@ class NewsCard extends StatelessWidget {
     );
   }
 
-  String convertDateTime({DateTime dateTime}) {
+  String convertDateTime({required DateTime dateTime}) {
     DateTime now = DateTime.now();
     int diffMin = now.difference(dateTime).inMinutes;
     int diffHr = now.difference(dateTime).inHours;
     int diffDay = now.difference(dateTime).inDays;
 
-    if(diffMin < 60) {
+    if (diffMin < 60) {
       return '$diffMin mins';
-    }
-    else if(diffMin < 1440) {
+    } else if (diffMin < 1440) {
       return '$diffHr hrs';
-    }
-    else {
+    } else {
       return '$diffDay days';
     }
   }

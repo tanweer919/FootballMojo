@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
 import '../Provider/AppProvider.dart';
 import '../models/Score.dart';
@@ -15,16 +15,16 @@ class FavouriteScoresPast extends StatefulWidget {
 
 class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
   ScrollController _scrollController = ScrollController();
-  int _lastRetrievedLindex;
-  int _totalNoOfScores;
-  List<Score> _scores;
+  int _lastRetrievedLindex = 0;
+  int _totalNoOfScores = 0;
+  List<Score> _scores = [];
   @override
   void initState() {
     super.initState();
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
     _setScores(appProvider);
-    }
+  }
 
   @override
   void dispose() {
@@ -57,7 +57,7 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
             controller: _scrollController,
             child: Container(
               margin: EdgeInsets.only(top: 30.0),
-              child: _scores != null
+              child: _scores.isNotEmpty
                   ? _totalNoOfScores > 0
                       ? scoreList()
                       : NoContent(
@@ -70,12 +70,21 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: 10,
                       itemBuilder: (BuildContext context, int index) {
-                        return themeModel.appTheme == AppTheme.Light ? PKCardSkeleton(
-                          isCircularImage: true,
-                          isBottomLinesActive: true,
-                        ) : PKDarkCardSkeleton(
-                          isCircularImage: true,
-                          isBottomLinesActive: true,
+                        return Shimmer.fromColors(
+                          baseColor: themeModel.appTheme == AppTheme.Light
+                              ? Colors.grey[300]!
+                              : Colors.grey[700]!,
+                          highlightColor: themeModel.appTheme == AppTheme.Light
+                              ? Colors.grey[100]!
+                              : Colors.grey[600]!,
+                          child: Container(
+                            height: 100,
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
                         );
                       }),
             ),
@@ -134,9 +143,9 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
 
   List<Score> _setScores(AppProvider appProvider) {
     List<Score> favouriteTeamScores = appProvider.favouriteTeamScores
-        .where((score) =>
+        ?.where((score) =>
             score.date_time.difference(DateTime.now()).inSeconds <= 0)
-        .toList();
+        .toList() ?? [];
     _totalNoOfScores = favouriteTeamScores.length;
     setState(() {
       if (_totalNoOfScores > 10) {
@@ -155,10 +164,16 @@ class _FavouriteScoresPastState extends State<FavouriteScoresPast> {
         _getMoreScores(favouriteTeamScores);
       }
     });
+    return favouriteTeamScores;
   }
 
-  Future<void> _handleRefresh({AppProvider appProvider}) async {
+  Future<void> _handleRefresh({required AppProvider appProvider}) async {
     await appProvider.loadFavouriteScores();
-    Navigator.of(context).pushReplacementNamed('/score');
+    _setScores(appProvider);
+  }
+
+  List<Score> _getFilteredScores() {
+    // ... existing code ...
+    return [];
   }
 }

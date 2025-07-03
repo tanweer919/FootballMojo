@@ -3,7 +3,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import '../commons/BottomNavbar.dart';
 import '../commons/NewsCard.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
+import 'package:shimmer/shimmer.dart';
 import '../services/LocalStorage.dart';
 import '../Provider/AppProvider.dart';
 import '../Provider/ThemeProvider.dart';
@@ -14,8 +14,9 @@ class NewsScreen extends StatefulWidget {
 }
 
 class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
-  TabController _tabController;
-  String teamName;
+  late TabController _tabController;
+  String? teamName;
+
   void initState() {
     final initialState = Provider.of<AppProvider>(context, listen: false);
     super.initState();
@@ -29,6 +30,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -62,7 +64,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
-                          '$teamName',
+                          teamName ?? 'Team',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
@@ -87,7 +89,8 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget allNews({AppProvider model, ThemeProvider themeModel}) {
+  Widget allNews(
+      {required AppProvider model, required ThemeProvider themeModel}) {
     return RefreshIndicator(
       onRefresh: () async {
         EasyLoading.instance
@@ -125,27 +128,34 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        return themeModel.appTheme == AppTheme.Light
-                            ? PKCardSkeleton(
-                                isCircularImage: true,
-                                isBottomLinesActive: true,
-                              )
-                            : PKDarkCardSkeleton(
-                                isCircularImage: true,
-                                isBottomLinesActive: true,
-                              );
+                        return Shimmer.fromColors(
+                          baseColor: themeModel.appTheme == AppTheme.Light
+                              ? Colors.grey[300]!
+                              : Colors.grey[700]!,
+                          highlightColor: themeModel.appTheme == AppTheme.Light
+                              ? Colors.grey[100]!
+                              : Colors.grey[600]!,
+                          child: Container(
+                            height: 100,
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
                       })
                   : ListView.separated(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: model.newsList.length,
+                      itemCount: model.newsList?.length ?? 0,
                       separatorBuilder: (BuildContext context, int index) {
                         return Divider();
                       },
                       itemBuilder: (BuildContext context, int index) {
                         return NewsCard(
                           index: index,
-                          news: model.newsList[index],
+                          news: model.newsList![index],
                         );
                       })
             ],
@@ -155,7 +165,8 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget favouriteTeamNews({AppProvider model, ThemeProvider themeModel}) {
+  Widget favouriteTeamNews(
+      {required AppProvider model, required ThemeProvider themeModel}) {
     return RefreshIndicator(
       onRefresh: () async {
         EasyLoading.instance
@@ -172,7 +183,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
         EasyLoading.show(status: 'Fetching latest news');
         await _handleFavouriteNewsRefresh(appProvider: model);
         EasyLoading.dismiss();
-
       },
       child: SingleChildScrollView(
         child: Padding(
@@ -194,27 +204,34 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        return themeModel.appTheme == AppTheme.Light
-                            ? PKCardSkeleton(
-                                isCircularImage: true,
-                                isBottomLinesActive: true,
-                              )
-                            : PKDarkCardSkeleton(
-                                isCircularImage: true,
-                                isBottomLinesActive: true,
-                              );
+                        return Shimmer.fromColors(
+                          baseColor: themeModel.appTheme == AppTheme.Light
+                              ? Colors.grey[300]!
+                              : Colors.grey[700]!,
+                          highlightColor: themeModel.appTheme == AppTheme.Light
+                              ? Colors.grey[100]!
+                              : Colors.grey[600]!,
+                          child: Container(
+                            height: 100,
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
                       })
                   : ListView.separated(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: model.favouriteNewsList.length,
+                      itemCount: model.favouriteNewsList?.length ?? 0,
                       separatorBuilder: (BuildContext context, int index) {
                         return Divider();
                       },
                       itemBuilder: (BuildContext context, int index) {
                         return NewsCard(
                           index: index,
-                          news: model.favouriteNewsList[index],
+                          news: model.favouriteNewsList![index],
                         );
                       })
             ],
@@ -224,11 +241,12 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> _handleAllNewsRefresh({AppProvider appProvider}) async {
+  Future<void> _handleAllNewsRefresh({required AppProvider appProvider}) async {
     await appProvider.loadAllNews();
   }
 
-  Future<void> _handleFavouriteNewsRefresh({AppProvider appProvider}) async {
+  Future<void> _handleFavouriteNewsRefresh(
+      {required AppProvider appProvider}) async {
     await appProvider.loadFavouriteNews();
   }
 }

@@ -12,6 +12,52 @@ import '../constants.dart';
 import '../widgets/LeagueDropdown.dart';
 import '../Provider/ThemeProvider.dart';
 
+// Define a stateless widget for the skeleton of a ScoreCard
+class ScoreCardSkeleton extends StatelessWidget {
+  final bool isDarkMode;
+  const ScoreCardSkeleton({Key? key, this.isDarkMode = false})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+      highlightColor: isDarkMode ? Colors.grey[700]! : Colors.grey[100]!,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.white,
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                      width: double.infinity,
+                      height: 10.0,
+                      color: Colors.white),
+                  SizedBox(height: 6),
+                  Container(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: 10.0,
+                      color: Colors.white),
+                ],
+              ),
+            ),
+            SizedBox(width: 12),
+            Container(width: 50, height: 20, color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class AllScores extends StatefulWidget {
   @override
   _AllScoresState createState() => _AllScoresState();
@@ -19,10 +65,10 @@ class AllScores extends StatefulWidget {
 
 class _AllScoresState extends State<AllScores> {
   ScrollController _scrollController = ScrollController();
-  int _lastRetrievedLindex;
-  int _totalNoOfScores;
-  List<Score> _scores;
-  List<DropdownMenuItem> leaguesItems = leagues.entries
+  int _lastRetrievedLindex = 0;
+  int _totalNoOfScores = 0;
+  List<Score> _scores = [];
+  List<DropdownMenuItem<String>> leaguesItems = leagues.entries
       .map<DropdownMenuItem<String>>((entry) => DropdownMenuItem<String>(
             value: entry.key,
             child: Text(entry.key),
@@ -35,7 +81,7 @@ class _AllScoresState extends State<AllScores> {
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
     _setScores(appProvider);
-    }
+  }
 
   @override
   void dispose() {
@@ -80,21 +126,25 @@ class _AllScoresState extends State<AllScores> {
                                       MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                     LeagueDropdown(
-                                      items: getLeagueItems(),
-                                      selectedLeague: model.selectedLeague,
+                                      items: leaguesItems,
+                                      selectedLeague:
+                                          model.selectedLeague ?? '',
                                       backgroundColor:
                                           themeModel.appTheme == AppTheme.Light
                                               ? Color(0xfffafafa)
                                               : Color(0xff1d1d1d),
-                                      fontColor: themeModel.appTheme == AppTheme.Light ? Colors.black : Colors.white,
+                                      fontColor:
+                                          themeModel.appTheme == AppTheme.Light
+                                              ? Colors.black
+                                              : Colors.white,
                                       purpose: "score",
                                     ),
                                     TextButton(
                                       style: TextButton.styleFrom(
-                                        backgroundColor:
-                                            themeModel.appTheme == AppTheme.Light
-                                                ? Color(0xfffafafa)
-                                                : Color(0xff1d1d1d),
+                                        backgroundColor: themeModel.appTheme ==
+                                                AppTheme.Light
+                                            ? Color(0xfffafafa)
+                                            : Color(0xff1d1d1d),
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
@@ -126,7 +176,9 @@ class _AllScoresState extends State<AllScores> {
                                       itemCount: 10,
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        return ScoreCardSkeleton(isDarkMode: themeModel.appTheme == AppTheme.Dark);
+                                        return ScoreCardSkeleton(
+                                            isDarkMode: themeModel.appTheme ==
+                                                AppTheme.Dark);
                                       }),
                             ],
                           ),
@@ -134,45 +186,6 @@ class _AllScoresState extends State<AllScores> {
                       )),
             ));
   }
-
-// Define a stateless widget for the skeleton of a ScoreCard
-class ScoreCardSkeleton extends StatelessWidget {
-  final bool isDarkMode;
-  const ScoreCardSkeleton({Key key, this.isDarkMode = false}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
-      highlightColor: isDarkMode ? Colors.grey[700]! : Colors.grey[100]!,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.white,
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(width: double.infinity, height: 10.0, color: Colors.white),
-                  SizedBox(height: 6),
-                  Container(width: MediaQuery.of(context).size.width * 0.4, height: 10.0, color: Colors.white),
-                ],
-              ),
-            ),
-            SizedBox(width: 12),
-            Container(width: 50, height: 20, color: Colors.white),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
   Widget scoreList() {
     return ListView.builder(
@@ -253,8 +266,8 @@ class ScoreCardSkeleton extends StatelessWidget {
     now = DateTime(now.year, now.month, now.day);
     final List<Score> allScores = filterScores(
         scores: appProvider.leagueWiseScores,
-        after: appProvider.startDate,
-        before: appProvider.endDate);
+        after: appProvider.startDate ?? now,
+        before: appProvider.endDate ?? now);
     _totalNoOfScores = allScores.length;
     setState(() {
       if (_totalNoOfScores > 10) {
@@ -275,7 +288,7 @@ class ScoreCardSkeleton extends StatelessWidget {
     });
   }
 
-  void onSettingPressed({ThemeProvider themeModel}) {
+  void onSettingPressed({required ThemeProvider themeModel}) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -290,7 +303,7 @@ class ScoreCardSkeleton extends StatelessWidget {
         });
   }
 
-  String convertDateTime({DateTime date_time}) {
+  String convertDateTime({required DateTime date_time}) {
     int dayDifferenceCount =
         dayDifference(date_time1: DateTime.now(), date_time2: date_time);
     if (dayDifferenceCount == 0) {
@@ -304,8 +317,13 @@ class ScoreCardSkeleton extends StatelessWidget {
     }
   }
 
-  Future<void> _handleRefresh({AppProvider model}) async {
+  Future<void> _handleRefresh({required AppProvider model}) async {
     await model.loadLeagueTable(leagueName: model.selectedLeague);
     Navigator.of(context).pushReplacementNamed('/league');
+  }
+
+  List<Score> _getFilteredScores() {
+    // ... existing code ...
+    return [];
   }
 }

@@ -7,15 +7,15 @@ import '../constants.dart';
 
 class ScoreCard extends StatefulWidget {
   final Score score;
-  ScoreCard({this.score});
+  ScoreCard({required this.score});
 
   @override
   _ScoreCardState createState() => _ScoreCardState();
 }
 
 class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
-  Animation<double> animation;
-  AnimationController _animationController;
+  late Animation<double> animation;
+  late AnimationController _animationController;
 
   @override
   void initState() {
@@ -60,7 +60,10 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                     child: Text(
                       '${widget.score.competition} - ${convertDateTime(date_time: widget.score.date_time)}',
                       style: TextStyle(
-                          fontSize: (widget.score.competition.startsWith('UEFA')) ? 11: 12,
+                          fontSize:
+                              (widget.score.competition.startsWith('UEFA'))
+                                  ? 11
+                                  : 12,
                           color: Theme.of(context).primaryColorDark),
                     ),
                   ),
@@ -104,7 +107,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                             child: Container(
                                 height: 60,
                                 child: CachedNetworkImage(
-                                    imageUrl: widget.score.homeTeamLogo,
+                                    imageUrl: widget.score.homeTeamLogo ?? '',
                                     placeholder:
                                         (BuildContext context, String url) =>
                                             Icon(MyFlutterApp.football))),
@@ -144,7 +147,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                             child: Container(
                                 height: 60,
                                 child: CachedNetworkImage(
-                                    imageUrl: widget.score.awayTeamLogo,
+                                    imageUrl: widget.score.awayTeamLogo ?? '',
                                     placeholder:
                                         (BuildContext context, String url) =>
                                             Icon(MyFlutterApp.football))),
@@ -168,7 +171,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
     );
   }
 
-  String convertDateTime({DateTime date_time}) {
+  String convertDateTime({required DateTime date_time}) {
     int dayDifferenceCount =
         dayDifference(date_time1: DateTime.now(), date_time2: date_time);
     if (dayDifferenceCount == 0) {

@@ -23,76 +23,176 @@ import '../services/FlushbarHelper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({Key? key}) : super(key: key);
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _sunController; // Changed to late
-  late AnimationController _moonController; // Changed to late
-  late Animation<Offset> _moonAnimation; // Changed to late
+    with SingleTickerProviderStateMixin {
+  late AnimationController _sunController;
+  late AnimationController _moonController;
+  late Animation<Offset> _moonAnimation;
+  Timer? _animationTimer;
 
   final FirebaseService _firebaseService = locator<FirebaseService>();
   final FirestoreService _firestoreService = locator<FirestoreService>();
   final FirebaseMessagingService _fcmService =
       locator<FirebaseMessagingService>();
+
   bool inProgress = false;
-  String? teamLogo, teamName, leagueName, leagueLogo; // Changed to String?
+  String? teamLogo;
+  String? teamName;
+  String? leagueName;
+  String? leagueLogo;
+  bool _notificationEnabled = false;
 
   @override
   void initState() {
-    super.initState(); // Call super.initState() first
-    _sunController = AnimationController( // Removed new
+    super.initState();
+    _initializeControllers();
+    _loadUserPreferences();
+    _loadNotificationState();
+  }
+
+  void _initializeControllers() {
+    _sunController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1300), // Removed new
+      duration: const Duration(milliseconds: 1300),
     );
-    _moonController = AnimationController( // Removed new
-        duration: Duration(milliseconds: 1000), vsync: this)
-      ..addListener(() => setState(() {}));
-    _moonAnimation = Tween<Offset>(begin: Offset(1.5, 0.0), end: Offset.zero)
-        .animate(CurvedAnimation(
-      parent: _moonController,
-      curve: Cubic(0, 1, .78, .98),
-    ));
-    LocalStorage.getString('teamName').then((value) {
-      if (mounted) { // Check if widget is still in the tree
-        setState(() {
-          teamName = value;
-        });
-      }
-    });
-    LocalStorage.getString('teamLogo').then((value) {
-       if (mounted) {
-        setState(() { // Ensure teamLogo is updated in setState if UI depends on it directly
-          teamLogo = value;
-        });
-      }
-    });
-    LocalStorage.getString('leagueName').then((value) {
-      if (mounted) {
-        setState(() {
-          leagueName = value;
-          if (leagueName != null) {
-            final leagueData = leagues[leagueName!]; // Use ! after null check
-            if (leagueData is Map && leagueData.containsKey("logo")) {
-              leagueLogo = leagueData["logo"] as String?;
-            } else {
-              leagueLogo = null;
-            }
-          } else {
-            leagueLogo = null;
-          }
-        });
+
+    _moonController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..addListener(() => setState(() {}));
+
+    _moonAnimation = Tween<Offset>(
+      begin: const Offset(1.5, 0.0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _moonController,
+        curve: const Cubic(0, 1, .78, .98),
+      ),
+    );
+  }
+
+  Future<void> _loadUserPreferences() async {
+    if (!mounted) return;
+
+    final preferences = await Future.wait([
+      LocalStorage.getString('teamName'),
+      LocalStorage.getString('teamLogo'),
+      LocalStorage.getString('leagueName'),
+    ]);
+
+    setState(() {
+      teamName = preferences[0];
+      teamLogo = preferences[1];
+      leagueName = preferences[2];
+
+      if (leagueName != null) {
+        final leagueData = leagues[leagueName!];
+        leagueLogo = leagueData is Map && leagueData.containsKey("logo")
+            ? leagueData["logo"] as String?
+            : null;
       }
     });
   }
 
+  Future<void> _loadNotificationState() async {
+    final enabled = await LocalStorage.getString('notificationEnabled');
+    if (mounted) {
+      setState(() {
+        _notificationEnabled = enabled == "yes";
+      });
+    }
+  }
+
   @override
   void dispose() {
-    super.dispose();
+    _animationTimer?.cancel();
     _sunController.dispose();
     _moonController.dispose();
+    super.dispose();
+  }
+
+  void showSun() {
+    _sunController.reset();
+    _sunController.forward();
+
+    _animationTimer?.cancel();
+    _animationTimer = Timer(const Duration(milliseconds: 1300), () {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.3,
+        ),
+        child: Center(
+          child: AnimatedBuilder(
+            animation: _sunController,
+            builder: (context, _widget) => Transform.rotate(
+              angle: _sunController.value * 3.14,
+              child: _widget,
+            ),
+          ),
+        ),
+      ),
+    ).then((_) {
+      _animationTimer?.cancel();
+      _animationTimer = null;
+    });
+  }
+
+  void showMoon() {
+    _moonController.reset();
+    _moonController.forward();
+
+    _animationTimer?.cancel();
+    _animationTimer = Timer(const Duration(milliseconds: 1300), () {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.3,
+        ),
+        child: Center(
+          child: SlideTransition(
+            position: _moonAnimation,
+            child: Image.asset('assets/images/moon.png'),
+          ),
+        ),
+      ),
+    ).then((_) {
+      _animationTimer?.cancel();
+      _animationTimer = null;
+    });
+  }
+
+  Future<void> _launchUrlTyped(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch $url')),
+        );
+      }
+    }
   }
 
   @override
@@ -102,725 +202,396 @@ class _DashboardScreenState extends State<DashboardScreen>
         backgroundColor: Theme.of(context).primaryColor,
         bottomNavigationBar: BottomNavbar(),
         body: Consumer<AppProvider>(
-          builder: (context, model, child) => Consumer<ThemeProvider>(
-              builder: (context, themeModel, child) => SingleChildScrollView(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(20.0),
-                              topLeft: Radius.circular(20.0)),
-                          color: themeModel.appTheme == AppTheme.Light
-                              ? Colors.white
-                              : Color(0XFF1D1D1D)),
-                      margin: EdgeInsets.only(top: 40.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 30.0, left: 8.0, right: 8.0, bottom: 8.0),
-                            child: (model.currentUser != null)
-                                ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 8.0),
-                                        child: Container(
-                                          width: 50,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(12.0),
-                                            child: CachedNetworkImage(
-                                                imageUrl: model.currentUser?.profilePic ?? '', // Handle null profilePic, provide empty or placeholder URL
-                                                errorWidget: (context, url, error) => Image.asset('assets/images/user-placeholder.jpg'), // Fallback for error
-                                                placeholder: (BuildContext
-                                                            context,
-                                                        String url) =>
-                                                    Image.asset(
-                                                        'assets/images/user-placeholder.jpg')),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                AutoSizeText(
-                                                  model.currentUser?.name ?? 'Guest', // Handle null name
-                                                  style:
-                                                      TextStyle(fontSize: 20),
-                                                  textAlign: TextAlign.left,
-                                                  maxLines: 1,
-                                                ),
-                                                Text(
-                                                  model.currentUser?.email ?? 'No email', // Handle null email
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Theme.of(context)
-                                                          .primaryColorDark),
-                                                )
-                                              ],
-                                            ),
-                                            CustomRaisedButton( // Assuming CustomRaisedButton is null-safe
-                                              height: 30,
-                                              minWidth: 75,
-                                              label: 'Logout',
-                                              onPressed: () async {
-                                                await _firebaseService
-                                                    .signOutGoogle();
-                                                model.currentUser = null;
-                                              },
-                                              inProgress: false, // Assuming this is handled
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : Row( // User is null, show Sign-in button
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xff4285f4),
-                                            padding: EdgeInsets.symmetric(horizontal: 4.0), // This padding is for the ElevatedButton itself
-                                          ),
-                                          onPressed: () async {
-                                            if (mounted) { // Check mounted before async operation
-                                              setState(() {
-                                                inProgress = true;
-                                              });
-                                            }
-
-                                            final User? user = // User can be null
-                                                await _firebaseService
-                                                    .signInWithGoogle();
-
-                                            if (!mounted) return; // Check mounted after await
-
-                                            if (user == null) { // Handle failed sign-in
-                                                setState(() {
-                                                  inProgress = false;
-                                                });
-                                                // Optionally show a message to the user
-                                                FlushHelper.flushbarAlert(context: context, title: "Sign-in Failed", message: "Could not sign in with Google.", seconds: 3);
-                                              return;
-                                            }
-
-                                            model.currentUser = user; // Assign the user to AppProvider
-
-                                            // Safely access user properties (they are nullable in User model)
-                                            final Map<String, dynamic> data = {
-                                              'name': user.name, // name is String?
-                                              'email': user.email, // email is String?
-                                              'teamName':
-                                                  await LocalStorage.getString('teamName'), // Returns String?
-                                              'teamId':
-                                                  await LocalStorage.getString('teamId'), // Returns String?
-                                              'teamLogo':
-                                                  await LocalStorage.getString('teamLogo'), // Returns String?
-                                              'leagueName':
-                                                  await LocalStorage.getString('leagueName'), // Returns String?
-                                              'leagueId':
-                                                  await LocalStorage.getString('leagueId'), // Returns String?
-                                              'fcmToken':
-                                                  await _fcmService.getToken() // Returns String?
-                                            };
-                                            // Firestore setData should handle Map<String, dynamic?> or ensure values are not null if required by backend
-                                            await _firestoreService.setData(
-                                                userId: user.uid, data: data); // uid is non-nullable
-
-                                            if (mounted) {
-                                              setState(() {
-                                                inProgress = false;
-                                              });
-                                            }
-                                          },
-                                          // padding for ElevatedButton content is usually handled by child an its own padding
-                                          child: inProgress
-                                              ? CircularProgressIndicator(
-                                                  valueColor:
-                                                      new AlwaysStoppedAnimation<
-                                                              Color>(
-                                                          Color(0xfff5f5f5)),
-                                                )
-                                              : Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: <Widget>[
-                                                    Container(
-                                                        color: Colors.white,
-                                                        height: 30,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Image.asset(
-                                                              'assets/images/google_logo.png'),
-                                                        )),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: AutoSizeText(
-                                                        'Sign in with Google',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                          ),
-                          Divider(
-                            thickness: 0.7,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Stack(
-                              children: <Widget>[
-                                Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20.0, vertical: 8.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                'Your Favourites',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Theme.of(context)
-                                                        .primaryColorDark),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.8,
-                                            decoration: BoxDecoration(
-                                              boxShadow: themeModel.appTheme ==
-                                                      AppTheme.Light
-                                                  ? [
-                                                      BoxShadow(
-                                                        color: Colors.white
-                                                            .withOpacity(0.8),
-                                                        offset:
-                                                            Offset(-6.0, -6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            .withOpacity(0.1),
-                                                        offset:
-                                                            Offset(6.0, 6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                    ]
-                                                  : [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            .withOpacity(0.8),
-                                                        offset:
-                                                            Offset(-6.0, -6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                      BoxShadow(
-                                                        color: Colors.white
-                                                            .withOpacity(0.1),
-                                                        offset:
-                                                            Offset(6.0, 6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                    ],
-                                              color: themeModel.appTheme ==
-                                                      AppTheme.Light
-                                                  ? Colors.white
-                                                  : Color(0XFF1D1D1D),
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      vertical: 30.0),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: <Widget>[
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                bottom: 4.0),
-                                                        child: Container(
-                                                            height: 40,
-                                                            child: leagueLogo !=
-                                                                    null
-                                                                ? CachedNetworkImage(
-                                                                    imageUrl: leagueLogo!, // Added ! after null check
-                                                                    errorWidget: (context, url, error) => Icon(MyFlutterApp.football, size: 40),
-                                                                    placeholder:
-                                                                        (BuildContext context,
-                                                                                String url) =>
-                                                                            Icon(
-                                                                              MyFlutterApp.football,
-                                                                              size: 40,
-                                                                            ))
-                                                                : Icon(
-                                                                    MyFlutterApp
-                                                                        .football,
-                                                                    size: 40,
-                                                                  )),
-                                                      ),
-                                                      Text(
-                                                        leagueName ?? 'N/A', // Handle null leagueName
-                                                        style: TextStyle(
-                                                            fontSize: 18),
-                                                      )
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.8,
-                                            decoration: BoxDecoration(
-                                              boxShadow: themeModel.appTheme ==
-                                                      AppTheme.Light
-                                                  ? [
-                                                      BoxShadow(
-                                                        color: Colors.white
-                                                            .withOpacity(0.8),
-                                                        offset:
-                                                            Offset(-6.0, -6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            .withOpacity(0.1),
-                                                        offset:
-                                                            Offset(6.0, 6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                    ]
-                                                  : [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            .withOpacity(0.8),
-                                                        offset:
-                                                            Offset(-6.0, -6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                      BoxShadow(
-                                                        color: Colors.white
-                                                            .withOpacity(0.1),
-                                                        offset:
-                                                            Offset(6.0, 6.0),
-                                                        blurRadius: 16.0,
-                                                      ),
-                                                    ],
-                                              color: themeModel.appTheme ==
-                                                      AppTheme.Light
-                                                  ? Colors.white
-                                                  : Color(0XFF1D1D1D),
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      vertical: 30.0),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: <Widget>[
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                bottom: 4.0),
-                                                        child: Container(
-                                                            height: 40,
-                                                            child: teamLogo != null && teamLogo!.isNotEmpty
-                                                                ? CachedNetworkImage(
-                                                                    imageUrl: teamLogo!, // Added ! after null check
-                                                                    errorWidget: (context, url, error) => Icon(MyFlutterApp.football, size: 40),
-                                                                    placeholder:
-                                                                        (BuildContext context,
-                                                                                String url) =>
-                                                                            Icon(
-                                                                              MyFlutterApp.football,
-                                                                              size: 40,
-                                                                            ))
-                                                                : Icon(
-                                                                    MyFlutterApp
-                                                                        .football,
-                                                                    size: 40,
-                                                                  )),
-                                                      ),
-                                                      Text(
-                                                        teamName ?? 'N/A', // Handle null teamName
-                                                        style: TextStyle(
-                                                            fontSize: 18),
-                                                      )
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 12,
-                                  right: 12,
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.of(context)
-                                          .pushNamed('/selectleague');
-                                    },
-                                    child: Icon(
-                                      Icons.edit,
-                                      color:
-                                          themeModel.appTheme == AppTheme.Light
-                                              ? Color(0X7A000000)
-                                              : Color(0XFFF5F5F5),
-                                      size: 25,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height / 12,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Container(
-                                  width: 50,
-                                  child: Icon(
-                                    Icons.wb_sunny,
-                                    color: Color(0xff808080),
-                                    size: 30,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 12.0),
-                                    child: Text(
-                                      'Theme',
-                                      style: TextStyle(
-                                          color: Color(0xff808080),
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w300),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 4.0),
-                                  child: DayNightSwitcher(
-                                    isDarkModeEnabled:
-                                        themeModel.appTheme == AppTheme.Dark,
-                                    onStateChanged: (bool value) async {
-                                      // themeModel is a ThemeProvider, appTheme setter notifies listeners
-                                      themeModel.appTheme = value ? AppTheme.Dark : AppTheme.Light;
-                                      await LocalStorage.setString(
-                                          'appTheme', value ? "dark" : "light");
-                                      if (!value) {
-                                        showSun();
-                                      } else {
-                                        showMoon();
-                                      }
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height / 12,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Container(
-                                  width: 50,
-                                  child: Icon(
-                                    Icons.notifications_active,
-                                    color: Color(0xff808080),
-                                    size: 30,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 12.0),
-                                    child: Text(
-                                      'Push notifications',
-                                      style: TextStyle(
-                                          color: Color(0xff808080),
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w300),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 4.0),
-                                  child: CupertinoSwitch(
-                                      activeTrackColor:
-                                          Theme.of(context).primaryColor,
-                                      inactiveTrackColor: Color(0xff56727c),
-                                      value: model.notificationEnabled, // AppProvider.notificationEnabled is bool
-                                      onChanged: (bool value) async {
-                                        model.notificationEnabled = value; // Setter in AppProvider
-                                        if (value) {
-                                          FlushHelper.flushbarAlert(
-                                              context: context,
-                                              title: 'Success',
-                                              message:
-                                                  'Push Notications Enabled',
-                                              seconds: 2);
-                                          await LocalStorage.setString(
-                                              'notificationEnabled', "yes");
-                                          if (teamName != null && teamName!.isNotEmpty) { // Check teamName for null/empty
-                                            await _fcmService.subscribeToTopic(
-                                                topic: teamName!.replaceAll(' ', ''));
-                                          }
-                                        } else {
-                                          FlushHelper.flushbarAlert(
-                                              context: context,
-                                              title: 'Success',
-                                              message:
-                                                  'Push Notications Disabled',
-                                              seconds: 2);
-                                          await LocalStorage.setString(
-                                              'notificationEnabled', "no");
-                                          if (teamName != null && teamName!.isNotEmpty) { // Check teamName for null/empty
-                                            await _fcmService.unsubscribeFromTopic(
-                                                    topic: teamName!.replaceAll(' ', ''));
-                                          }
-                                          await LocalStorage.setString('lastTopic', ""); // Set to empty string instead of null
-                                        }
-                                      }),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height / 12,
-                            child: InkWell(
-                              onTap: () async {
-                                await _launchUrlTyped( // Changed to private typed version
-                                    'https://play.google.com/store/apps/details?id=com.footballmojo');
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Container(
-                                    width: 50,
-                                    child: Icon(
-                                      Icons.star_border,
-                                      color: Color(0xff808080),
-                                      size: 30,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 12.0),
-                                      child: Text(
-                                        'Rate this app on play store',
-                                        style: TextStyle(
-                                            color: Color(0xff808080),
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w300),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 50,
-                                    child: Icon(
-                                      Icons.chevron_right,
-                                      color: Theme.of(context).primaryColor,
-                                      size: 30,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height / 12,
-                            child: InkWell(
-                              onTap: () {
-                                Share.share(
-                                    'Check out this app where you can get latest football news and scores.\nhttps://play.google.com/store/apps/details?id=com.footballmojo');
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Container(
-                                    width: 50,
-                                    child: Icon(
-                                      Icons.share,
-                                      color: Color(0xff808080),
-                                      size: 30,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 12.0),
-                                      child: Text(
-                                        'Share this app',
-                                        style: TextStyle(
-                                            color: Color(0xff808080),
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w300),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 50,
-                                    child: Icon(
-                                      Icons.chevron_right,
-                                      color: Theme.of(context).primaryColor,
-                                      size: 30,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )),
+          builder: (context, model, _) => Consumer<ThemeProvider>(
+            builder: (context, themeModel, _) => SingleChildScrollView(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(20.0),
+                    topLeft: Radius.circular(20.0),
+                  ),
+                  color: themeModel.appTheme == AppTheme.Light
+                      ? Colors.white
+                      : const Color(0XFF1D1D1D),
+                ),
+                margin: const EdgeInsets.only(top: 40.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    _buildUserProfileSection(context, model, themeModel),
+                    _buildThemeSection(context, themeModel),
+                    _buildNotificationSection(context),
+                    _buildRateAppSection(context),
+                    _buildShareAppSection(context),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  void showSun() {
-    _sunController.repeat();
-    Timer? timer = Timer(Duration(milliseconds: 1300), () { // Timer can be nullable
-      if(mounted) { // Check if mounted before popping
-         Navigator.of(context, rootNavigator: true).pop();
-      }
-      _sunController.stop(); // Stop controller regardless
-    });
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AnimatedBuilder(
-          animation: _sunController,
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.25),
-            child: Image.asset('assets/images/sun.png'),
+  Widget _buildUserProfileSection(
+      BuildContext context, AppProvider model, ThemeProvider themeModel) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              color: themeModel.appTheme == AppTheme.Light
+                  ? Colors.white
+                  : const Color(0XFF1D1D1D),
+              boxShadow: [
+                BoxShadow(
+                  color: themeModel.appTheme == AppTheme.Light
+                      ? Colors.black.withOpacity(0.1)
+                      : Colors.white.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: model.currentUser != null
+                ? _buildLoggedInUserProfile(context, model)
+                : _buildGuestUserProfile(context),
           ),
-          builder: (BuildContext context, Widget? _widget) { // _widget can be nullable
-            return Transform.rotate(
-              angle: _sunController.value * 3.14,
-              child: _widget!, // Assert non-null if child is always provided
-            );
-          }),
-    ).then((value) {
-      timer?.cancel(); // Cancel if timer is not null
-      timer = null;
-    });
+          Positioned(
+            top: 12,
+            right: 12,
+            child: InkWell(
+              onTap: () => Navigator.of(context).pushNamed('/selectleague'),
+              child: Icon(
+                Icons.edit,
+                color: themeModel.appTheme == AppTheme.Light
+                    ? const Color(0X7A000000)
+                    : const Color(0XFFF5F5F5),
+                size: 25,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  void showMoon() {
-    _moonController.reset();
-    _moonController.forward();
-    Timer? timer = Timer(Duration(milliseconds: 1300), () { // Timer can be nullable
-      if(mounted) { // Check if mounted
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-    });
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) => Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.3),
-              child: Center(
-                child: SlideTransition(
-                  position: _moonAnimation,
-                  child: Container( // Child for SlideTransition should not be null
-                    child: Image.asset('assets/images/moon.png'),
+  Widget _buildLoggedInUserProfile(BuildContext context, AppProvider model) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: CachedNetworkImage(
+                  imageUrl: model.currentUser?.profilePic ?? '',
+                  errorWidget: (_, __, ___) => Image.asset(
+                    'assets/images/user-placeholder.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                  placeholder: (_, __) => Image.asset(
+                    'assets/images/user-placeholder.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    AutoSizeText(
+                      model.currentUser?.name ?? 'Guest',
+                      style: const TextStyle(fontSize: 20),
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                    ),
+                    Text(
+                      model.currentUser?.email ?? 'No email',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                    ),
+                  ],
+                ),
+                CustomRaisedButton(
+                  height: 30,
+                  minWidth: 75,
+                  label: 'Logout',
+                  onPressed: () async {
+                    await _firebaseService.signOutGoogle();
+                    model.currentUser = null;
+                  },
+                  inProgress: false,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGuestUserProfile(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff4285f4),
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              ),
+              onPressed: () async {
+                if (mounted) {
+                  setState(() => inProgress = true);
+                  try {
+                    final user = await _firebaseService.signInWithGoogle();
+                    if (mounted) {
+                      context.read<AppProvider>().currentUser = user;
+                    }
+                  } finally {
+                    if (mounted) {
+                      setState(() => inProgress = false);
+                    }
+                  }
+                }
+              },
+              child: inProgress
+                  ? const CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Color(0xfff5f5f5)),
+                    )
+                  : const Text('Sign in with Google'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeSection(BuildContext context, ThemeProvider themeModel) {
+    return Container(
+      height: MediaQuery.of(context).size.height / 12,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          const Icon(
+            Icons.wb_sunny,
+            color: Color(0xff808080),
+            size: 30,
+          ),
+          const Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: 12.0),
+              child: Text(
+                'Theme',
+                style: TextStyle(
+                  color: Color(0xff808080),
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
+          DayNightSwitcher(
+            isDarkModeEnabled: themeModel.appTheme == AppTheme.Dark,
+            onStateChanged: (isDarkModeEnabled) {
+              themeModel.appTheme =
+                  isDarkModeEnabled ? AppTheme.Dark : AppTheme.Light;
+              if (isDarkModeEnabled) {
+                showMoon();
+              } else {
+                showSun();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationSection(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height / 12,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          const Icon(
+            Icons.notifications,
+            color: Color(0xff808080),
+            size: 30,
+          ),
+          const Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: 12.0),
+              child: Text(
+                'Push Notifications',
+                style: TextStyle(
+                  color: Color(0xff808080),
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
+          Switch(
+            value: _notificationEnabled,
+            onChanged: (value) async {
+              try {
+                if (value) {
+                  await LocalStorage.setString('notificationEnabled', "yes");
+                  if (teamName != null && teamName!.isNotEmpty) {
+                    await _fcmService.subscribeToTopic(
+                      topic: teamName!.replaceAll(' ', ''),
+                    );
+                  }
+                  if (mounted) {
+                    setState(() => _notificationEnabled = true);
+                    FlushHelper.flushbarAlert(
+                      context: context,
+                      title: 'Success',
+                      message: 'Push Notifications Enabled',
+                      seconds: 2,
+                    );
+                  }
+                } else {
+                  await LocalStorage.setString('notificationEnabled', "no");
+                  if (teamName != null && teamName!.isNotEmpty) {
+                    await _fcmService.unsubscribeFromTopic(
+                      topic: teamName!.replaceAll(' ', ''),
+                    );
+                  }
+                  if (mounted) {
+                    setState(() => _notificationEnabled = false);
+                    FlushHelper.flushbarAlert(
+                      context: context,
+                      title: 'Success',
+                      message: 'Push Notifications Disabled',
+                      seconds: 2,
+                    );
+                  }
+                }
+              } catch (e) {
+                if (mounted) {
+                  FlushHelper.flushbarAlert(
+                    context: context,
+                    title: 'Error',
+                    message: 'Failed to update notification settings',
+                    seconds: 2,
+                  );
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRateAppSection(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height / 12,
+      child: InkWell(
+        onTap: () => _launchUrlTyped(
+          'https://play.google.com/store/apps/details?id=com.footballmojo',
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const <Widget>[
+              Icon(
+                Icons.star_border,
+                color: Color(0xff808080),
+                size: 30,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 12.0),
+                  child: Text(
+                    'Rate this app on play store',
+                    style: TextStyle(
+                      color: Color(0xff808080),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
                 ),
               ),
-            )).then((value) {
-      timer?.cancel(); // Cancel if timer is not null
-      timer = null;
-    });
+              Icon(
+                Icons.chevron_right,
+                color: Color(0xff808080),
+                size: 30,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
-  // Updated launchUrl method to _launchUrlTyped for clarity and new url_launcher API
-  Future<void> _launchUrlTyped(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      // Consider showing a Flushbar or SnackBar on failure
-      print('Could not launch $url');
-      // throw 'Could not launch $url'; // Or handle more gracefully
-    }
+  Widget _buildShareAppSection(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height / 12,
+      child: InkWell(
+        onTap: () {
+          Share.share(
+            'Check out this app where you can get latest football news and scores.\nhttps://play.google.com/store/apps/details?id=com.footballmojo',
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const <Widget>[
+              Icon(
+                Icons.share,
+                color: Color(0xff808080),
+                size: 30,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 12.0),
+                  child: Text(
+                    'Share this app',
+                    style: TextStyle(
+                      color: Color(0xff808080),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: Color(0xff808080),
+                size: 30,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

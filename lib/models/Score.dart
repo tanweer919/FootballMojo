@@ -1,18 +1,18 @@
 class Score {
   final int id;
   final String competition;
-  final String? venue; // Nullable
+  final String? venue;
   final DateTime date_time;
   final String status;
   final String homeTeam;
   final String awayTeam;
-  final String? homeTeamLogo; // Nullable
-  final String? awayTeamLogo; // Nullable
-  final int? minuteElapsed; // Nullable
-  final int? homeScore; // Nullable
-  final int? awayScore; // Nullable
+  final String? homeTeamLogo;
+  final String? awayTeamLogo;
+  final int? minuteElapsed;
+  final int? homeScore;
+  final int? awayScore;
 
-  Score({
+  const Score({
     required this.id,
     required this.competition,
     this.venue,
@@ -27,6 +27,36 @@ class Score {
     this.minuteElapsed,
   });
 
+  Score copyWith({
+    int? id,
+    String? competition,
+    String? venue,
+    DateTime? date_time,
+    String? status,
+    String? homeTeam,
+    String? awayTeam,
+    String? homeTeamLogo,
+    String? awayTeamLogo,
+    int? homeScore,
+    int? awayScore,
+    int? minuteElapsed,
+  }) {
+    return Score(
+      id: id ?? this.id,
+      competition: competition ?? this.competition,
+      venue: venue ?? this.venue,
+      date_time: date_time ?? this.date_time,
+      status: status ?? this.status,
+      homeTeam: homeTeam ?? this.homeTeam,
+      awayTeam: awayTeam ?? this.awayTeam,
+      homeTeamLogo: homeTeamLogo ?? this.homeTeamLogo,
+      awayTeamLogo: awayTeamLogo ?? this.awayTeamLogo,
+      homeScore: homeScore ?? this.homeScore,
+      awayScore: awayScore ?? this.awayScore,
+      minuteElapsed: minuteElapsed ?? this.minuteElapsed,
+    );
+  }
+
   factory Score.fromJson(Map<String, dynamic> parsedJson) {
     final fixtureData = parsedJson['fixture'] as Map<String, dynamic>?;
     final leagueData = parsedJson['league'] as Map<String, dynamic>?;
@@ -40,25 +70,46 @@ class Score {
     DateTime parsedDateTime;
     final dateStr = fixtureData?['date'] as String?;
     if (dateStr != null && dateStr.length >= 19) {
-      parsedDateTime = DateTime.tryParse('${dateStr.substring(0, 19)}Z') ?? DateTime.now();
+      parsedDateTime =
+          DateTime.tryParse('${dateStr.substring(0, 19)}Z') ?? DateTime.now();
     } else {
-      parsedDateTime = DateTime.now(); // Default if date string is invalid or null
+      parsedDateTime = DateTime.now();
     }
 
-    String currentStatus = 'NS'; // Default status
+    String currentStatus = 'NS';
     final shortStatus = fixtureStatusData?['short'] as String?;
     if (shortStatus != null && possibleStatus.containsKey(shortStatus)) {
       currentStatus = possibleStatus[shortStatus]!;
     }
 
+    final fixtureId = fixtureData?['id'];
+    if (fixtureId == null) {
+      throw FormatException('Fixture ID is required');
+    }
+
+    final leagueName = leagueData?['name'] as String?;
+    if (leagueName == null) {
+      throw FormatException('League name is required');
+    }
+
+    final homeTeamName = homeTeamData?['name'] as String?;
+    if (homeTeamName == null) {
+      throw FormatException('Home team name is required');
+    }
+
+    final awayTeamName = awayTeamData?['name'] as String?;
+    if (awayTeamName == null) {
+      throw FormatException('Away team name is required');
+    }
+
     return Score(
-      id: fixtureData?['id'] as int? ?? 0,
-      competition: leagueData?['name'] as String? ?? 'N/A',
+      id: fixtureId as int,
+      competition: leagueName,
       venue: venueData?['name'] as String?,
       date_time: parsedDateTime,
       status: currentStatus,
-      homeTeam: homeTeamData?['name'] as String? ?? 'N/A',
-      awayTeam: awayTeamData?['name'] as String? ?? 'N/A',
+      homeTeam: homeTeamName,
+      awayTeam: awayTeamName,
       homeTeamLogo: homeTeamData?['logo'] as String?,
       awayTeamLogo: awayTeamData?['logo'] as String?,
       homeScore: goalsData?['home'] as int?,
@@ -67,17 +118,17 @@ class Score {
     );
   }
 
-  static final Map<String, String> possibleStatus = {
+  static const Map<String, String> possibleStatus = {
     'TBD': 'NS', // To Be Defined
     'NS': 'NS', // Not Started
     '1H': 'LV',
     'HT': 'HT',
     '2H': 'LV',
     'ET': 'LV', // Extra Time
-    'P': 'LV',  // Penalty In Progress (or similar live state)
+    'P': 'LV', // Penalty In Progress (or similar live state)
     'FT': 'FT', // Finished
-    'AET': 'FT',// Finished After Extra Time
-    'PEN': 'FT',// Finished After Penalties
+    'AET': 'FT', // Finished After Extra Time
+    'PEN': 'FT', // Finished After Penalties
     'BT': 'LV', // Break Time (e.g. before ET or Penalties)
     'SUSP': 'SUSP', // Suspended
     'INT': 'INT', // Interrupted

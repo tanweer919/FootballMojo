@@ -7,37 +7,44 @@ import '../commons/CustomRaisedButton.dart';
 
 class SettingsDialog extends StatefulWidget {
   final Color borderColor;
-  SettingsDialog({Key key, this.borderColor}) : super(key: key);
+  const SettingsDialog({required this.borderColor});
   @override
   _SettingsDialogState createState() => _SettingsDialogState();
 }
 
 class _SettingsDialogState extends State<SettingsDialog> {
-  DateTime startDate, endDate;
+  late DateTime startDate;
+  late DateTime endDate;
 
   @override
   void initState() {
+    super.initState();
     final AppProvider appProvider =
         Provider.of<AppProvider>(context, listen: false);
     DateTime now = DateTime.now();
     now = DateTime(now.year, now.month, now.day);
+
+    final firstDate =
+        getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"]
+            as DateTime;
+    final lastDate =
+        getFirstAndLastDate(appProvider.leagueWiseScores)["lastDate"]
+            as DateTime;
+
     setState(() {
       startDate = dayDifference(
-                  date_time1: getFirstAndLastDate(
-                      appProvider.leagueWiseScores)["firstDate"],
-                  date_time2: appProvider.startDate) <
+                  date_time1: firstDate,
+                  date_time2: appProvider.startDate ?? now) <
               0
-          ? appProvider.startDate
-          : getFirstAndLastDate(appProvider.leagueWiseScores)["firstDate"];
+          ? appProvider.startDate ?? now
+          : firstDate;
       endDate = dayDifference(
-                  date_time1: getFirstAndLastDate(
-                      appProvider.leagueWiseScores)["lastDate"],
-                  date_time2: appProvider.endDate) >
+                  date_time1: lastDate,
+                  date_time2: appProvider.endDate ?? now) >
               0
-          ? appProvider.endDate
-          : getFirstAndLastDate(appProvider.leagueWiseScores)["lastDate"];
+          ? appProvider.endDate ?? now
+          : lastDate;
     });
-    super.initState();
   }
 
   @override
@@ -58,17 +65,19 @@ class _SettingsDialogState extends State<SettingsDialog> {
               children: <Widget>[
                 InkWell(
                   onTap: () async {
-                    final DateTime date = await showDatePicker(
+                    final DateTime? pickedDate = await showDatePicker(
                         context: context,
                         initialDate: startDate,
                         firstDate: getFirstAndLastDate(
-                            model.leagueWiseScores)["firstDate"],
+                            model.leagueWiseScores)["firstDate"] as DateTime,
                         lastDate: getFirstAndLastDate(
-                            model.leagueWiseScores)["lastDate"]);
-                    setState(() {
-                      startDate = date;
-                    });
-                                    },
+                            model.leagueWiseScores)["lastDate"] as DateTime);
+                    if (pickedDate != null) {
+                      setState(() {
+                        startDate = pickedDate;
+                      });
+                    }
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(width: 2, color: widget.borderColor),
@@ -97,17 +106,19 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 ),
                 InkWell(
                   onTap: () async {
-                    final DateTime date = await showDatePicker(
+                    final DateTime? pickedDate = await showDatePicker(
                         context: context,
                         initialDate: endDate,
                         firstDate: getFirstAndLastDate(
-                            model.leagueWiseScores)["firstDate"],
+                            model.leagueWiseScores)["firstDate"] as DateTime,
                         lastDate: getFirstAndLastDate(
-                            model.leagueWiseScores)["lastDate"]);
-                    setState(() {
-                      endDate = date;
-                    });
-                                    },
+                            model.leagueWiseScores)["lastDate"] as DateTime);
+                    if (pickedDate != null) {
+                      setState(() {
+                        endDate = pickedDate;
+                      });
+                    }
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(width: 2, color: widget.borderColor),

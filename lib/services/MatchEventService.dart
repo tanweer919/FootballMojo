@@ -1,12 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import '../models/MatchEvent.dart';
 import 'HttpService.dart';
 class MatchEventService {
-  final Dio dio = HttpService.getApiClient();
 
   Future<List<MatchEvent>?> fetchEvents(
       {required int fixtureId}) async { // Return type is now nullable
+  final Dio dio = await HttpService.getApiClient();
     List<MatchEvent> events = [];
     try {
       final response = await dio.get('fixtures/events?fixture=$fixtureId');

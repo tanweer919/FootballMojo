@@ -7,7 +7,7 @@ final Map<String, dynamic> leagues = {
     "id": 78,
     "logo": "https://media.api-sports.io/football/leagues/78.png"
   },
-  "Eredivisie" : {
+  "Eredivisie": {
     "id": 88,
     "logo": "https://media.api-sports.io/football/leagues/88.png"
   },
@@ -20,7 +20,7 @@ final Map<String, dynamic> leagues = {
     "logo": "https://media.api-sports.io/football/leagues/324.png"
   },
   "La Liga": {
-    "id":140,
+    "id": 140,
     "logo": "https://media.api-sports.io/football/leagues/140.png"
   },
   "Ligue 1": {
@@ -39,27 +39,34 @@ final Map<String, dynamic> leagues = {
     "id": 135,
     "logo": "https://media.api-sports.io/football/leagues/135.png"
   },
-  "UEFA Champions League" : {
+  "UEFA Champions League": {
     "id": 2,
     "logo": "https://media.api-sports.io/football/leagues/2.png"
   },
-  "UEFA Europa League" : {
+  "UEFA Europa League": {
     "id": 3,
     "logo": "https://media.api-sports.io/football/leagues/3.png"
   },
 };
 
-
 ///Get difference between two dates in days
-int dayDifference({DateTime date_time1, DateTime date_time2}) {
+int dayDifference(
+    {required DateTime date_time1, required DateTime date_time2}) {
   final date1 = DateTime(date_time1.year, date_time1.month, date_time1.day);
   final date2 = DateTime(date_time2.year, date_time2.month, date_time2.day);
   return date1.difference(date2).inDays;
 }
 
 //
-List<Score> filterScores({List<Score> scores, DateTime after, DateTime before}) {
-  return scores.where((score) => dayDifference(date_time1: score.date_time, date_time2: after) >=0 && dayDifference(date_time1: score.date_time, date_time2: before) <= 0).toList();
+List<Score> filterScores(
+    {required List<Score> scores,
+    required DateTime after,
+    required DateTime before}) {
+  return scores
+      .where((score) =>
+          dayDifference(date_time1: score.date_time, date_time2: after) >= 0 &&
+          dayDifference(date_time1: score.date_time, date_time2: before) <= 0)
+      .toList();
 }
 
 //Get first and last date of the matches in current league
@@ -76,8 +83,8 @@ Map<String, DateTime> getFirstAndLastDate(List<Score> scores) {
 List<DropdownMenuItem> getLeagueItems() {
   return leagues.entries
       .map<DropdownMenuItem<String>>((entry) => DropdownMenuItem<String>(
-    value: entry.key,
-    child: Text(entry.key),
-  ))
+            value: entry.key,
+            child: Text(entry.key),
+          ))
       .toList();
 }

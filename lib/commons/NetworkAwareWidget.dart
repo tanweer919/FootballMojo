@@ -5,7 +5,7 @@ import '../commons/BottomNavbar.dart';
 
 class NetworkAwareWidget extends StatelessWidget {
   final Widget child;
-  NetworkAwareWidget({Key key, this.child}) : super(key: key);
+  NetworkAwareWidget({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +29,12 @@ class NetworkAwareWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 2.0, bottom: 4.0),
                   child: Text(
                     "No internet available",
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                   ),
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 8.0, left: 14.0, right: 14.0),
+                  padding: const EdgeInsets.only(
+                      bottom: 8.0, left: 14.0, right: 14.0),
                   child: Text(
                     "You are offline. Please turn on your mobile data to get updates.",
                     textAlign: TextAlign.center,

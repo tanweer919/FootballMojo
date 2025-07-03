@@ -1,86 +1,198 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
-import '../models/User.dart';
+import '../models/User.dart' as app_models;
+import 'dart:developer' as developer;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FirebaseService {
-  final FirebaseAuth _auth;
+  final firebase_auth.FirebaseAuth _auth;
   final GoogleSignIn googleSignIn;
+  final SharedPreferences _prefs;
   String? name;
   String? email;
   String? imageUrl;
+  bool _isInitialized = false;
 
-  FirebaseService()
-      : _auth = FirebaseAuth.instance,
-        googleSignIn = GoogleSignIn();
-
-  Future<User?> getCurrentUser() async {
-    User? currentUser; // Defaulting to null is implicit for nullable types
-    // _auth.currentUser() from older firebase_auth returns FirebaseUser, not User.
-    // And it might be null.
-    final FirebaseUser? firebaseUser = await _auth.currentUser();
-    if (firebaseUser != null) {
-      // Assuming User model constructor can handle String? for name, email, profilePic
-      currentUser = User(
-          uid: firebaseUser.uid, // uid is typically non-null
-          name: firebaseUser.displayName,
-          email: firebaseUser.email,
-          profilePic: firebaseUser.photoUrl);
-    }
-    return currentUser;
+  FirebaseService({required SharedPreferences prefs})
+      : _auth = firebase_auth.FirebaseAuth.instance,
+        googleSignIn = GoogleSignIn(),
+        _prefs = prefs {
+    _initialize();
   }
 
-  Future<User?> signInWithGoogle() async {
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
-    if (googleSignInAccount == null) {
-      // User cancelled sign-in
+  Future<void> _initialize() async {
+    if (_isInitialized) {
+      developer.log('FirebaseService already initialized');
+      return;
+    }
+
+    try {
+      developer.log('Initializing FirebaseService');
+      await _loadUserState();
+      _isInitialized = true;
+      developer.log('FirebaseService initialized successfully');
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error initializing FirebaseService',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> _loadUserState() async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        name = currentUser.displayName;
+        email = currentUser.email;
+        imageUrl = currentUser.photoURL;
+        await _saveUserState();
+      }
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error loading user state',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> _saveUserState() async {
+    try {
+      await _prefs.setString('user_name', name ?? '');
+      await _prefs.setString('user_email', email ?? '');
+      await _prefs.setString('user_image', imageUrl ?? '');
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error saving user state',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<app_models.User?> getCurrentUser() async {
+    if (!_isInitialized) {
+      developer
+          .log('FirebaseService not initialized when getting current user');
       return null;
     }
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
 
-    // Assuming GoogleAuthProvider.getCredential is from an older library version
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
+    try {
+      final firebase_auth.User? firebaseUser = _auth.currentUser;
+      if (firebaseUser != null) {
+        developer.log('Current user found: ${firebaseUser.uid}');
+        return app_models.User(
+          uid: firebaseUser.uid,
+          name: firebaseUser.displayName,
+          email: firebaseUser.email,
+          profilePic: firebaseUser.photoURL,
+        );
+      }
+      developer.log('No current user found');
+      return null;
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error getting current user',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
+  }
+
+  Future<app_models.User?> signInWithGoogle() async {
+    if (!_isInitialized) {
+      developer
+          .log('FirebaseService not initialized when signing in with Google');
+      return null;
+    }
+
+    try {
+      developer.log('Starting Google sign in');
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        developer.log('Google sign in cancelled by user');
+        return null;
+      }
+
+      developer.log('Getting Google authentication');
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final firebase_auth.AuthCredential credential =
+          firebase_auth.GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken);
+        idToken: googleSignInAuthentication.idToken,
+      );
 
-    final AuthResult authResult = await _auth.signInWithCredential(credential);
-    // authResult.user is FirebaseUser in older versions
-    final FirebaseUser? user = authResult.user;
+      developer.log('Signing in with Firebase');
+      final firebase_auth.UserCredential authResult =
+          await _auth.signInWithCredential(credential);
+      final firebase_auth.User? user = authResult.user;
 
-    if (user == null) {
-      return null;
-    }
+      if (user == null) {
+        developer.log('No user returned from Firebase sign in');
+        return null;
+      }
 
-    // Assertions remain, but now 'user' is checked for nullness above.
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
 
-    // _auth.currentUser() returns FirebaseUser in older versions
-    final FirebaseUser? currentFbUser = await _auth.currentUser();
-    // It's possible currentFbUser is null briefly if events haven't propagated,
-    // though ideally it should be the same as 'user'.
-    // For robustness, check currentFbUser as well if strict assertion is needed.
-    assert(user.uid == currentFbUser?.uid);
+      final firebase_auth.User? currentUser = _auth.currentUser;
+      assert(user.uid == currentUser?.uid);
 
-    // user.email, user.displayName, user.photoUrl can be null
-    // Assigning them to nullable class members
-    name = user.displayName;
-    email = user.email;
-    imageUrl = user.photoUrl;
+      name = user.displayName;
+      email = user.email;
+      imageUrl = user.photoURL;
 
-    // Assuming User model constructor can handle String? for name, email, profilePic
-    return User(
-        uid: user.uid, // uid is typically non-null
+      await _saveUserState();
+      developer.log('User signed in successfully: ${user.uid}');
+
+      return app_models.User(
+        uid: user.uid,
         name: name,
         email: email,
-        profilePic: imageUrl);
+        profilePic: imageUrl,
+      );
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error signing in with Google',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
   }
 
   Future<void> signOutGoogle() async {
-    await _auth.signOut();
-    await googleSignIn.signOut();
-    // Consider clearing local user data/state if needed
+    if (!_isInitialized) {
+      developer.log('FirebaseService not initialized when signing out');
+      return;
+    }
+
+    try {
+      developer.log('Starting sign out process');
+      await _auth.signOut();
+      await googleSignIn.signOut();
+      name = null;
+      email = null;
+      imageUrl = null;
+      await _saveUserState();
+      developer.log('User signed out successfully');
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error signing out',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  void dispose() {
+    _isInitialized = false;
     name = null;
     email = null;
     imageUrl = null;

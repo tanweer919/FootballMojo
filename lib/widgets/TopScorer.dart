@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsmojo/commons/NoContent.dart';
 import '../models/Player.dart';
@@ -32,75 +32,95 @@ class _TopScorersState extends State<TopScorers> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
         builder: (context, model, child) => Consumer<ThemeProvider>(
-          builder: (context, themeModel, child) => SingleChildScrollView(
-            child: Container(
-              margin: EdgeInsets.only(top: 10.0),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 4.0),
-                      child: LeagueDropdown(
-                        items: getLeagueItems(),
-                        selectedLeague: model.selectedLeague,
-                        backgroundColor: themeModel.appTheme == AppTheme.Light ? Color(0xfffafafa) : Color(0xff1d1d1d),
-                        fontColor: themeModel.appTheme == AppTheme.Light ? Colors.black : Colors.white,
-                        purpose: "topscorer",
-                      ),
+              builder: (context, themeModel, child) => SingleChildScrollView(
+                child: Container(
+                  margin: EdgeInsets.only(top: 10.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 4.0),
+                          child: LeagueDropdown(
+                            items: getLeagueItems()
+                                .cast<DropdownMenuItem<String>>(),
+                            selectedLeague: model.selectedLeague ?? '',
+                            backgroundColor:
+                                themeModel.appTheme == AppTheme.Light
+                                    ? Color(0xfffafafa)
+                                    : Color(0xff1d1d1d),
+                            fontColor: themeModel.appTheme == AppTheme.Light
+                                ? Colors.black
+                                : Colors.white,
+                            purpose: "topscorer",
+                          ),
+                        ),
+                        model.topScorers != null
+                            ? model.topScorers.length > 0
+                                ? Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0, horizontal: 2.0),
+                                      child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: model.topScorers.length,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            if (index == 0) {
+                                              return Column(
+                                                children: <Widget>[
+                                                  tableHeader(),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 8.0),
+                                                    child: tableRow(model
+                                                        .topScorers[index]),
+                                                  )
+                                                ],
+                                              );
+                                            }
+                                            return Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 8.0),
+                                              child: tableRow(
+                                                  model.topScorers[index]),
+                                            );
+                                          }),
+                                    ),
+                                  )
+                                : NoContent(
+                                    title: 'Top scorers not found',
+                                    description:
+                                        'Cannot find league topscorers matching your query',
+                                  )
+                            : Shimmer.fromColors(
+                                baseColor: themeModel.appTheme == AppTheme.Light
+                                    ? Colors.grey[300]!
+                                    : Colors.grey[700]!,
+                                highlightColor:
+                                    themeModel.appTheme == AppTheme.Light
+                                        ? Colors.grey[100]!
+                                        : Colors.grey[600]!,
+                                child: Container(
+                                  height: 100,
+                                  margin: EdgeInsets.symmetric(vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                      ],
                     ),
-                    model.topScorers != null
-                        ? model.topScorers.length > 0
-                        ? Card(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 2.0),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: model.topScorers.length,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder:
-                                (BuildContext context, int index) {
-                              if (index == 0) {
-                                return Column(
-                                  children: <Widget>[
-                                    tableHeader(),
-                                    Padding(
-                                      padding: const EdgeInsets
-                                          .symmetric(vertical: 8.0),
-                                      child: tableRow(
-                                          model.topScorers[index]),
-                                    )
-                                  ],
-                                );
-                              }
-                              return Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8.0),
-                                child: tableRow(
-                                    model.topScorers[index]),
-                              );
-                            }),
-                      ),
-                    )
-                        : NoContent(
-                      title: 'Top scorers not found',
-                      description:
-                      'Cannot find league topscorers matching your query',
-                    )
-                        : themeModel.appTheme == AppTheme.Light ? PKCardPageSkeleton(
-                      totalLines: 15,
-                    ) :  PKDarkCardPageSkeleton(
-                      totalLines: 15,
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ));
+            ));
   }
 
   Widget tableHeader() {
@@ -112,21 +132,24 @@ class _TopScorersState extends State<TopScorers> {
             width: MediaQuery.of(context).size.width * 0.45,
             child: Text(
               'Player',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.left,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.21,
             child: Text(
               'Goals(P)',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
         Container(
             width: MediaQuery.of(context).size.width * 0.21,
             child: Text(
               'Assists',
-              style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColorDark),
+              style: TextStyle(
+                  fontSize: 15, color: Theme.of(context).primaryColorDark),
               textAlign: TextAlign.center,
             )),
       ],
@@ -154,7 +177,7 @@ class _TopScorersState extends State<TopScorers> {
                 child: Container(
                   width: 30,
                   child: CachedNetworkImage(
-                      imageUrl: topScorer.photoUrl,
+                      imageUrl: topScorer.photoUrl ?? '',
                       placeholder: (BuildContext context, String url) =>
                           Image.asset('assets/images/user-placeholder.jpg')),
                 ),
@@ -179,7 +202,9 @@ class _TopScorersState extends State<TopScorers> {
                     ),
                     Text(
                       '${topScorer.teamName}',
-                      style: TextStyle(fontSize: 13, color: Theme.of(context).primaryColorDark),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: Theme.of(context).primaryColorDark),
                     )
                   ],
                 ),

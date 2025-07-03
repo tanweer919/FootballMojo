@@ -5,6 +5,7 @@ import '../commons/BottomNavbar.dart';
 import '../Provider/AppProvider.dart';
 
 class NotFound extends StatelessWidget {
+  const NotFound({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final AppProvider appProvider = Provider.of<AppProvider>(context);
@@ -22,17 +23,16 @@ class NotFound extends StatelessWidget {
                 child: Image.asset('assets/images/notfound.png'),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top:8.0, bottom: 4.0),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
               child: Text(
                 "Looks like you are lost",
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0, left: 14.0, right: 14.0),
+              padding:
+                  const EdgeInsets.only(bottom: 8.0, left: 14.0, right: 14.0),
               child: Text(
                 "Page you are looking for isn't available.",
                 textAlign: TextAlign.center,

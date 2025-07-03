@@ -14,7 +14,7 @@ import '../Provider/ThemeProvider.dart';
 
 class MatchStatScreen extends StatefulWidget {
   final Score score;
-  MatchStatScreen({this.score});
+  const MatchStatScreen({Key? key, required this.score}) : super(key: key);
 
   @override
   _MatchStatScreenState createState() => _MatchStatScreenState();
@@ -25,13 +25,14 @@ class _MatchStatScreenState extends State<MatchStatScreen>
   final MatchEventViewModel _matchEventViewModel =
       locator<MatchEventViewModel>();
   final MatchStatViewModel _matchStatViewModel = locator<MatchStatViewModel>();
-  Animation<double> animation;
-  AnimationController _animationController;
+  late Animation<double> animation;
+  late AnimationController _animationController;
 
   @override
   void initState() {
+    super.initState();
     _animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
     animation =
         Tween<double>(begin: 20.0, end: 0.0).animate(_animationController)
           ..addListener(() {
@@ -56,31 +57,33 @@ class _MatchStatScreenState extends State<MatchStatScreen>
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
-        builder: (context, themeModel, child) => SafeArea(
-              child: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  iconTheme: IconThemeData(
-                      color: themeModel.appTheme == AppTheme.Light
-                          ? Colors.black
-                          : Colors.white),
-                ),
-                body: RefreshIndicator(
-                  onRefresh: () async {},
-                  child: (widget.score.status != 'NS')
-                      ? SingleChildScrollView(
-                          child: statSections(themeModel: themeModel),
-                        )
-                      : Container(
-                          child: statSections(themeModel: themeModel),
-                        ),
-                ),
-              ),
-            ));
+      builder: (context, themeModel, child) => SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(
+              color: themeModel.appTheme == AppTheme.Light
+                  ? Colors.black
+                  : Colors.white,
+            ),
+          ),
+          body: RefreshIndicator(
+            onRefresh: () async {},
+            child: (widget.score.status != 'NS')
+                ? SingleChildScrollView(
+                    child: statSections(themeModel: themeModel),
+                  )
+                : Container(
+                    child: statSections(themeModel: themeModel),
+                  ),
+          ),
+        ),
+      ),
+    );
   }
 
-  Widget statSections({ThemeProvider themeModel}) {
+  Widget statSections({required ThemeProvider themeModel}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
       child: Column(
@@ -95,7 +98,7 @@ class _MatchStatScreenState extends State<MatchStatScreen>
                       fontSize: 12, color: Theme.of(context).primaryColorDark),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
@@ -105,7 +108,9 @@ class _MatchStatScreenState extends State<MatchStatScreen>
                       (widget.score.status == 'LV')
                           ? "${widget.score.minuteElapsed}'"
                           : "${widget.score.status}",
-                      style: TextStyle(color: Colors.red, fontSize: widget.score.status == 'LV' ? 14 : 12),
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontSize: widget.score.status == 'LV' ? 14 : 12),
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -129,13 +134,17 @@ class _MatchStatScreenState extends State<MatchStatScreen>
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4.0),
                       child: Container(
-                          height: 60,
-                          child: CachedNetworkImage(
-                              imageUrl: widget.score.homeTeamLogo,
-                              placeholder: (BuildContext context, String url) =>
-                                  Icon(MyFlutterApp.football))),
+                        height: 60,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.score.homeTeamLogo ?? '',
+                          placeholder: (BuildContext context, String url) =>
+                              Icon(MyFlutterApp.football),
+                        ),
+                      ),
                     ),
-                    FittedBox(child: Text(widget.score.homeTeam), fit: BoxFit.fitWidth),
+                    FittedBox(
+                        child: Text(widget.score.homeTeam),
+                        fit: BoxFit.fitWidth),
                   ],
                 ),
               ),
@@ -146,15 +155,16 @@ class _MatchStatScreenState extends State<MatchStatScreen>
                     (widget.score.minuteElapsed != null)
                         ? Text(
                             '${widget.score.homeScore} - ${widget.score.awayScore}',
-                            style: TextStyle(fontSize: 30),
+                            style: const TextStyle(fontSize: 30),
                           )
                         : Text(
                             'VS',
                             style: TextStyle(
-                                fontSize: 18,
-                                color: themeModel.appTheme == AppTheme.Light
-                                    ? Color(0XAA000000)
-                                    : Colors.white),
+                              fontSize: 18,
+                              color: themeModel.appTheme == AppTheme.Light
+                                  ? const Color(0XAA000000)
+                                  : Colors.white,
+                            ),
                           ),
                   ],
                 ),
@@ -166,112 +176,61 @@ class _MatchStatScreenState extends State<MatchStatScreen>
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Container(
-                          height: 60,
-                          child: CachedNetworkImage(
-                              imageUrl: widget.score.awayTeamLogo,
-                              placeholder: (BuildContext context, String url) =>
-                                  Icon(MyFlutterApp.football))),
+                        height: 60,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.score.awayTeamLogo ?? '',
+                          placeholder: (BuildContext context, String url) =>
+                              Icon(MyFlutterApp.football),
+                        ),
+                      ),
                     ),
-                    FittedBox(child: Text(widget.score.awayTeam), fit: BoxFit.fitWidth,)
+                    FittedBox(
+                        child: Text(widget.score.awayTeam),
+                        fit: BoxFit.fitWidth),
                   ],
                 ),
               )
             ],
           ),
-          Divider(
-            thickness: 0.7,
-          ),
+          const Divider(thickness: 0.7),
           (widget.score.status != 'NS')
               ? ChangeNotifierProvider(
                   create: (context) => _matchEventViewModel,
-                  child: Scorer(
-                    score: widget.score,
-                  ),
+                  child: Scorer(score: widget.score),
                 )
               : getScorer(),
-          Divider(
-            thickness: 0.7,
-          ),
+          const Divider(thickness: 0.7),
           (widget.score.status != 'NS')
               ? ChangeNotifierProvider(
-                  create: (contet) => _matchStatViewModel,
-                  child: Stats(
-                    score: widget.score,
-                  ),
+                  create: (context) => _matchStatViewModel,
+                  child: Stats(score: widget.score),
                 )
-              : Expanded(
-                  child: getStats(),
-                )
+              : getStats(),
         ],
       ),
     );
   }
 
   Widget getScorer() {
-    return ConstrainedBox(
-      constraints: BoxConstraints(minHeight: 80),
-      child: Center(
-        child: Text(
-          'Match not started',
-          style: TextStyle(
-              fontSize: 18, color: Theme.of(context).primaryColorDark),
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget getStats() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                    height: 25,
-                    child: CachedNetworkImage(
-                        imageUrl: widget.score.homeTeamLogo,
-                        placeholder: (BuildContext context, String url) =>
-                            Icon(MyFlutterApp.football))),
-                Text('Team Stats'),
-                Container(
-                    height: 25,
-                    child: CachedNetworkImage(
-                        imageUrl: widget.score.awayTeamLogo,
-                        placeholder: (BuildContext context, String url) =>
-                            Icon(MyFlutterApp.football)))
-              ],
-            ),
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Match not started',
-                  style: TextStyle(
-                      fontSize: 22, color: Theme.of(context).primaryColorDark),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
-  String convertDateTime({DateTime date_time}) {
-    int dayDifferenceCount =
-        dayDifference(date_time1: DateTime.now(), date_time2: date_time);
-    if (dayDifferenceCount == 0) {
-      return 'Today, ' + DateFormat('hh:mm aaa').format(widget.score.date_time);
-    } else if (dayDifferenceCount == 1) {
-      return 'Yesterday, ' +
-          DateFormat('hh:mm aaa').format(widget.score.date_time);
-    } else if (dayDifferenceCount == -1) {
-      return 'Tomorrow, ' +
-          DateFormat('hh:mm aaa').format(widget.score.date_time);
+  String convertDateTime({required DateTime date_time}) {
+    final DateTime now = DateTime.now();
+    final int diffMin = now.difference(date_time).inMinutes;
+    final int diffHr = now.difference(date_time).inHours;
+    final int diffDay = now.difference(date_time).inDays;
+
+    if (diffMin < 60) {
+      return '$diffMin mins';
+    } else if (diffMin < 1440) {
+      return '$diffHr hrs';
     } else {
-      return DateFormat('E, d MMMM, hh:mm aaa').format(date_time);
+      return '$diffDay days';
     }
   }
 }

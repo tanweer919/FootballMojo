@@ -10,17 +10,18 @@ import '../services/FlushbarHelper.dart';
 import '../services/FirebaseMessagingService.dart';
 
 class NoInternetScreen extends StatefulWidget {
-  final String from;
-  NoInternetScreen({this.from});
+  final String? from;
+  const NoInternetScreen({Key? key, this.from}) : super(key: key);
   @override
   _NoInternetScreenState createState() => _NoInternetScreenState();
 }
 
 class _NoInternetScreenState extends State<NoInternetScreen> {
-  FirebaseService firebaseService = locator<FirebaseService>();
+  final FirebaseService firebaseService = locator<FirebaseService>();
   final RemoteConfigService _remoteConfigService =
-  locator<RemoteConfigService>();
-  final FirebaseMessagingService _fcmService = locator<FirebaseMessagingService>();
+      locator<RemoteConfigService>();
+  final FirebaseMessagingService _fcmService =
+      locator<FirebaseMessagingService>();
 
   bool inProgress = false;
   @override
@@ -39,17 +40,16 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 child: Image.asset('assets/images/nointernet.png'),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top:8.0, bottom: 4.0),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
               child: Text(
                 "No internet available",
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 8.0, left: 14.0, right: 14.0),
+              padding:
+                  const EdgeInsets.only(bottom: 8.0, left: 14.0, right: 14.0),
               child: Text(
                 "You are offline. Please turn on your mobile data to get updates.",
                 textAlign: TextAlign.center,
@@ -64,14 +64,17 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
               minWidth: 100,
               height: 40,
               inProgress: inProgress,
-              onPressed: () async{
+              onPressed: () async {
                 setState(() {
                   inProgress = true;
                 });
-                List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-                bool result = !(connectivityResult.contains(ConnectivityResult.none) || connectivityResult.isEmpty);
+                List<ConnectivityResult> connectivityResult =
+                    await (Connectivity().checkConnectivity());
+                bool result =
+                    !(connectivityResult.contains(ConnectivityResult.none) ||
+                        connectivityResult.isEmpty);
 
-                if(result == true) {
+                if (result == true) {
                   await _fcmService.initialise();
                   await _remoteConfigService.initialise();
                   final currentUser = await firebaseService.getCurrentUser();
@@ -80,12 +83,15 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                     inProgress = false;
                   });
                   Navigator.of(context).pushReplacementNamed('/start');
-                }
-                else {
+                } else {
                   setState(() {
                     inProgress = false;
                   });
-                  FlushHelper.flushbarAlert(context: context, title: 'Error', message: 'You are offline', seconds: 3);
+                  FlushHelper.flushbarAlert(
+                      context: context,
+                      title: 'Error',
+                      message: 'You are offline',
+                      seconds: 3);
                 }
               },
             )

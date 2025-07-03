@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 class NoContent extends StatelessWidget {
   final String title;
   final String description;
-  NoContent({Key key, this.title, this.description}) : super(key: key);
+  const NoContent({
+    super.key,
+    required this.title,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +29,12 @@ class NoContent extends StatelessWidget {
               padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
               child: Text(
                 title,
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
               ),
             ),
             Padding(
               padding:
-              const EdgeInsets.only(bottom: 8.0, left: 14.0, right: 14.0),
+                  const EdgeInsets.only(bottom: 8.0, left: 14.0, right: 14.0),
               child: Text(
                 description,
                 textAlign: TextAlign.center,

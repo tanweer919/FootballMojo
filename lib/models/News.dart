@@ -1,13 +1,13 @@
 class News {
   final String source;
-  final String? sourceLogo; // Nullable
+  final String? sourceLogo;
   final String title;
   final String content;
   final String url;
-  final String imageUrl; // Non-nullable due to fallback
+  final String imageUrl;
   final DateTime publishedAt;
 
-  News({
+  const News({
     required this.source,
     this.sourceLogo,
     required this.title,
@@ -17,10 +17,31 @@ class News {
     required this.publishedAt,
   });
 
-  factory News.fromJson(Map<String, dynamic> parsedJson) {
-    String defaultImageUrl = 'https://res.cloudinary.com/doy9hqxr1/image/upload/q_70/v1596572656/Football-Class-Cover-Page_sjrsaq.jpg';
+  News copyWith({
+    String? source,
+    String? sourceLogo,
+    String? title,
+    String? content,
+    String? url,
+    String? imageUrl,
+    DateTime? publishedAt,
+  }) {
+    return News(
+      source: source ?? this.source,
+      sourceLogo: sourceLogo ?? this.sourceLogo,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      url: url ?? this.url,
+      imageUrl: imageUrl ?? this.imageUrl,
+      publishedAt: publishedAt ?? this.publishedAt,
+    );
+  }
 
-    dynamic providerList = parsedJson['provider'];
+  factory News.fromJson(Map<String, dynamic> parsedJson) {
+    const String defaultImageUrl =
+        'https://res.cloudinary.com/doy9hqxr1/image/upload/q_70/v1596572656/Football-Class-Cover-Page_sjrsaq.jpg';
+
+    final providerList = parsedJson['provider'];
     Map<String, dynamic>? providerData;
     if (providerList is List && providerList.isNotEmpty) {
       providerData = providerList[0] as Map<String, dynamic>?;
@@ -30,7 +51,8 @@ class News {
     if (providerData != null) {
       final imageProviderData = providerData['image'] as Map<String, dynamic>?;
       if (imageProviderData != null) {
-        final thumbnailData = imageProviderData['thumbnail'] as Map<String, dynamic>?;
+        final thumbnailData =
+            imageProviderData['thumbnail'] as Map<String, dynamic>?;
         sourceLogoUrl = thumbnailData?['contentUrl'] as String?;
       }
     }
@@ -46,15 +68,35 @@ class News {
     if (datePublishedStr != null) {
       publicationDate = DateTime.tryParse(datePublishedStr) ?? DateTime.now();
     } else {
-      publicationDate = DateTime.now(); // Default if datePublished is null
+      publicationDate = DateTime.now();
+    }
+
+    final sourceName = providerData?['name'] as String?;
+    if (sourceName == null) {
+      throw FormatException('Source name is required');
+    }
+
+    final title = parsedJson['name'] as String?;
+    if (title == null) {
+      throw FormatException('Title is required');
+    }
+
+    final content = parsedJson['description'] as String?;
+    if (content == null) {
+      throw FormatException('Content is required');
+    }
+
+    final url = parsedJson['url'] as String?;
+    if (url == null) {
+      throw FormatException('URL is required');
     }
 
     return News(
-      source: providerData?['name'] as String? ?? 'Unknown Source',
+      source: sourceName,
       sourceLogo: sourceLogoUrl,
-      title: parsedJson['name'] as String? ?? 'No Title',
-      content: parsedJson['description'] as String? ?? 'No Content',
-      url: parsedJson['url'] as String? ?? '',
+      title: title,
+      content: content,
+      url: url,
       imageUrl: imageUrlFromSource ?? defaultImageUrl,
       publishedAt: publicationDate,
     );

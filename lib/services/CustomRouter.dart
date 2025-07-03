@@ -103,10 +103,10 @@ class RouterService {
       '/league': LeagueTableScreen(),
       '/news': NewsScreen(),
       '/dashboard': DashboardScreen(),
-      '/newsarticle': NewsArticleScreen(index: index, news: news),
+      '/newsarticle': NewsArticleScreen(index: index!, news: news!),
       '/selectteam':
-          FavouriteTeam(leagueId: leagueId, leagueName: leagueName),
-      '/matchstat': MatchStatScreen(score: score),
+          FavouriteTeam(leagueId: leagueId!, leagueName: leagueName!),
+      '/matchstat': MatchStatScreen(score: score!),
       '/selectleague': FavouriteLeague(),
       '/introduction': IntroductionScreen(),
       '/nointernet': NoInternetScreen(from: from)

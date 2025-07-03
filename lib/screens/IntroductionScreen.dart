@@ -8,17 +8,19 @@ import '../services/GetItLocator.dart';
 import '../Provider/AppProvider.dart';
 import '../models/User.dart';
 import '../services/FirebaseMessagingService.dart';
+import '../models/Score.dart';
+import '../models/News.dart';
+import '../models/LeagueTable.dart';
 
 class IntroductionScreen extends StatefulWidget {
+  const IntroductionScreen({Key? key}) : super(key: key);
   @override
   _IntroductionScreenState createState() => _IntroductionScreenState();
 }
 
 class _IntroductionScreenState extends State<IntroductionScreen> {
   final FirebaseService _firebaseService = locator<FirebaseService>();
-
   final FirestoreService _firestoreService = locator<FirestoreService>();
-
   final FirebaseMessagingService _fcmService =
       locator<FirebaseMessagingService>();
   bool inProgress = false;
@@ -46,15 +48,15 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                     height: MediaQuery.of(context).size.height * 0.6,
                     child: Image.asset('assets/images/football_cover.png'),
                   ),
-                  Text(
+                  const Text(
                     'Welcome to Football Mojo',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
                   ),
                   Flexible(
                       child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: const Text(
                       'The football companion which keeps updated about latest scores and news.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -67,7 +69,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                   Column(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.all(4.0),
+                        padding: const EdgeInsets.all(4.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -75,24 +77,37 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                               width: MediaQuery.of(context).size.width * 0.5,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xff4285f4),
-                                  padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                  backgroundColor: const Color(0xff4285f4),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0),
                                 ),
                                 onPressed: () async {
                                   setState(() {
                                     inProgress = true;
                                   });
-                                  final User user =
+                                  final User? user =
                                       await _firebaseService.signInWithGoogle();
+                                  if (user == null) {
+                                    setState(() {
+                                      inProgress = false;
+                                    });
+                                    return;
+                                  }
                                   model.currentUser = user;
                                   await _firestoreService.setData(
                                       userId: user.uid,
                                       data: {
                                         'fcmToken': await _fcmService.getToken()
                                       });
-                                  final Map<String, dynamic> data =
+                                  final Map<String, dynamic>? data =
                                       await _firestoreService.getData(
                                           userId: user.uid);
+                                  if (data == null) {
+                                    setState(() {
+                                      inProgress = false;
+                                    });
+                                    return;
+                                  }
                                   if (data.containsKey('teamName') &&
                                       data['teamName'] != null &&
                                       data.containsKey('teamId') &&
@@ -114,11 +129,11 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                     LocalStorage.setString(
                                         'leagueId', data['leagueId']);
                                     model.selectedLeague = data['leagueName'];
-                                    model.leagueWiseScores = null;
-                                    model.favouriteTeamScores = null;
-                                    model.newsList = null;
-                                    model.favouriteNewsList = null;
-                                    model.leagueTableEntries = null;
+                                    model.leagueWiseScores = [];
+                                    model.favouriteTeamScores = [];
+                                    model.newsList = [];
+                                    model.favouriteNewsList = [];
+                                    model.leagueTableEntries = [];
                                     model.navbarIndex = 0;
                                     Navigator.of(context).pushReplacementNamed(
                                         '/home',
@@ -135,11 +150,10 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                         .pushReplacementNamed('/selectleague');
                                   }
                                 },
-                                padding: EdgeInsets.symmetric(horizontal: 4.0),
                                 child: inProgress
-                                    ? CircularProgressIndicator(
+                                    ? const CircularProgressIndicator(
                                         valueColor:
-                                            new AlwaysStoppedAnimation<Color>(
+                                            AlwaysStoppedAnimation<Color>(
                                                 Color(0xfff5f5f5)),
                                       )
                                     : Row(
@@ -155,9 +169,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                                 child: Image.asset(
                                                     'assets/images/google_logo.png'),
                                               )),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: AutoSizeText(
+                                          const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
                                               'Sign in with Google',
                                               style: TextStyle(
                                                   color: Colors.white),
@@ -165,7 +179,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                                           )
                                         ],
                                       ),
-                                ),
+                              ),
                             )
                           ],
                         ),
@@ -178,7 +192,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                           Navigator.of(context)
                               .pushReplacementNamed('/selectleague');
                         },
-                        child: Text(
+                        child: const Text(
                           'Continue as guest',
                           textAlign: TextAlign.center,
                           style: TextStyle(

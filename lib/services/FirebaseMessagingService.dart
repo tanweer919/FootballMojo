@@ -5,45 +5,53 @@ import 'GetItLocator.dart';
 import 'LocalStorage.dart';
 
 class FirebaseMessagingService {
-  // Assuming _fcm = FirebaseMessaging() is for an older library version.
-  // For modern versions, it would be FirebaseMessaging.instance.
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final RouterService _routerService = locator<RouterService>();
 
   Future<void> initialise() async {
     if (Platform.isIOS) {
-      // Ensure IosNotificationSettings is correctly instantiated if needed.
-      _fcm.requestNotificationPermissions(IosNotificationSettings());
+      await _fcm.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
     }
-    _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        final dynamic data = message['data'];
-        if (data is Map && data.containsKey('route')) {
-          final route = data['route'];
-          if (route is String) {
-            _routerService.navigationKey.currentState?.pushReplacementNamed(route);
-          }
+
+    // Handle messages when app is in foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final data = message.data;
+      if (data.containsKey('route')) {
+        final route = data['route'];
+        if (route is String) {
+          _routerService.navigationKey.currentState
+              ?.pushReplacementNamed(route);
         }
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        final dynamic data = message['data'];
-        if (data is Map && data.containsKey('route')) {
-          final route = data['route'];
-          if (route is String) {
-            _routerService.navigationKey.currentState?.pushReplacementNamed(route);
-          }
+      }
+    });
+
+    // Handle messages when app is in background and user taps notification
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      final data = message.data;
+      if (data.containsKey('route')) {
+        final route = data['route'];
+        if (route is String) {
+          _routerService.navigationKey.currentState?.pushNamed(route);
         }
-      },
-      onResume: (Map<String, dynamic> message) async {
-        final dynamic data = message['data'];
-        if (data is Map && data.containsKey('route')) {
-          final route = data['route'];
-          if (route is String) {
-            _routerService.navigationKey.currentState?.pushNamed(route);
-          }
+      }
+    });
+
+    // Handle messages when app is terminated and user taps notification
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      final data = initialMessage.data;
+      if (data.containsKey('route')) {
+        final route = data['route'];
+        if (route is String) {
+          _routerService.navigationKey.currentState
+              ?.pushReplacementNamed(route);
         }
-      },
-    );
+      }
+    }
   }
 
   Future<void> subscribeToTopic({required String topic}) async {
@@ -60,9 +68,6 @@ class FirebaseMessagingService {
   }
 
   Future<String?> getToken() async {
-    // getToken from older firebase_messaging might return null or String.
-    // Explicitly making it Future<String?> is safer.
-    final String? token = await _fcm.getToken();
-    return token;
+    return await _fcm.getToken();
   }
 }

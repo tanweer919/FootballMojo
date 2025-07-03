@@ -21,22 +21,40 @@ import 'FirebaseMessagingService.dart';
 import 'CustomRouter.dart';
 import '../Provider/ThemeProvider.dart';
 import 'AnalyticsService.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'HttpService.dart';
 
 GetIt locator = GetIt.instance;
 
 Future setupLocator() async {
   DateTime now =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  // Initialize SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+
+  // Initialize RemoteConfigService
   RemoteConfigService remoteConfigService =
       await RemoteConfigService.getInstance();
-  locator.registerLazySingleton<NewsService>(() => NewsService());
+
+  // Initialize Dio client
+  final dio = await HttpService.getApiClient();
+
+  // Register services
+  locator.registerLazySingleton<NewsService>(
+      () => NewsService(remoteConfigService));
   locator.registerLazySingleton<TeamService>(() => TeamService());
-  locator.registerLazySingleton<ScoreService>(() => ScoreService());
+  locator.registerLazySingleton<ScoreService>(
+      () => ScoreService(dio, remoteConfigService));
   locator.registerLazySingleton<StatService>(() => StatService());
   locator.registerLazySingleton<MatchEventService>(() => MatchEventService());
-  locator.registerLazySingleton<LeagueTableService>(() => LeagueTableService());
-  locator.registerLazySingleton<TopScorerService>(() => TopScorerService());
-  locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
+  locator.registerLazySingleton<LeagueTableService>(
+      () => LeagueTableService(dio, remoteConfigService));
+  locator.registerLazySingleton<TopScorerService>(
+      () => TopScorerService(dio, remoteConfigService));
+  locator.registerLazySingleton<FirebaseService>(
+      () => FirebaseService(prefs: prefs));
   locator.registerLazySingleton<FirestoreService>(() => FirestoreService());
   locator.registerLazySingleton<AnalyticsService>(() => AnalyticsService());
   locator.registerLazySingleton<NetworkStatusService>(
@@ -45,24 +63,32 @@ Future setupLocator() async {
   locator.registerLazySingleton<FirebaseMessagingService>(
       () => FirebaseMessagingService());
   locator.registerLazySingleton<RouterService>(() => RouterService());
+
+  // Register ViewModels
   locator.registerFactory<HomeViewModel>(
-      () => HomeViewModel(carouselIndex: 0)); // Updated
-  locator.registerFactory<MatchStatViewModel>(
-      () => MatchStatViewModel(stats: {})); // Updated, assuming {} is a valid default
-  locator.registerFactory<MatchEventViewModel>(
-      () => MatchEventViewModel(events: [])); // Updated, assuming [] is a valid default
-  locator.registerFactoryParam<FavouriteScoresViewModel, List<Score>, int>(
-      (scores, index) => FavouriteScoresViewModel(
-          scores: scores, lastRetrievedIndex: index)); // Updated
-  locator.registerFactoryParam<AppProvider, Map<String, dynamic>, User?>( // User can be null
+      () => HomeViewModel(carouselIndex: 0, prefs: prefs));
+  locator
+      .registerFactory<MatchStatViewModel>(() => MatchStatViewModel(stats: {}));
+  locator.registerFactory<MatchEventViewModel>(() => MatchEventViewModel(
+      events: [], eventService: locator<MatchEventService>(), prefs: prefs));
+
+  // Register AppProvider with all required dependencies
+  locator.registerFactoryParam<AppProvider, Map<String, dynamic>, User?>(
       (map, currentUser) => AppProvider(
-            selectedLeague: map['leagueName'] as String?, // Safe cast
-            notificationEnabled: map['notificationEnabled'] as bool, // Safe cast
-            currentUser: currentUser, // currentUser is User?
-            navbarIndex: 0, // Default or passed value
+            prefs: prefs,
+            newsService: locator<NewsService>(),
+            scoreService: locator<ScoreService>(),
+            leagueTableService: locator<LeagueTableService>(),
+            topScorerService: locator<TopScorerService>(),
+            selectedLeague: map['leagueName'] as String?,
+            notificationEnabled: map['notificationEnabled'] as bool,
+            currentUser: currentUser,
+            navbarIndex: 0,
             startDate: now.subtract(Duration(days: 90)),
             endDate: now.add(Duration(days: 7)),
-          )); // Updated
+          ));
+
+  // Register ThemeProvider
   locator.registerFactoryParam<ThemeProvider, AppTheme, void>(
-      (theme, _) => ThemeProvider(appTheme: theme)); // Updated
+      (theme, _) => ThemeProvider(appTheme: theme, prefs: prefs));
 }

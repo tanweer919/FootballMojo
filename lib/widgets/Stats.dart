@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsmojo/Provider/MatchStatViewModel.dart';
 import '../commons/custom_icons.dart';
@@ -9,7 +9,7 @@ import '../Provider/ThemeProvider.dart';
 
 class Stats extends StatefulWidget {
   final Score score;
-  Stats({this.score});
+  Stats({required this.score});
 
   @override
   _StatsState createState() => _StatsState();
@@ -45,18 +45,16 @@ class _StatsState extends State<Stats> {
                       Container(
                           height: 25,
                           child: CachedNetworkImage(
-                              imageUrl: widget.score.homeTeamLogo,
-                              placeholder:
-                                  (BuildContext context, String url) =>
-                                      Icon(MyFlutterApp.football))),
+                              imageUrl: widget.score.homeTeamLogo ?? '',
+                              placeholder: (BuildContext context, String url) =>
+                                  Icon(MyFlutterApp.football))),
                       Text('Team Stats'),
                       Container(
                           height: 25,
                           child: CachedNetworkImage(
-                              imageUrl: widget.score.awayTeamLogo,
-                              placeholder:
-                                  (BuildContext context, String url) =>
-                                      Icon(MyFlutterApp.football)))
+                              imageUrl: widget.score.awayTeamLogo ?? '',
+                              placeholder: (BuildContext context, String url) =>
+                                  Icon(MyFlutterApp.football)))
                     ],
                   ),
                   Padding(
@@ -67,7 +65,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].totalShots.isNaN ? 'N/A' : stats["home"].totalShots}',
+                          '${stats["home"]?.totalShots?.isNaN ?? true ? 'N/A' : stats["home"]?.totalShots}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -77,7 +75,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].totalShots.isNaN ? 'N/A' : stats["away"].totalShots}',
+                          '${stats["away"]?.totalShots?.isNaN ?? true ? 'N/A' : stats["away"]?.totalShots}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -92,7 +90,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].shotsOnTarget.isNaN ? 'N/A' : stats["home"].shotsOnTarget}',
+                          '${stats["home"]?.shotsOnTarget?.isNaN ?? true ? 'N/A' : stats["home"]?.shotsOnTarget}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -102,7 +100,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].shotsOnTarget.isNaN ? 'N/A' : stats["away"].shotsOnTarget}',
+                          '${stats["away"]?.shotsOnTarget?.isNaN ?? true ? 'N/A' : stats["away"]?.shotsOnTarget}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -117,7 +115,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].possession}',
+                          '${stats["home"]?.possession ?? 'N/A'}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -127,7 +125,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].possession}',
+                          '${stats["away"]?.possession ?? 'N/A'}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -142,7 +140,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].totalPasses.isNaN ? 'N/A' : stats["home"].totalPasses}',
+                          '${stats["home"]?.totalPasses?.isNaN ?? true ? 'N/A' : stats["home"]?.totalPasses}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -152,7 +150,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].totalPasses.isNaN ? 'N/A' : stats["away"].totalPasses}',
+                          '${stats["away"]?.totalPasses?.isNaN ?? true ? 'N/A' : stats["away"]?.totalPasses}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -167,7 +165,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].accuratePasses}',
+                          '${stats["home"]?.accuratePasses ?? 'N/A'}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -177,7 +175,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].accuratePasses}',
+                          '${stats["away"]?.accuratePasses ?? 'N/A'}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -192,7 +190,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].fouls.isNaN ? 'N/A' : stats["home"].fouls}',
+                          '${stats["home"]?.fouls?.isNaN ?? true ? 'N/A' : stats["home"]?.fouls}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -202,7 +200,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].fouls.isNaN ? 'N/A' : stats["away"].fouls}',
+                          '${stats["away"]?.fouls?.isNaN ?? true ? 'N/A' : stats["away"]?.fouls}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -217,7 +215,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].yellowCards.isNaN ? 'N/A' : stats["home"].yellowCards}',
+                          '${stats["home"]?.yellowCards?.isNaN ?? true ? 'N/A' : stats["home"]?.yellowCards}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -227,7 +225,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].yellowCards.isNaN ? 'N/A' : stats["away"].yellowCards}',
+                          '${stats["away"]?.yellowCards?.isNaN ?? true ? 'N/A' : stats["away"]?.yellowCards}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -242,7 +240,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].redCards.isNaN ? 'N/A' : stats["home"].redCards}',
+                          '${stats["home"]?.redCards?.isNaN ?? true ? 'N/A' : stats["home"]?.redCards}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -252,7 +250,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].redCards.isNaN ? 'N/A' : stats["away"].redCards}',
+                          '${stats["away"]?.redCards?.isNaN ?? true ? 'N/A' : stats["away"]?.redCards}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -267,7 +265,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].offsides.isNaN ? 'N/A' : stats["home"].offsides}',
+                          '${stats["home"]?.offsides?.isNaN ?? true ? 'N/A' : stats["home"]?.offsides}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -277,7 +275,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].offsides.isNaN ? 'N/A' : stats["away"].offsides}',
+                          '${stats["away"]?.offsides?.isNaN ?? true ? 'N/A' : stats["away"]?.offsides}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -292,7 +290,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].corners.isNaN ? 'N/A' : stats["home"].corners}',
+                          '${stats["home"]?.corners?.isNaN ?? true ? 'N/A' : stats["home"]?.corners}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -302,7 +300,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].corners.isNaN ? 'N/A' : stats["away"].corners}',
+                          '${stats["away"]?.corners?.isNaN ?? true ? 'N/A' : stats["away"]?.corners}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -317,7 +315,7 @@ class _StatsState extends State<Stats> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '${stats["home"].saves.isNaN ? 'N/A' : stats["home"].saves}',
+                          '${stats["home"]?.saves?.isNaN ?? true ? 'N/A' : stats["home"]?.saves}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
@@ -327,7 +325,7 @@ class _StatsState extends State<Stats> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          '${stats["away"].saves.isNaN ? 'N/A' : stats["away"].saves}',
+                          '${stats["away"]?.saves?.isNaN ?? true ? 'N/A' : stats["away"]?.saves}',
                           style: TextStyle(fontSize: 14),
                           textAlign: TextAlign.center,
                         )
@@ -336,7 +334,7 @@ class _StatsState extends State<Stats> {
                   )
                 ],
               );
-                        },
+            },
           ),
         ),
       ),
